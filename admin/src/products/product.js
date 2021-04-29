@@ -1,8 +1,8 @@
 import React, { useEffect, useState, useContext } from 'react';
 import MaterialTable from 'material-table'
 import { Button, Spinner, } from 'react-bootstrap';
-import { getAllProducts, deleteProduct, editProductFormatter } from './../services/productService'
-import Snackbar from '@material-ui/core/Snackbar'
+import { getAllProducts, deleteProduct, editProductFormatter } from './../services/productService';
+import Snackbar from '@material-ui/core/Snackbar';
 import NavBar from '../components/navBar';
 import * as axios from 'axios';
 import { url, jwt, userId } from './../constants/auth';
@@ -21,7 +21,6 @@ export const Product = (props) => {
                     authorization: `Bearer ${token}`
                 }
             });
-            console.log(res)
             if (res.status === 200) {
                 setProduct(res.data);
             }
@@ -63,23 +62,19 @@ export const Product = (props) => {
     },
     ]
     useEffect(() => {
-        console.log(11111);
         getProduct().then(() => {
-            console.log(2222);
-            fetch(url + '/auth/refresh_token', {
+            fetch(url + '/auth/token', {
                 method: 'POST', credentials: 'include', headers: {
                     'Content-Type': 'application/json',
                 }
-            })
-                .then(res => res.json())
-                .then(data => {
-                    console.log(data);
-                    if (!data.token) {
-                        return;
-                    }
-                    console.log(data.token);
-                    localStorage.setItem("token", data.token);
-                });
+            }).then(res => res.json()).then(data => {
+                console.log(data);
+                if (!data.token) {
+                    return;
+                }
+                console.log(data.token);
+                localStorage.setItem("token", data.token);
+            });
         });
     }, []);
     return (
@@ -97,7 +92,6 @@ export const Product = (props) => {
                 <MaterialTable style={{ margin: '15px' }} title="Products" data={product} columns={columns}
                     actions={[
                         {
-
                             icon: 'edit',
                             tooltip: 'Edit User',
                             onClick: async (event, rowData) => {

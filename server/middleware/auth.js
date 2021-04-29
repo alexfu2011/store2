@@ -9,13 +9,15 @@ const isAuth = async (req, res, next) => {
   const token = authorization.split(' ')[1];
   let payload;
   try {
-    payload = await verify(token, "Secret encryption message for sessions");
+    payload = verify(token, "Secret encryption message for sessions");
   } catch (err) {
-    if (err.name == "JsonWebTokenError") {
+    if (err.name == "TokenExpiredError") {
+      return res.sendStatus(401);
+    } else {
       return res.sendStatus(400);
     }
   }
-  const session = await UserSession.findOne({ _userId: payload.userId });
+  const session = await UserSession.findOne({ token });
   if (!session) {
     return res.sendStatus(400);
   } else if (session.token !== token) {

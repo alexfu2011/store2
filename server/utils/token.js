@@ -3,7 +3,7 @@ require('dotenv').config();
 
 const createToken = userId => {
   return sign({ userId }, "Secret encryption message for sessions", {
-    expiresIn: '15m',
+    expiresIn: '1m',
   });
 };
 

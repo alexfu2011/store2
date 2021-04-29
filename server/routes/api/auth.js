@@ -43,7 +43,7 @@ router.post('/login', jsonParser, async (req, res) => {
         await session.save();
         res.status(200).cookie('token', token, {
             httpOnly: true,
-            path: '/api/auth/refresh_token',
+            path: '/api/auth/token',
         }).json({ token });
     } catch (err) {
         console.log(err);
@@ -60,33 +60,30 @@ router.post('/logout', (_req, res) => {
     });
 });
 
-router.post('/refresh_token', async (req, res) => {
+router.post('/token', async (req, res) => {
     const token = req.cookies.token;
     if (!token) {
         return res.status(400).json({ token: "" });
     }
     let payload = null;
     try {
-        payload = await verify(token, "Secret encryption message for sessions");
+        payload = verify(token, "Secret encryption message for sessions");
     } catch (err) {
         if (err.name == "TokenExpiredError") {
+            await UserSession.deleteOne({ token });
             return res.status(401).json({ token: "" });
         } else {
             return res.status(400).json({ token: "" });
         }
     }
-    const session = await UserSession.findOne({ _userId: payload.userId });
-    if (!session) {
-        return res.status(400).json({ token: "" });
-    } else if (session.token !== token) {
-        return res.status(401).json({ token: "" });
-    } else {
-        const newToken = createToken(payload.userId);
+    const session = await UserSession.findOne({ token });
+    if (session) {
+        const newToken = createToken(session._userId);
         session.token = newToken;
         await session.save();
         res.status(200).cookie('token', newToken, {
             httpOnly: true,
-            path: '/api/auth/refresh_token',
+            path: '/api/auth/token',
         }).json({ token: newToken });
     }
 });
