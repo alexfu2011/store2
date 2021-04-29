@@ -7,9 +7,8 @@ const isAuth = async (req, res, next) => {
     return res.sendStatus(400);
   }
   const token = authorization.split(' ')[1];
-  let payload;
   try {
-    payload = verify(token, "Secret encryption message for sessions");
+    verify(token, "Secret encryption message for sessions");
   } catch (err) {
     if (err.name == "TokenExpiredError") {
       return res.sendStatus(401);

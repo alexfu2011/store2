@@ -8,8 +8,9 @@ import * as axios from 'axios';
 import { url, jwt, userId } from './../constants/auth';
 
 export const Product = (props) => {
-    const [product, setProduct] = useState([])
+    const [products, setProducts] = useState([])
     const [barOpen, setBarOpen] = useState(false)
+    const [auth, setAuth] = useState(false)
     const [dbError, setDbError] = useState(false)
 
     const getProduct = async () => {
@@ -22,7 +23,10 @@ export const Product = (props) => {
                 }
             });
             if (res.status === 200) {
-                setProduct(res.data);
+                setAuth(true);
+                setProducts(res.data);
+            } else if (res.status === 400 || res.status === 401) {
+                setAuth(false);
             }
         }
         catch (error) {
@@ -84,51 +88,59 @@ export const Product = (props) => {
             <NavBar {...props}></NavBar>
 
 
-            <div>
-                <div style={{ margin: '10px 20px' }}>
-                    <Button onClick={() => { props.history.push('/product/add') }}>Add Product</Button>
-
+            {auth ?
+                <div>
+                    <div style={{ margin: '10px 20px' }}>
+                        <Button onClick={() => { props.history.push('/product/add') }}>Add Product</Button>
+                    </div>
+                    <MaterialTable style={{ margin: '15px' }} title="Products" data={products} columns={columns}
+                        actions={[
+                            {
+                                icon: 'edit',
+                                tooltip: 'Edit User',
+                                onClick: async (event, rowData) => {
+                                    const edit = await editProductFormatter(rowData)
+                                    console.log("Edit", edit)
+                                    props.history.replace({
+                                        pathname: '/product/edit',
+                                        state: edit
+                                    })
+                                }
+                            },
+                        ]}
+                        editable={{
+                            onRowDelete: selectedRow => new Promise(async (resolve, reject) => {
+                                const id = selectedRow._id
+                                console.log(id)
+                                const data = await deleteProduct(id)
+                                if (data) {
+                                    setBarOpen(true)
+                                    getProduct()
+                                    resolve()
+                                }
+                            }),
+                        }}
+                        options={{
+                            actionsColumnIndex: -1,
+                            showFirstLastPageButtons: false,
+                            pageSizeOptions: [5, 10, 20, 50]
+                        }}
+                        localization={{
+                            header: {
+                              actions: "Acciones"
+                            },
+                            body: {
+                              emptyDataSourceMessage: "No hay ningúna persona  cargada"
+                            }
+                          }}
+                    >
+                    </MaterialTable>
                 </div>
-                <MaterialTable style={{ margin: '15px' }} title="Products" data={product} columns={columns}
-                    actions={[
-                        {
-                            icon: 'edit',
-                            tooltip: 'Edit User',
-                            onClick: async (event, rowData) => {
-                                const edit = await editProductFormatter(rowData)
-                                console.log("Edit", edit)
-                                props.history.replace({
-                                    pathname: '/product/edit',
-                                    state: edit
-                                })
-                            }
-                        },
-                    ]}
-                    editable={{
-                        onRowDelete: selectedRow => new Promise(async (resolve, reject) => {
-                            const id = selectedRow._id
-                            console.log(id)
-                            const data = await deleteProduct(id)
-                            if (data) {
-                                setBarOpen(true)
-                                getProduct()
-                                resolve()
-                            }
-                        }),
-                    }}
-
-                    options={{
-                        actionsColumnIndex: -1,
-                        showFirstLastPageButtons: false,
-                        pageSizeOptions: [5, 10, 20, 50]
-                    }}
-
-                >
-
-                </MaterialTable>
-
-            </div>
-
+                :
+                <div className="d-flex align-items-center justify-content-center" style={{ height: "550px" }}>
+                    <a href="/login">重新登陆</a>
+                </div>
+            }
 
             <Snackbar open={barOpen} message="Successfully Deleted" autoHideDuration={3500} onClose={handleClose}>
 
