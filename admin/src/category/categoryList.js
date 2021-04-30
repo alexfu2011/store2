@@ -7,6 +7,8 @@ import CategoryForm from './categoryForm'
 import Snackbar from '@material-ui/core/Snackbar'
 import NavBar from './../components/navBar'
 import { url, jwt, userId } from './../constants/auth';
+import localization from "../localization";
+
 export const CategoryList = (props) => {
     const [categoryList, setCategoryList] = useState([])
     const [modalShow, setModalShow] = useState(false)
@@ -14,27 +16,29 @@ export const CategoryList = (props) => {
     const [editCategory, setEditCategory] = useState([])
     const [dbError, setDbError] = useState(false)
     const [snackBarOpen, setSnackBarOpen] = useState(false)
+    const [login, setLogin] = useState(false);
+    const [loading, setLoading] = useState(true);
+
     const handleCloseSnack = () => {
         setSnackBarOpen(false)
     }
-    const columns = [{ title: "Category Name", field: 'name' },
+    const columns = [{ title: "分类名称", field: 'name' },
     {
-        title: "Is Active", field: 'isActive',
+        title: "状态", field: 'isActive',
         render: rowData => {
             if (rowData.isActive) {
                 return (
-                    <p style={{ color: 'green', fontWeight: "bolder" }}>Active</p>
+                    <p style={{ color: 'green', fontWeight: "bolder" }}>上架</p>
                 )
             }
             else {
                 return (
-                    <p style={{ color: 'red', fontWeight: "bolder" }}>InActive</p>
+                    <p style={{ color: 'red', fontWeight: "bolder" }}>下架</p>
                 )
             }
         }
     },
     ]
-
 
     const modalOpen = () => {
 
@@ -78,15 +82,13 @@ export const CategoryList = (props) => {
                 }
             }).then(res => {
                 if (res.status === 200) {
+                    setLoading(false);
                     return res.json();
+                } else if (res.status === 401) {
+                    setLogin(true);
                 }
             }).then(data => {
-                //if (res.status === 200) {
-                    //setAuth(true);
-                    setCategoryList(data);
-                //} else if (res.status === 400 || res.status === 401) {
-                    //setAuth(false);
-                //}
+                setCategoryList(data);
             });
         } catch (error) {
             if (error) {
@@ -122,16 +124,34 @@ export const CategoryList = (props) => {
     return (
         <div>
             <NavBar></NavBar>
-            <div>
-                <Button style={{ margin: '10px 30px' }} onClick={() => modalOpen()}>Add Category</Button>
-                {categoryList ?
-                    <div className='table'>
-                        <MaterialTable style={{ marginTop: '15px' }} title="Category" data={categoryList}
+            {login ?
+                <div style={{ width: '100%', height: '100px', marginTop: '300px' }} >
+                    <p style={{
+                        display: 'block', marginLeft: 'auto',
+                        marginRight: 'auto', textAlign: 'center'
+                    }}><a href="/login">重新登陆</a></p>
+                </div>
+                :
+                loading ?
+                    <div style={{ width: '100%', height: '100px', marginTop: '300px' }} >
+                        <Spinner style={{
+                            display: 'block', marginLeft: 'auto',
+                            marginRight: 'auto', height: '50px', width: '50px'
+                        }} animation="border" variant="primary" />
+                        <p style={{
+                            display: 'block', marginLeft: 'auto',
+                            marginRight: 'auto', textAlign: 'center'
+                        }}>加载中</p>
+                    </div>
+                    :
+                    <div>
+                        <Button style={{ margin: '10px 30px' }} onClick={() => modalOpen()}>添加分类</Button>
+                        <MaterialTable style={{ margin: '15px' }} title="分类" data={categoryList}
                             columns={columns}
                             actions={[
                                 {
                                     icon: 'edit',
-                                    tooltip: 'Edit category',
+                                    tooltip: '编辑分类',
                                     onClick: async (event, rowData) => {
                                         editActive(rowData)
                                     }
@@ -156,84 +176,24 @@ export const CategoryList = (props) => {
                                 pageSizeOptions: [5, 10, 20, 50],
                                 detailPanelColumnAlignment: 'right'
                             }}
-                            detailPanel={[
-                                {
-                                    icon: 'expand_more',
-                                    tooltip: 'Show Sub-Category',
-                                    onRowClick: async (event, rowData) => {
-                                        console.log(rowData)
-                                    },
-                                    render: rowData => {
-                                        return (
-                                            <div>
-                                                <MaterialTable style={{ border: "3px solid #067BFD" }} title='Sub Category' columns={subCategoryColumn} data={rowData.subCategories}
-                                                    options={{
-                                                        search: false,
-                                                        toolbar: false,
-                                                        paging: false,
-                                                        actionsColumnIndex: -1
-                                                    }}
-                                                    actions={[
-                                                        {
-                                                            icon: 'edit',
-                                                            tooltip: 'Edit sub Category',
-                                                            onClick: async (event, rowData) => {
-                                                                console.log(rowData)
-                                                                props.history.replace({
-                                                                    pathname: '/category/addSubCategory',
-                                                                    state: rowData
-                                                                })
-                                                            }
-                                                        },
-                                                    ]}
-                                                    editable={{
-                                                        onRowDelete: selectedRow => new Promise(async (resolve, reject) => {
-                                                            const id = selectedRow._id
-                                                            const data = await deleteSubCategory(id)
-                                                            if (data) {
-                                                                setSnackBarOpen(true)
-                                                                setTimeout(() => {
-                                                                    getCategory()
-                                                                    resolve()
-                                                                }, 1000);
-
-                                                            }
-                                                        }),
-                                                    }}
-                                                    localization={{
-                                                        header: {
-                                                            actions: "Acciones"
-                                                        },
-                                                        body: {
-                                                            emptyDataSourceMessage: "No hay ningúna persona  cargada"
-                                                        }
-                                                    }}
-                                                ></MaterialTable>
-                                            </div>
-                                        )
-                                    },
-                                },
-                            ]}
+                            localization={localization}
                         >
                         </MaterialTable>
                     </div>
-                    :
-                    <div></div>
-                }
-                <CategoryForm
-                    onHide={() => {
-                        modalClose()
-                    }}
-                    show={modalShow}
-                    onSave={() => { onSave() }}
-                    isEdit={isEditCategory}
-                    editCategory={editCategory}
-                ></CategoryForm>
-                <Snackbar open={snackBarOpen} message="Successfully Deleted"
-                    autoHideDuration={3500} onClose={handleCloseSnack}>
-                </Snackbar>
-            </div>
+            }
+            <CategoryForm
+                onHide={() => {
+                    modalClose()
+                }}
+                show={modalShow}
+                onSave={() => { onSave() }}
+                isEdit={isEditCategory}
+                editCategory={editCategory}
+            ></CategoryForm>
+            <Snackbar open={snackBarOpen} message="Successfully Deleted"
+                autoHideDuration={3500} onClose={handleCloseSnack}>
+            </Snackbar>
         </div>
     )
 }
-export default CategoryList
+export default CategoryList;

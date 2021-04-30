@@ -102,30 +102,27 @@ export const CategoryForm = (props) => {
         setErrorDb(false)          // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [props])
 
-
     return (
         <div>
             <Modal centered  {...props} >
                 <Form noValidate validated={validated} onSubmit={handleSubmit}>
-                    <Modal.Header closeButton>Add Category</Modal.Header>
+                    <Modal.Header closeButton>{props.isEdit ? "编辑分类" : "添加分类"}</Modal.Header>
                     <Modal.Body>
                         <Form.Row>
                             <Form.Group as={Col} >
-                                <Form.Label>Category Name</Form.Label>
-                                <Form.Control required type="text" value={name} onChange={(e) => setField(e.target.value)} placeholder="Enter Category Name" />
-                                <Form.Control.Feedback type="invalid">
-                                    Please Enter a Category Name.
-                                </Form.Control.Feedback>
+                                <Form.Label>分类名称</Form.Label>
+                                <Form.Control required type="text" value={name} onChange={(e) => setField(e.target.value)} placeholder="分类名称" />
+                                <Form.Control.Feedback type="invalid">请输入分类名称</Form.Control.Feedback>
                             </Form.Group>
                         </Form.Row>
                     </Modal.Body>
                     <Modal.Footer>
-                        {errorDb && <p><p style={{ color: 'red' }}>Cannot {isEdit ? 'Update' : 'Save'} data</p></p>}
-                        <Button type='submit'> {props.isEdit ? 'Update' : 'Save'}</Button>
+                        {errorDb && <p><p style={{ color: "red" }}>无法{props.isEdit ? "更新" : "保存"}数据</p></p>}
+                        <Button type="submit">{props.isEdit ? "更新" : "保存"}</Button>
                         <Button onClick={() => {
                             props.onHide()
-                            setName('')
-                        }}>Close</Button>
+                            setName("")
+                        }}>关闭</Button>
                     </Modal.Footer>
                 </Form>
             </Modal>

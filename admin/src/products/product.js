@@ -6,28 +6,34 @@ import Snackbar from '@material-ui/core/Snackbar';
 import NavBar from '../components/navBar';
 import * as axios from 'axios';
 import { url, jwt, userId } from './../constants/auth';
+import localization from "../localization";
 
 export const Product = (props) => {
-    const [products, setProducts] = useState([])
-    const [barOpen, setBarOpen] = useState(false)
-    const [auth, setAuth] = useState(false)
-    const [dbError, setDbError] = useState(false)
+    const [products, setProducts] = useState([]);
+    const [barOpen, setBarOpen] = useState(false);
+    const [login, setLogin] = useState(false);
+    const [loading, setLoading] = useState(true);
+    const [dbError, setDbError] = useState(false);
 
     const getProduct = async () => {
+        let res;
         try {
             const token = localStorage.getItem("token");
-            const res = await axios.get(url + '/product/user/60826e0faab69e002b1293d1', {
+            fetch(url + '/product/user/60826e0faab69e002b1293d1', {
                 headers: {
                     'Content-Type': 'application/json',
                     authorization: `Bearer ${token}`
                 }
+            }).then(res => {
+                if (res.status === 200) {
+                    setLoading(false);
+                    return res.json();
+                } else if (res.status === 401) {
+                    setLogin(true);
+                }
+            }).then(data => {
+                setProducts(data);
             });
-            if (res.status === 200) {
-                setAuth(true);
-                setProducts(res.data);
-            } else if (res.status === 400 || res.status === 401) {
-                setAuth(false);
-            }
         }
         catch (error) {
             if (error) {
@@ -39,31 +45,27 @@ export const Product = (props) => {
         setBarOpen(false)
     }
 
-    const columns = [{ title: "Product ID", field: '_id' },
-    { title: "Product Name", field: 'name' },
-    { title: "Brand Name", field: 'brand.brandName' },
-    { title: 'Model Name', field: "manufactureDetails.modelName" },
-    { title: "Category", field: 'category.name' },
-    //  {title:"Variants",field:'variants.length'},
-    { title: "Images", field: 'gallery.length' },
-    { title: "Tags", field: 'tags.length' },
-    // {title:"Stock",field:'variants[0].stock'},
-    // {title:"Price",field:'variants[0].price'},
-    {
-        title: "Is Active", field: 'isActive',
-        render: rowData => {
-            if (rowData.isActive) {
-                return (
-                    <p style={{ color: 'green', fontWeight: "bolder" }}>Active</p>
-                )
+    const columns = [
+        { title: "产品名称", field: 'name' },
+        { title: "品牌", field: 'brand.brandName' },
+        { title: "分类", field: 'category.name' },
+        //{ title: "Images", field: 'gallery.length' },
+        { title: "库存", field: 'variants[0].stock' },
+        { title: "价格", field: 'variants[0].price' },
+        {
+            title: "状态", field: 'isActive',
+            render: rowData => {
+                if (rowData.isActive) {
+                    return (
+                        <p style={{ color: 'green', fontWeight: "bolder" }}>上架</p>
+                    )
+                } else {
+                    return (
+                        <p style={{ color: 'red', fontWeight: "bolder" }}>下架</p>
+                    )
+                }
             }
-            else {
-                return (
-                    <p style={{ color: 'red', fontWeight: "bolder" }}>InActive</p>
-                )
-            }
-        }
-    },
+        },
     ]
     useEffect(() => {
         getProduct().then(() => {
@@ -72,32 +74,45 @@ export const Product = (props) => {
                     'Content-Type': 'application/json',
                 }
             }).then(res => res.json()).then(data => {
-                console.log(data);
                 if (!data.token) {
                     return;
                 }
-                console.log(data.token);
                 localStorage.setItem("token", data.token);
             });
         });
     }, []);
     return (
-
         <div >
-
             <NavBar {...props}></NavBar>
-
-
-            {auth ?
+            {login ?
+                <div style={{ width: '100%', height: '100px', marginTop: '300px' }} >
+                <p style={{
+                    display: 'block', marginLeft: 'auto',
+                    marginRight: 'auto', textAlign: 'center'
+                }}><a href="/login">重新登陆</a></p>
+                </div>
+                :
+                loading ?
+                <div style={{ width: '100%', height: '100px', marginTop: '300px' }} >
+                    <Spinner style={{
+                        display: 'block', marginLeft: 'auto',
+                        marginRight: 'auto', height: '50px', width: '50px'
+                    }} animation="border" variant="primary" />
+                    <p style={{
+                        display: 'block', marginLeft: 'auto',
+                        marginRight: 'auto', textAlign: 'center'
+                    }}>加载中</p>
+                </div>
+                :
                 <div>
                     <div style={{ margin: '10px 20px' }}>
-                        <Button onClick={() => { props.history.push('/product/add') }}>Add Product</Button>
+                        <Button onClick={() => { props.history.push('/product/add') }}>添加产品</Button>
                     </div>
-                    <MaterialTable style={{ margin: '15px' }} title="Products" data={products} columns={columns}
+                    <MaterialTable style={{ margin: '15px' }} title="产品列表" data={products} columns={columns}
                         actions={[
                             {
                                 icon: 'edit',
-                                tooltip: 'Edit User',
+                                tooltip: '',
                                 onClick: async (event, rowData) => {
                                     const edit = await editProductFormatter(rowData)
                                     console.log("Edit", edit)
@@ -125,28 +140,16 @@ export const Product = (props) => {
                             showFirstLastPageButtons: false,
                             pageSizeOptions: [5, 10, 20, 50]
                         }}
-                        localization={{
-                            header: {
-                              actions: "Acciones"
-                            },
-                            body: {
-                              emptyDataSourceMessage: "No hay ningúna persona  cargada"
-                            }
-                          }}
+                        localization={localization}
                     >
                     </MaterialTable>
                 </div>
-                :
-                <div className="d-flex align-items-center justify-content-center" style={{ height: "550px" }}>
-                    <a href="/login">重新登陆</a>
-                </div>
             }
-
+            
             <Snackbar open={barOpen} message="Successfully Deleted" autoHideDuration={3500} onClose={handleClose}>
 
             </Snackbar>
         </div>
-
     )
 }
 export default Product

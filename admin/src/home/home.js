@@ -49,11 +49,10 @@ export const Home = (props) => {
         // eslint-disable-next-line react-hooks/exhaustive-deps      
     }, [props])
     return (
-        <div className='body'>
+        <div>
             <NavBar props={props}></NavBar>
             {  data.loaded ?
                 <div >
-                    Loaded
                 </div> :
                 dbError ?
                     <div style={{ width: '100%', height: '100px', marginTop: '300px' }} >

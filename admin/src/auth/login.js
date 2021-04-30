@@ -10,7 +10,6 @@ export const LoginPage = (props) => {
   const [password, setPassword] = useState("");
   const history = useHistory();
 
-
   function validateForm() {
     return username.length > 0 && password.length > 0;
   }
@@ -20,7 +19,6 @@ export const LoginPage = (props) => {
       if (data.error) {
         return;
       }
-      console.log(data.token);
       localStorage.setItem("token", data.token);
       history.push("/home");
     }).catch(() => {});
@@ -30,7 +28,7 @@ export const LoginPage = (props) => {
     <div className="Login">
       <Form >
         <Form.Group size="lg" controlId="username">
-          <Form.Label>Username</Form.Label>
+          <Form.Label>用户名</Form.Label>
           <Form.Control
             autoFocus
             type="username"
@@ -39,7 +37,7 @@ export const LoginPage = (props) => {
           />
         </Form.Group>
         <Form.Group size="lg" controlId="password">
-          <Form.Label>Password</Form.Label>
+          <Form.Label>密码</Form.Label>
           <Form.Control
             type="password"
             value={password}
@@ -47,7 +45,7 @@ export const LoginPage = (props) => {
           />
         </Form.Group>
         <Button block size="lg" onClick={() => { Loginhandler(username, password) }} disabled={!validateForm()}>
-          Login
+          登陆
         </Button>
       </Form>
     </div>
