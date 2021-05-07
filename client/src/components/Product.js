@@ -20,10 +20,10 @@ const Product = ({ products_data }) => {
         <Card.Text as='div'>
           <Rating
             value={products_data.rating}
-            text={`${products_data.numReviews} Review`}
+            text={`${products_data.numReviews} 好评`}
           />
         </Card.Text>
-        <Card.Text as='h3'>₹{products_data.price}</Card.Text>
+        <Card.Text as='h3'>{products_data.price}元</Card.Text>
       </Card.Body>
     </Card>
   );

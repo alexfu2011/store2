@@ -11,8 +11,8 @@ module.exports = Mongoose.model("Product", Schema({
     price: Number,
     description: String,
     isPublish: {
-        type: Boolean,
-        default: true
+        type: Number,
+        default: 1
     },
     timeStamp: {
         type: Number,

@@ -20,7 +20,7 @@ const HomeScreen = () => {
   // const products = [];
   return (
     <>
-      <h1>Latest Products</h1>
+      <h1>最新产品</h1>
       {loading ? (
         <Loader />
       ) : error ? (

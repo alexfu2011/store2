@@ -19,7 +19,7 @@ const Header = () => {
       <Navbar bg='primary' variant="dark" collapseOnSelect expand='lg'>
         <Container>
           <LinkContainer to='/'>
-            <Navbar.Brand>Anuj E-commerce</Navbar.Brand>
+            <Navbar.Brand>E-commerce</Navbar.Brand>
           </LinkContainer>
           <Navbar.Toggle aria-controls='basic-navbar-nav' />
           <Navbar.Collapse id='basic-navbar-nav'>
@@ -27,7 +27,7 @@ const Header = () => {
               <LinkContainer to='/cart'>
                 <Nav.Link>
                   {" "}
-                  <i className='fas fa-shopping-cart'></i> CART
+                  <i className='fas fa-shopping-cart'></i> 购物车
                 </Nav.Link>
               </LinkContainer>
               {userInfo ? (
@@ -36,13 +36,13 @@ const Header = () => {
                     <NavDropdown.Item>Profile</NavDropdown.Item>
                   </LinkContainer>
                   <NavDropdown.Item onClick={logoutHandler}>
-                    Logout
+                    退出
                   </NavDropdown.Item>
                 </NavDropdown>
               ) : (
                 <LinkContainer to='/login'>
                   <Nav.Link>
-                    <i className='fas fa-user'></i> Sign In
+                    <i className='fas fa-user'></i> 登录
                   </Nav.Link>
                 </LinkContainer>
               )}

@@ -22,6 +22,7 @@ const isAuth = async (req, res, next) => {
   } else if (session.token !== token) {
     return res.sendStatus(401);
   } else {
+    req.session = session;
     next();
   }
 };

@@ -7,6 +7,10 @@ module.exports = Mongoose.model("Category", Schema({
         type: Schema.Types.ObjectId,
         ref: "User",
     },
+    active: {
+        type: Number,
+        default: 1
+    },
     products: [{
         type: Schema.Types.ObjectId,
         ref: "Product"

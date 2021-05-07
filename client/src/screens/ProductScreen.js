@@ -37,7 +37,7 @@ export default function ProductScreen({ history, match }) {
   return (
     <>
       <Link to='/' className='btn btn-light my-3'>
-        Go Back
+        返回
       </Link>
       {loading ? (
         <Loader />
@@ -56,12 +56,12 @@ export default function ProductScreen({ history, match }) {
               <ListGroup.Item>
                 <Rating
                   value={product.rating}
-                  text={`${product.numReviews} Review`}
+                  text={`${product.numReviews} 好评`}
                 />
               </ListGroup.Item>
-              <ListGroup.Item>Price : ₹ {product.price}</ListGroup.Item>
+              <ListGroup.Item>价格： {product.price}</ListGroup.Item>
               <ListGroup.Item>
-                Description : {product.description}
+                描述： {product.description}
               </ListGroup.Item>
             </ListGroup>
           </Col>
@@ -71,7 +71,7 @@ export default function ProductScreen({ history, match }) {
               <ListGroup variant='flush'>
                 <ListGroup.Item>
                   <Row>
-                    <Col>Price :</Col>
+                    <Col>价格：</Col>
                     <Col>
                       <strong>{product.price}</strong>
                     </Col>
@@ -79,7 +79,7 @@ export default function ProductScreen({ history, match }) {
                 </ListGroup.Item>
                 <ListGroup.Item>
                   <Row>
-                    <Col>Status :</Col>
+                    <Col>库存：</Col>
                     <Col>
                       {product.countInStock > 0 ? "In Stock" : "Out Of Stock"}
                     </Col>
@@ -88,7 +88,7 @@ export default function ProductScreen({ history, match }) {
                 {product.countInStock > 0 && (
                   <ListGroup.Item>
                     <Row>
-                      <Col>Qty</Col>
+                      <Col>数量：</Col>
                       <Col>
                         <Form.Control
                           as='select'
@@ -112,7 +112,7 @@ export default function ProductScreen({ history, match }) {
                     type='button'
                     disabled={product.countInStock === 0}
                   >
-                    Add To Cart
+                    添加购物车
                   </Button>
                 </ListGroup.Item>
               </ListGroup>
