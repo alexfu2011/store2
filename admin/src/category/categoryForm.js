@@ -107,16 +107,20 @@ export const CategoryForm = ({ onSave, isEditCategory, data, ...props }) => {
         if (isEditCategory) {
             setCategory(data);
             setIsEdit(true);
+        } else {
+            console.log("sdfsdf");
+            setCategory({name: ""});
+            setIsEdit(false);
         }
-    }, [data]);
+    }, [isEditCategory, data]);
     return (
         <>
-            <Modal centered {...props} >
+            <Modal centered {...props}>
                 <Form noValidate validated={validated} onSubmit={handleSubmit}>
                     <Modal.Header closeButton>{isEdit ? "编辑分类" : "添加分类"}</Modal.Header>
                     <Modal.Body>
                         <Form.Row>
-                            <Form.Group as={Col} >
+                            <Form.Group as={Col}>
                                 <Form.Label>分类名称</Form.Label>
                                 <Form.Control required type="text" value={category.name} name="name" onChange={handleChange} placeholder="分类名称" />
                                 <Form.Control.Feedback type="invalid">请输入分类名称</Form.Control.Feedback>

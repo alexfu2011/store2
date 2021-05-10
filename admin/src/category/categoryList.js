@@ -39,6 +39,7 @@ export const CategoryList = (props) => {
     }]
 
     const modalOpen = () => {
+        setIsEditCategory(false);
         setModalShow(true);
     }
     const modalClose = () => {
@@ -78,7 +79,7 @@ export const CategoryList = (props) => {
             });
         } catch (error) {
             if (error) {
-                return false
+                return false;
             }
         }
     }
@@ -110,10 +111,10 @@ export const CategoryList = (props) => {
     }
 
     useEffect(() => {
-        getCategory()
-        setDbError(false)
-        setSnackBarOpen(false)
-    }, [props])
+        getCategory();
+        setDbError(false);
+        setSnackBarOpen(false);
+    }, [props]);
 
     return (
         <div>
