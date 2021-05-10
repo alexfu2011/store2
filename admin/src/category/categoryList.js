@@ -56,32 +56,34 @@ export const CategoryList = (props) => {
     }
 
     const deleteCategory = async (categoryId) => {
-        try {
-            const token = localStorage.getItem("token");
-            fetch(url + "/category/delete/" + categoryId, {
-                method: "DELETE",
-                headers: {
-                    "Content-Type": "application/json",
-                    authorization: `Bearer ${token}`
+        return new Promise(async (resolve, reject) => {
+            try {
+                const token = localStorage.getItem("token");
+                fetch(url + "/category/delete/" + categoryId, {
+                    method: "DELETE",
+                    headers: {
+                        "Content-Type": "application/json",
+                        authorization: `Bearer ${token}`
+                    }
+                }).then(res => {
+                    if (res.status === 200) {
+                        return res.json();
+                    } else if (res.status === 401) {
+                        reject(false);
+                    }
+                }).then(data => {
+                    if (!data.error) {
+                        resolve(true);
+                    } else {
+                        reject(false);
+                    }
+                });
+            } catch (error) {
+                if (error) {
+                    reject(false);
                 }
-            }).then(res => {
-                if (res.status === 200) {
-                    return res.json();
-                } else if (res.status === 401) {
-                    return false;
-                }
-            }).then(data => {
-                if (!data.error) {
-                    return true;
-                } else {
-                    return false;
-                }
-            });
-        } catch (error) {
-            if (error) {
-                return false;
             }
-        }
+        });
     }
 
     const getCategory = async () => {
@@ -141,7 +143,7 @@ export const CategoryList = (props) => {
                     :
                     <div>
                         <Button style={{ margin: "10px 30px" }} onClick={() => modalOpen()}>添加分类</Button>
-                        <MaterialTable style={{ margin: "15px" }} title="分类" data={categoryList}
+                        <MaterialTable title="分类" data={categoryList}
                             columns={columns}
                             actions={[
                                 {

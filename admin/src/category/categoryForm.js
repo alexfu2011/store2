@@ -6,10 +6,7 @@ import { url, jwt, userId } from './../constants/auth';
 
 export const CategoryForm = ({ onSave, isEditCategory, data, ...props }) => {
     const [category, setCategory] = useState({ name: "" })
-    const [name, setName] = useState('')
-    const [active, setActive] = useState(true)
     const [validated, setValidated] = useState(false);
-    const [editCategoryId, setEditCategoryId] = useState('')
     const [errorDb, setErrorDb] = useState(false)
     const [isEdit, setIsEdit] = useState(false)
 
@@ -80,7 +77,6 @@ export const CategoryForm = ({ onSave, isEditCategory, data, ...props }) => {
                 const res = await updateCategory();
                 if (res) {
                     setSnackBarOpen(true);
-                    setIsEdit(false);
                     onSave();
                     //setValidated(true);
                 } else {
@@ -89,6 +85,7 @@ export const CategoryForm = ({ onSave, isEditCategory, data, ...props }) => {
             } else {
                 const res = await addCategory();
                 if (res) {
+                    setCategory({name: ""});
                     setSnackBarOpen(true);
                     onSave();
                     //setValidated(false);
@@ -108,13 +105,12 @@ export const CategoryForm = ({ onSave, isEditCategory, data, ...props }) => {
             setCategory(data);
             setIsEdit(true);
         } else {
-            console.log("sdfsdf");
             setCategory({name: ""});
             setIsEdit(false);
         }
     }, [isEditCategory, data]);
     return (
-        <>
+        <div>
             <Modal centered {...props}>
                 <Form noValidate validated={validated} onSubmit={handleSubmit}>
                     <Modal.Header closeButton>{isEdit ? "编辑分类" : "添加分类"}</Modal.Header>
@@ -132,7 +128,6 @@ export const CategoryForm = ({ onSave, isEditCategory, data, ...props }) => {
                         <Button type="submit">{isEdit ? "更新" : "保存"}</Button>
                         <Button onClick={() => {
                             props.onHide()
-                            setName("")
                         }}>关闭</Button>
                     </Modal.Footer>
                 </Form>
@@ -140,7 +135,7 @@ export const CategoryForm = ({ onSave, isEditCategory, data, ...props }) => {
             <Snackbar open={snackBarOpen} message={isEdit ? "编辑成功" : "添加成功"}
                 autoHideDuration={2000} onClose={handleCloseSnack}>
             </Snackbar>
-        </>
+        </div>
     )
 }
 export default CategoryForm;
