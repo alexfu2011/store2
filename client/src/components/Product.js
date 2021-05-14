@@ -9,21 +9,19 @@ const Product = ({ products_data }) => {
       <Link to={`/product/${products_data._id}`}>
         <Card.Img src={products_data.image} variant='top' />
       </Link>
-
       <Card.Body>
         <Link to={`/product/${products_data._id}`}>
           <Card.Title as='div'>
-            <strong>{products_data.name}</strong>
+            <h3>{products_data.name}</h3>
           </Card.Title>
         </Link>
-
+        <Card.Text as='strong'>{products_data.price}元</Card.Text>
         <Card.Text as='div'>
           <Rating
-            value={products_data.rating}
-            text={`${products_data.numReviews} 好评`}
+            value={products_data.rating || 0}
+            text={ ` ${products_data.numReviews || 0} 好评`}
           />
         </Card.Text>
-        <Card.Text as='h3'>{products_data.price}元</Card.Text>
       </Card.Body>
     </Card>
   );

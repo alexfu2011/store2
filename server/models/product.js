@@ -1,16 +1,28 @@
 const Mongoose = require("mongoose");
 const { Schema } = Mongoose;
+const Review = require("./review");
 
 module.exports = Mongoose.model("Product", Schema({
     _userId: {
         type: Schema.Types.ObjectId,
-        ref: "user",
+        ref: "User",
     },
+    category: {
+        type: Schema.Types.ObjectId,
+        ref: "Category",
+    },
+    reviews: [{
+        type: Schema.Types.ObjectId,
+        ref: "Review",
+    }],
     name: String,
-    image: String,
+    brandName: String,
+    stock: Number,
     price: Number,
+    summary: String,
     description: String,
-    isPublish: {
+    image: String,
+    isActive: {
         type: Number,
         default: 1
     },
@@ -19,4 +31,3 @@ module.exports = Mongoose.model("Product", Schema({
         default: Date.now()
     }
 }));
-

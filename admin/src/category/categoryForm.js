@@ -1,6 +1,5 @@
 import React, { useEffect, useState } from 'react'
 import { Button, Modal, Form, Col } from 'react-bootstrap'
-import { addCategory, updateCategory } from './../services/categoryService'
 import Snackbar from '@material-ui/core/Snackbar'
 import { url, jwt, userId } from './../constants/auth';
 
@@ -124,11 +123,9 @@ export const CategoryForm = ({ onSave, isEditCategory, data, ...props }) => {
                         </Form.Row>
                     </Modal.Body>
                     <Modal.Footer>
-                        {errorDb && <p><p style={{ color: "red" }}>无法{isEdit ? "更新" : "保存"}数据</p></p>}
+                        {errorDb && <p style={{ color: "red" }}>无法{isEdit ? "更新" : "保存"}数据</p>}
                         <Button type="submit">{isEdit ? "更新" : "保存"}</Button>
-                        <Button onClick={() => {
-                            props.onHide()
-                        }}>关闭</Button>
+                        <Button onClick={() => { props.onHide() }}>关闭</Button>
                     </Modal.Footer>
                 </Form>
             </Modal>

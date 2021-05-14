@@ -19,6 +19,73 @@ export const CategoryList = (props) => {
     const [login, setLogin] = useState(false);
     const [loading, setLoading] = useState(true);
 
+    const getToken = () => {
+        return new Promise((resolve, reject) => {
+            fetch(url + '/auth/token', {
+                method: 'POST', credentials: 'include', headers: {
+                    'Content-Type': 'application/json',
+                }
+            }).then(res => {
+                if (res.status === 200) {
+                    setLoading(false);
+                    return res.json();
+                } else if (res.status === 400) {
+                    setLogin(false);
+                    throw new Error("request error");
+                } else if (res.status === 401) {
+                    setLogin(false);
+                    throw new Error("not login");
+                } else {
+                    setDbError(true);
+                    throw new Error("server error");
+                }
+            }).then(data => {
+                if (!data.token) {
+                    reject(false);
+                    return;
+                }
+                localStorage.setItem("token", data.token);
+                resolve(true);
+            }).catch(err => {
+                reject(false);
+            });
+
+        });
+    };
+
+    const getCategory = async () => {
+        return new Promise(async (resolve, reject) => {
+            const token = localStorage.getItem("token");
+            fetch(url + "/category", {
+                method: "GET",
+                headers: {
+                    "Content-Type": "application/json",
+                    authorization: `Bearer ${token}`
+                }
+            }).then(res => {
+                if (res.status === 200) {
+                    setLoading(false);
+                    return res.json();
+                } else if (res.status === 400) {
+                    setLogin(true);
+                    throw new Error("request error");
+                } else if (res.status === 401) {
+                    setLogin(true);
+                    throw new Error("not login");
+                } else {
+                    setDbError(true);
+                    throw new Error("server error");
+                }
+            }).then(data => {
+                setLoading(false);
+                setCategoryList(data);
+                resolve(true);
+            }).catch(err => {
+                reject(false);
+            });
+        });
+    };
+
     const handleCloseSnack = () => {
         setSnackBarOpen(false)
     }
@@ -68,8 +135,15 @@ export const CategoryList = (props) => {
                 }).then(res => {
                     if (res.status === 200) {
                         return res.json();
+                    } else if (res.status === 400) {
+                        setLogin(false);
+                        throw new Error("request error");
                     } else if (res.status === 401) {
-                        reject(false);
+                        setLogin(false);
+                        throw new Error("not login");
+                    } else {
+                        setDbError(true);
+                        throw new Error("server error");
                     }
                 }).then(data => {
                     if (!data.error) {
@@ -77,6 +151,8 @@ export const CategoryList = (props) => {
                     } else {
                         reject(false);
                     }
+                }).catch(err => {
+                    reject(false);
                 });
             } catch (error) {
                 if (error) {
@@ -86,34 +162,8 @@ export const CategoryList = (props) => {
         });
     }
 
-    const getCategory = async () => {
-        try {
-            const token = localStorage.getItem("token");
-            fetch(url + "/category", {
-                method: "GET",
-                headers: {
-                    "Content-Type": "application/json",
-                    authorization: `Bearer ${token}`
-                }
-            }).then(res => {
-                if (res.status === 200) {
-                    setLoading(false);
-                    return res.json();
-                } else if (res.status === 401) {
-                    setLogin(true);
-                }
-            }).then(data => {
-                setCategoryList(data);
-            });
-        } catch (error) {
-            if (error) {
-                setDbError(true);
-            }
-        }
-    }
-
     useEffect(() => {
-        getCategory();
+        getCategory().then(() => getToken());
         setDbError(false);
         setSnackBarOpen(false);
     }, [props]);
@@ -121,64 +171,72 @@ export const CategoryList = (props) => {
     return (
         <div>
             <NavBar></NavBar>
-            {login ?
+            {dbError ?
                 <div style={{ width: "100%", height: "100px", marginTop: "300px" }} >
                     <p style={{
                         display: "block", marginLeft: "auto",
                         marginRight: "auto", textAlign: "center"
-                    }}><a href="/login">重新登陆</a></p>
+                    }}>服务器宕机</p>
                 </div>
                 :
-                loading ?
+                login ?
                     <div style={{ width: "100%", height: "100px", marginTop: "300px" }} >
-                        <Spinner style={{
-                            display: "block", marginLeft: "auto",
-                            marginRight: "auto", height: "50px", width: "50px"
-                        }} animation="border" variant="primary" />
                         <p style={{
                             display: "block", marginLeft: "auto",
                             marginRight: "auto", textAlign: "center"
-                        }}>加载中</p>
+                        }}><a href="/login">重新登陆</a></p>
                     </div>
                     :
-                    <div>
-                        <Button style={{ margin: "10px 30px" }} onClick={() => modalOpen()}>添加分类</Button>
-                        <MaterialTable title="分类" data={categoryList}
-                            columns={columns}
-                            actions={[
-                                {
-                                    icon: "edit",
-                                    tooltip: "编辑分类",
-                                    onClick: async (event, rowData) => {
-                                        editActive(rowData)
-                                    }
-                                },
-                            ]}
-                            editable={{
-                                onRowDelete: selectedRow => new Promise(async (resolve, reject) => {
-                                    const id = selectedRow._id
-                                    const res = await deleteCategory(id)
-                                    console.log(res);
-                                    if (res) {
-                                        setSnackBarOpen(true)
-                                        getCategory()
-                                        resolve();
-                                    } else {
-                                        reject();
-                                    }
-                                }),
-                            }}
-                            options={{
-                                actionsColumnIndex: -1,
-                                showFirstLastPageButtons: false,
-                                pageSizeOptions: [5, 10, 20, 50],
-                                detailPanelColumnAlignment: "right"
-                            }}
-                            localization={localization}
-                        >
-                        </MaterialTable>
-                    </div>
+                    loading ?
+                        <div style={{ width: "100%", height: "100px", marginTop: "300px" }} >
+                            <Spinner style={{
+                                display: "block", marginLeft: "auto",
+                                marginRight: "auto", height: "50px", width: "50px"
+                            }} animation="border" variant="primary" />
+                            <p style={{
+                                display: "block", marginLeft: "auto",
+                                marginRight: "auto", textAlign: "center"
+                            }}>加载中</p>
+                        </div>
+                        :
+                        <div>
+                            <Button style={{ margin: "10px 30px" }} onClick={() => modalOpen()}>添加分类</Button>
+                            <MaterialTable title="分类" data={categoryList}
+                                columns={columns}
+                                actions={[
+                                    {
+                                        icon: "edit",
+                                        tooltip: "编辑分类",
+                                        onClick: async (event, rowData) => {
+                                            editActive(rowData)
+                                        }
+                                    },
+                                ]}
+                                editable={{
+                                    onRowDelete: selectedRow => new Promise(async (resolve, reject) => {
+                                        const id = selectedRow._id
+                                        const res = await deleteCategory(id)
+                                        if (res) {
+                                            setSnackBarOpen(true)
+                                            getCategory()
+                                            resolve();
+                                        } else {
+                                            reject();
+                                        }
+                                    }),
+                                }}
+                                options={{
+                                    actionsColumnIndex: -1,
+                                    showFirstLastPageButtons: false,
+                                    pageSizeOptions: [5, 10, 20, 50],
+                                    detailPanelColumnAlignment: "right"
+                                }}
+                                localization={localization}
+                            >
+                            </MaterialTable>
+                        </div>
             }
+
             <CategoryForm
                 onHide={() => { modalClose() }}
                 show={modalShow}
@@ -186,6 +244,7 @@ export const CategoryList = (props) => {
                 isEditCategory={isEditCategory}
                 data={category}
             ></CategoryForm>
+
             <Snackbar open={snackBarOpen} message="删除成功"
                 autoHideDuration={3500} onClose={handleCloseSnack}>
             </Snackbar>

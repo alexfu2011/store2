@@ -39,7 +39,6 @@ const RegisterScreen = ({ location, history }) => {
   return (
     <div className="text-center">
     <FormContainer>
-      <h1>注册</h1>
       {message && <Message variant='danger'>{message}</Message>}
       {error && <Message variant='danger'>{error}</Message>}
       {loading && <Loader />}

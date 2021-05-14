@@ -24,6 +24,8 @@ const CartScreen = ({ match, location, history }) => {
   const { cartItems } = cart;
 
   useEffect(() => {
+    const el = document.querySelector(".home");
+    el.classList.remove("active");
     if (productId) {
       dispatch(addToCart(productId, qty));
     }
@@ -40,7 +42,6 @@ const CartScreen = ({ match, location, history }) => {
   return (
     <Row>
       <Col md={8}>
-        <h1>购物车</h1>
         {cartItems.length === 0 ? (
           <Message>
             请添加购物车 <Link to='/'>返回</Link>
@@ -52,12 +53,12 @@ const CartScreen = ({ match, location, history }) => {
                 <ListGroup.Item key={item.product}>
                   <Row>
                     <Col md={2}>
-                      <Image src={item.image} alt={item.name} fluid rounded />
+                      <Image src={"/"+item.image} alt={item.name} fluid rounded />
                     </Col>
                     <Col md={3}>
                       <Link to={`/product/${item.product}`}>{item.name}</Link>
                     </Col>
-                    <Col md={2}>₹ {item.price}</Col>
+                    <Col md={2}>{item.price} 元</Col>
                     <Col md={2}>
                       <Form.Control
                         as='select'

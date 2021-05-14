@@ -14,13 +14,14 @@ const HomeScreen = () => {
   // console.log(products);
 
   useEffect(() => {
+    const el = document.querySelector(".home");
+    el.classList.add("active");
     dispatch(listProducts());
   }, [dispatch]);
 
   // const products = [];
   return (
     <>
-      <h1>最新产品</h1>
       {loading ? (
         <Loader />
       ) : error ? (

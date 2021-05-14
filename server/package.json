@@ -1,0 +1,38 @@
+{
+  "name": "store",
+  "version": "1.0.0",
+  "description": "",
+  "main": "app.js",
+  "bin": {
+    "store": "www.js"
+  },
+  "scripts": {
+    "start": "nodemon ./bin/www.js",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/alexfu2011/store2.git"
+  },
+  "author": "Alex Fu",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/alexfu2011/store2/issues"
+  },
+  "homepage": "https://github.com/alexfu2011/store2#readme",
+  "dependencies": {
+    "bcrypt": "^5.0.0",
+    "body-parser": "^1.19.0",
+    "connect-flash": "^0.1.1",
+    "connect-mongodb-session": "^2.4.1",
+    "express": "^4.17.1",
+    "express-ejs-layouts": "^2.5.0",
+    "express-session": "^1.17.1",
+    "express-validator": "^6.6.1",
+    "mongodb": "^3.6.2",
+    "mongoose": "^5.10.5",
+    "multer": "^1.4.2",
+    "nodemon": "^2.0.5"
+  },
+  "devDependencies": {}
+}

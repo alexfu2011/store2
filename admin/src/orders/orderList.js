@@ -1,5 +1,4 @@
 import React,{useEffect, useState} from 'react'
-import {getAllOrders} from '../services/orderService'
 import { Button ,Spinner} from 'react-bootstrap'
 import Snackbar from '@material-ui/core/Snackbar'
 import MaterialTable from 'material-table'
@@ -7,6 +6,8 @@ import NavBar from '../components/navBar'
 export const OrderList=(props)=>{
     const [orders,SetOrders] = useState(null)
     const [dbError,setDbError] = useState(false)
+
+    const getAllOrders = () => {}
     const getOrders=async()=>{
         const data = await getAllOrders()
         if(data){

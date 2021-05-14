@@ -3,7 +3,7 @@ import { useHistory } from "react-router";
 import Form from "react-bootstrap/Form";
 import Button from "react-bootstrap/Button";
 import "./login.css";
-import { Login } from './../services/authserivce';
+import { url } from '../constants/auth'
 
 export const LoginPage = (props) => {
   const [username, setUsername] = useState("");
@@ -14,6 +14,19 @@ export const LoginPage = (props) => {
     return username.length > 0 && password.length > 0;
   }
 
+  const Login = async (username, password) => {
+    const res = await fetch(url + "/auth/login", {
+      method: 'POST', headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        username,
+        password
+      })
+    });
+    return res.json();
+  }
+
   function Loginhandler(username, password) {
     Login(username, password).then(data => {
       if (data.error) {
@@ -21,7 +34,7 @@ export const LoginPage = (props) => {
       }
       localStorage.setItem("token", data.token);
       history.push("/home");
-    }).catch(() => {});
+    }).catch(() => { });
   }
 
   return (

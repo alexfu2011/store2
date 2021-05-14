@@ -36,34 +36,16 @@ export default function ProductScreen({ history, match }) {
   // const product = products.find((p) => p._id === );
   return (
     <>
-      <Link to='/' className='btn btn-light my-3'>
-        返回
-      </Link>
       {loading ? (
         <Loader />
       ) : error ? (
         <Message variant='danger'>{error}</Message>
       ) : (
+        <div>
+        <h3>{product.name}</h3>
         <Row>
-          <Col md={6}>
-            <Image src={product.image} alt={product.image} fluid />
-          </Col>
-          <Col md={3}>
-            <ListGroup variant='flush'>
-              <ListGroup.Item>
-                <h3>{product.name}</h3>
-              </ListGroup.Item>
-              <ListGroup.Item>
-                <Rating
-                  value={product.rating}
-                  text={`${product.numReviews} 好评`}
-                />
-              </ListGroup.Item>
-              <ListGroup.Item>价格： {product.price}</ListGroup.Item>
-              <ListGroup.Item>
-                描述： {product.description}
-              </ListGroup.Item>
-            </ListGroup>
+          <Col md={9}>
+            <Image src={"/"+product.image} alt={product.image} fluid />
           </Col>
 
           <Col md={3}>
@@ -81,10 +63,16 @@ export default function ProductScreen({ history, match }) {
                   <Row>
                     <Col>库存：</Col>
                     <Col>
-                      {product.countInStock > 0 ? "In Stock" : "Out Of Stock"}
+                      {product.countInStock > 0 ? <p style={{ color: "green", fontWeight: "bolder" }}>有库存</p> : <span style={{ color: "red", fontWeight: "bolder" }}>断货</span>}
                     </Col>
                   </Row>
                 </ListGroup.Item>
+              <ListGroup.Item>
+                <Rating
+                  value={product.rating || 0}
+                  text={` ${product.numReviews || 0} 好评`}
+                />
+              </ListGroup.Item>
                 {product.countInStock > 0 && (
                   <ListGroup.Item>
                     <Row>
@@ -119,6 +107,8 @@ export default function ProductScreen({ history, match }) {
             </Card>
           </Col>
         </Row>
+        <p style={{ "margin-top": "20px" }}>{product.description}</p>
+        </div>
       )}
     </>
   );

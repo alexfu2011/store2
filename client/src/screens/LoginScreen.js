@@ -32,15 +32,14 @@ const LoginScreen = ({ location, history }) => {
   return (
     <div className="text-center">
     <FormContainer>
-      <h1>登录</h1>
       {error && <Message variant='danger'>{error}</Message>}
       {loading && <Loader />}
       <Form onSubmit={submitHandler}>
-        <Form.Group controlId='email'>
-          <Form.Label className="float-left">邮箱</Form.Label>
+        <Form.Group controlId='username'>
+          <Form.Label className="float-left">用户名</Form.Label>
           <Form.Control
-            type='email'
-            placeholder='请输入邮箱'
+            type='username'
+            placeholder='请输入用户名'
             value={email}
             onChange={(e) => setEmail(e.target.value)}
           ></Form.Control>
