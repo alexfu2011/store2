@@ -5,10 +5,9 @@ const Category = require("../../models/category");
 const router = express.Router();
 const auth = require("../../middleware/auth");
 
-router.get("/", auth.isAuth, async (req, res) => {
+router.get("/", async (req, res) => {
     try {
-        const userId = req.session._userId;
-        const categories = await Category.find({ _userId: userId });
+        const categories = await Category.find({});
         res.status(200).json(categories);
     } catch {
         res.status(400).json({

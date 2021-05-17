@@ -14,8 +14,6 @@ const HomeScreen = () => {
   // console.log(products);
 
   useEffect(() => {
-    const el = document.querySelector(".home");
-    el.classList.add("active");
     dispatch(listProducts());
   }, [dispatch]);
 
@@ -30,7 +28,7 @@ const HomeScreen = () => {
         <Row>
           {products &&
             products.map((product) => (
-              <Col key={product._id} sm={12} md={6} lg={4} xl={3}>
+              <Col key={product._id} xs={6} md={6} lg={6}>
                 <Product products_data={product} />
               </Col>
             ))}
