@@ -15,28 +15,28 @@ const SideBar = (props) => {
   useEffect(() => {
     dispatch(listCategories());
   }, [dispatch]);
-    return (
-      <div className={classNames("sidebar", { "is-open": props.isOpen })}>
+  return (
+    <div className={classNames("sidebar", { "is-open": props.isOpen })}>
 
-        <Nav className="flex-column pt-2">
-          <Nav.Link onClick={props.toggle}>返回</Nav.Link>
-          <Nav.Item className="active">
-            <Nav.Link href="/">
-              首页
-            </Nav.Link>
-          </Nav.Item>
+      <Nav className="flex-column pt-2">
+        <Nav.Link onClick={props.toggle}>返回</Nav.Link>
+        <Nav.Item className="active">
+          <Nav.Link href="/">
+            <strong>首页</strong>
+          </Nav.Link>
+        </Nav.Item>
 
-          {categories &&
-            categories.map((category) => (
-          <Nav.Item>
-            <Nav.Link href="/">
-              {category.name}
-            </Nav.Link>
-          </Nav.Item>
-            ))}
-        </Nav>
-      </div>
-    );
+        {categories &&
+          categories.map((category) => (
+            <Nav.Item key={category._id}>
+              <Nav.Link href={"/category/"+category._id}>
+                <strong>{category.name}</strong>
+              </Nav.Link>
+            </Nav.Item>
+          ))}
+      </Nav>
+    </div>
+  );
 }
 
 export default SideBar;

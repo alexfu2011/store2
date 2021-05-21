@@ -45,7 +45,7 @@ export default function ProductScreen({ history, match }) {
         <h3>{product.name}</h3>
         <Row>
           <Col md={9}>
-            <Image src={"/"+product.image} alt={product.image} fluid />
+            <Image src={"/"+product.image} alt={product.image} fluid className="mb-4"/>
           </Col>
 
           <Col md={3}>
@@ -67,7 +67,7 @@ export default function ProductScreen({ history, match }) {
                     </Col>
                   </Row>
                 </ListGroup.Item>
-              <ListGroup.Item>
+              <ListGroup.Item className="text-center">
                 <Rating
                   value={product.rating || 0}
                   text={` ${product.numReviews || 0} 好评`}

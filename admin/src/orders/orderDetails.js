@@ -1,132 +1,172 @@
 import React, { useEffect, useState } from 'react'
-import {  Container, Col, Row } from 'react-bootstrap'
+import { Container, Modal, Form, Button, Col, Row } from 'react-bootstrap'
 import './orderDetails.css'
-import { FiTruck } from "react-icons/fi";
-import { BiMessageError } from "react-icons/bi";
+import { url, jwt, userId } from './../constants/auth';
 
-export const OrderDetails = (props) => {
-    const [details, setDetails] = useState([])
-    const [products, setProduct] = useState([])
+export const OrderDetails = ({ onSave, isEditOrder, data, ...props }) => {
+    const [order, setOrder] = useState(null)
+    const [isEdit, setIsEdit] = useState(null)
+    const [snackBarOpen, setSnackBarOpen] = useState(false)
+    const [errorDb, setErrorDb] = useState(false)
+
+    const changeProductStatus = (value) => {
+        const newOrder = Object.assign({}, order);
+        newOrder.products.map(product => {
+            product.status = value;
+        });
+        setOrder(newOrder);
+    }
+
+    const changeStatus = (value) => {
+        const newOrder = Object.assign({}, order);
+        newOrder.isActive = value;
+        setOrder(newOrder);
+    }
+
+    const updateOrder = async () => {
+        try {
+            const token = localStorage.getItem("token");
+            const body = {
+                _id: order._id,
+                cartId: order.cartId,
+                products: order.products,
+                total: order.total,
+                status: order.status
+            };
+            const res = await fetch(url + '/order/update/' + order._id, {
+                method: 'PUT',
+                body: JSON.stringify(body),
+                headers: {
+                    'Content-Type': 'application/json',
+                    authorization: `Bearer ${token}`
+                }
+            });
+            if (res.status === 200) {
+                return true;
+            } else if (res.status === 400 || res.status === 401) {
+                return false;
+            }
+        } catch (err) {
+            if (err) {
+                return false;
+            }
+        }
+    };
+
+    const handleSubmit = async (e) => {
+        e.preventDefault();
+        const res = await updateOrder();
+        if (res) {
+            setSnackBarOpen(true);
+            //onSave();
+        } else {
+            setErrorDb(true);
+        }
+    };
+
     useEffect(() => {
-        if (props.location.state) {
-            setDetails(props.location.state)
-            setProduct(props.location.state.products)
-            console.log(props.location.state)
+        if (isEditOrder) {
+            setOrder(data);
+            setIsEdit(true);
+        } else {
         }
 
-        // eslint-disable-next-line react-hooks/exhaustive-deps      
-    }, [])
+    }, [isEditOrder, data])
 
     return (
         <div>
-            <h2>Order Details</h2>
-            <Container >
-                {/* 
-            <Row>   
-                    <Col>
-                    <Row><h4>User Details</h4></Row>
-                    <Row>
-                        <Col>Name</Col>
-                        <Col>{details.user.nickName}</Col>
-                    </Row>
-                    </Col>
-                    <Col>
-                    <Row><h4> </h4></Row>
-                    <Row>
-                        <Col>Email</Col>
-                        <Col>{details.user.email}</Col>
-                    </Row>
-                    </Col>
-                </Row> */}
-                <Row >
-                    <Col className='box' >
-                        <Row className="titleHead"><h4>Product Details</h4></Row>
-                        <Row>
-                            <Col>
-                                <h5 className="title">Product Name</h5>
-                                {products.map((item) => <p>{item.product.name}</p>)}
-                            </Col>
-                            <Col>
-                                <h5 className="title">Quantity</h5>
-                                {products.map((item) => <p className="product_quantity">{item.quantity}</p>)}
-                            </Col>
-                        </Row>
-                    </Col>
-                    <Col className='box'>
-                        <Row className="titleHead"><h4>Price Details</h4></Row>
-                        <Row>
-                            <Col>Total Price</Col>
-                            <Col>{details.totalPrice}</Col>
-                        </Row>
-                        <Row>
-                            <Col>Discount Price</Col>
-                            <Col>{details.discountPrice}</Col>
-                        </Row>
-                        <Row>
-                            <Col>Cashback Price</Col>
-                            <Col>{details.cashBackPrice}</Col>
-                        </Row>
-                        <div className="line"></div>
-                        <Row >
-                            <Col> Grand Total</Col>
-                            <Col>{details.totalPrice}</Col>
-                        </Row>
+            {order &&
+                <Modal centered {...props}>
+                    <Form onSubmit={handleSubmit}>
+                        <Modal.Header closeButton>订单ID：{order._id}</Modal.Header>
+                        <Modal.Body>
+                            <Row >
+                                <Col className='box' >
+                                    <Row className="titleHead"><h4>产品明细</h4></Row>
+                                    <Row>
+                                        <Col>
+                                            <h5 className="title">名称</h5>
+                                            {order.products.map((item) => <p className="name">{item.product.name}</p>)}
+                                        </Col>
+                                        <Col>
+                                            <h5 className="title">数量</h5>
+                                            {order.products.map((item) => <p className="name">{item.quantity}</p> )}
+                                        </Col>
+                                        <Col>
+                                            <h5 className="title">状态</h5>
+                                            {order.products.map((item) =>
+                                                <Form.Control name="status" required as="select" value={item.status} onChange={e => changeProductStatus(e.target.value)}>
+                                                    <option value="">请选择状态</option>
+                                                    <option value="not-processed">未处理</option>
+                                                    <option value="processing">处理中</option>
+                                                    <option value="shipped">已发货</option>
+                                                    <option value="delivered">已交货</option>
+                                                    <option value="cancelled">已取消</option>
+                                                </Form.Control>
+                                            )}
+                                        </Col>
+                                    </Row>
+                                </Col>
+                            </Row>
 
-                    </Col>
-                </Row>
-                <Row >
-                    <Col className='box'>
-                        <Row className="titleHead">
-                            <h4>Transaction Details</h4>
-                        </Row>
-                        <Row >
-                            <Col> Amount to be paid </Col>
-                            <Col>{details.totalPrice}</Col>
-                        </Row>
-                        <Row>
-                            <Col>Payment Method</Col>
-                            <Col>{details.paymentType}</Col>
-                        </Row>
-                        <Row>
-                            <Col>Payment Status</Col>
-                            <Col>{details.paymentStatus}</Col>
-                        </Row>
-                        <Row>
-                            <Col>Transaction Provider</Col>
-                            <Col>{details.transactionProvider}</Col>
-                        </Row>
-                    </Col>
-                    <Col className='box'>
-                        <Row className="titleHead"><h4>Order Details</h4></Row>
-                        <Row>
-                            <Col>Order Status</Col>
-                            <Col>{details.status}</Col>
-                        </Row>
-                        <Row>
-                            <Col>Order Created</Col>
-                            <Col>{details.createdAt}</Col>
-                        </Row>
-                        <Row>
-                            <Col>Order Updated</Col>
-                            <Col>{details.updatedAt}</Col>
-                        </Row>
-                        <Row>
-                            <Col>Order Cancellation</Col>
-                            <Col className={details.isCancelled?"danger":"success"}>{details.isCancelled ? "Cancelled" : "Not Cancelled"}</Col>
-                        </Row>
-                        <Row>
-                            <Col>Order Delivered</Col>
-                            <Col className={details.isDelivered?"sucess":"warn"}>{details.isDelivered ? "Delivered" :<div><FiTruck size={30}></FiTruck>
-                                 On-Transist</div>}</Col>
-                        </Row>
-                        <Row>
-                            <Col>Push Status</Col>
-                            <Col className={details.pushStatus?"success":"warn"}>{details.pushStatus ? "Send" : 
-                            <div><BiMessageError size={30}></BiMessageError>Not Send</div>}</Col>
-                        </Row>
-                    </Col>
-                </Row>
-            </Container>
+                            <Row >
+                                <Col className='box'>
+                                    <Row className="titleHead"><h4>产品配送</h4></Row>
+                                    <Row>
+                                        <Col className="title">地址：</Col>
+                                        <Col className="title">{order.profile.address}</Col>
+                                    </Row>
+                                    <Row>
+                                        <Col className="title">城市：</Col>
+                                        <Col className="title">{order.profile.city}</Col>
+                                    </Row>
+                                    <Row>
+                                        <Col className="title">联系人：</Col>
+                                        <Col className="title">{order.profile.person}</Col>
+                                    </Row>
+                                    <Row>
+                                        <Col className="title">电话：</Col>
+                                        <Col className="title">{order.profile.phone}</Col>
+                                    </Row>
+                                </Col>
+                            </Row>
+                            <Row >
+                                <Col className='box'>
+                                    <Row className="titleHead"><h4>会员详情</h4></Row>
+                                    <Row>
+                                        <Col className="title">用户名：</Col>
+                                        <Col className="title">{order.user.username}</Col>
+                                    </Row>
+                                </Col>
+                            </Row>
+                            <Row >
+                                <Col className='box'>
+                                    <Row className="titleHead"><h4>订单详情</h4></Row>
+                                    <Row>
+                                        <Col className="title">总价：</Col>
+                                        <Col><p className="title">{order.total}</p></Col>
+                                    </Row>
+                                    <Row>
+                                        <Col className="name">订单状态：</Col>
+                                        <Col>
+                                            <Form.Control name="status" required as="select" value={order.isActive} onChange={e => changeStatus(e.target.value)}>
+                                                <option value="">请选择状态</option>
+                                                <option value="1">已生效</option>
+                                                <option value="2">已取消</option>
+                                            </Form.Control>
+                                        </Col>
+                                    </Row>
+                                </Col>
+                            </Row>
+                        </Modal.Body>
+                        <Modal.Footer>
+                            {errorDb && <p style={{ color: "red" }}>无法{isEdit ? "更新" : "保存"}数据</p>}
+                            <Button type="submit">{isEdit ? "更新" : "保存"}</Button>
+                            <Button onClick={() => { props.onHide() }}>关闭</Button>
+                        </Modal.Footer>
+                    </Form>
+                </Modal>
+            }
         </div>
     )
 }

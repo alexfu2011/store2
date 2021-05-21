@@ -1,6 +1,6 @@
-import React, { useEffect, useState } from 'react'
-import { Button, Modal, Form, Col } from 'react-bootstrap'
-import Snackbar from '@material-ui/core/Snackbar'
+import React, { useEffect, useState } from 'react';
+import { Button, Modal, Form, Col } from 'react-bootstrap';
+import Snackbar from '@material-ui/core/Snackbar';
 import { url, jwt, userId } from './../constants/auth';
 
 export const CategoryForm = ({ onSave, isEditCategory, data, ...props }) => {

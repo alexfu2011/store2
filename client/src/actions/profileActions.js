@@ -1,43 +1,12 @@
 import axios from "axios";
 import {
-  CART_ADD_ITEM,
-  CART_REMOVE_ITEM,
   CART_SAVE_SHIPPING_ADDRESS_REQUEST,
   CART_SAVE_SHIPPING_ADDRESS_SUCCESS,
   CART_SAVE_SHIPPING_ADDRESS_FAIL,
   CART_SHIPPING_ADDRESS_REQUEST,
   CART_SHIPPING_ADDRESS_SUCCESS,
   CART_SHIPPING_ADDRESS_FAIL,
-  CART_SAVE_PAYMENT_METHOD,
-} from "../constants/cartConstants";
-
-
-export const addToCart = (id, qty) => async (dispatch, getState) => {
-  const { data } = await axios.get(`/api/product/${id}`);
-
-  dispatch({
-    type: CART_ADD_ITEM,
-    payload: {
-      product: data._id,
-      name: data.name,
-      image: data.image,
-      price: data.price,
-      countInStock: data.countInStock,
-      qty,
-    },
-  });
-
-  localStorage.setItem("cartItems", JSON.stringify(getState().cart.cartItems));
-};
-
-export const removeFromCart = (id) => (dispatch, getState) => {
-  dispatch({
-    type: CART_REMOVE_ITEM,
-    payload: id,
-  });
-
-  localStorage.setItem("cartItems", JSON.stringify(getState().cart.cartItems));
-};
+} from "../constants/profileConstants";
 
 export const getShippingAddress = () => async (dispatch, getState) => {
   try {
@@ -88,14 +57,21 @@ export const saveShippingAddress = (data) => async (dispatch, getState) => {
       },
     };
 
-    const res = await axios.post(`/api/profile/save`, data, config);
+    let res = await axios.post(`/api/profile/save`, data, config);
 
     dispatch({
       type: CART_SAVE_SHIPPING_ADDRESS_SUCCESS,
-      payload: data,
+      payload: res.data,
     });
 
     localStorage.setItem("shippingAddress", JSON.stringify(data));
+
+    const cartItems = JSON.parse(localStorage.getItem('cartItems'));
+    const { products, total } = getCartItems(cartItems);
+    axios.post(`/api/cart/add`, { products }, config).then(res => res.data.cartId).then(async cartId => {
+      await axios.post(`/api/order/add`, { cartId, total }, config);
+    });
+
   } catch (error) {
     dispatch({
       type: CART_SAVE_SHIPPING_ADDRESS_FAIL,
@@ -104,11 +80,17 @@ export const saveShippingAddress = (data) => async (dispatch, getState) => {
   }
 };
 
-export const savePaymentMethod = (data) => (dispatch) => {
-  dispatch({
-    type: CART_SAVE_PAYMENT_METHOD,
-    payload: data,
+const getCartItems = cartItems => {
+  const newCartItems = [];
+  let total = 0;
+  cartItems.map(item => {
+      const newItem = {};
+      newItem.quantity = item.qty;
+      newItem.totalPrice = item.price * item.qty;
+      total += newItem.totalPrice;
+      newItem.product = item.product;
+      newCartItems.push(newItem);
   });
 
-  localStorage.setItem("paymentMethod", JSON.stringify(data));
+  return { products: newCartItems, total };
 };

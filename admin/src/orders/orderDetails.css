@@ -5,10 +5,14 @@
 }
 .titleHead{
     background-color: #F6F6F6;
+    padding: 0 5px;
+}
+.titleHead h4 {
+    margin: 5px;
 }
 .title{
-    
-    margin-bottom: 10px;
+    margin: 5px 0;
+    overflow-wrap: anywhere;
 }       
 .box{
     border: 1px solid #F9F9F9;
@@ -31,4 +35,12 @@
 }
 .danger{
     color: red;
+}
+
+.form-control {
+    margin: 10px 0;
+}
+
+.name {
+    margin: 15px 0;
 }

@@ -14,6 +14,19 @@ router.get("/", async (req, res) => {
         });
     }
 });
+
+router.get("/category/:id", async (req, res) => {
+    try {
+        const id = req.params.id;
+        const products = await Product.find({category: id}).populate("category");
+        res.status(200).json(products);
+    } catch (err) {
+        res.status(400).json({
+            error: "Your request could not be processed. Please try again."
+        });
+    }
+});
+
 router.get("/:id", async (req, res) => {
     try {
         const id = req.params.id;

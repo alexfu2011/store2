@@ -1,30 +1,111 @@
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import { Form, Button } from 'react-bootstrap'
 import { useDispatch, useSelector } from 'react-redux'
 import FormContainer from '../components/FormContainer'
 import CheckoutSteps from '../components/CheckoutSteps'
-import { saveShippingAddress } from '../actions/cartActions'
+import { saveShippingAddress, getShippingAddress } from '../actions/profileActions'
+import Message from "../components/Message";
+import Loader from "../components/Loader";
+import axios from "axios";
+import { logout } from "../actions/userActions";
 
 const ShippingScreen = ({ history }) => {
-  const cart = useSelector((state) => state.cart)
-  const { shippingAddress } = cart
-
-  const [address, setAddress] = useState(shippingAddress.address)
-  const [city, setCity] = useState(shippingAddress.city)
-  const [postalCode, setPostalCode] = useState(shippingAddress.postalCode)
-  const [country, setCountry] = useState(shippingAddress.country)
+  const profileDetail = useSelector((state) => state.profile);
+  const {loading, error, profile} = profileDetail;
+  const [address, setAddress] = useState("")
+  const [city, setCity] = useState("")
+  const [person, setPerson] = useState("")
+  const [phone, setPhone] = useState("")
+  const [login, setLogin] = useState(false)
 
   const dispatch = useDispatch()
 
   const submitHandler = (e) => {
     e.preventDefault()
-    dispatch(saveShippingAddress({ address, city, postalCode, country }))
-    history.push('/payment')
+    dispatch(saveShippingAddress({ address, city, person, phone }));
   }
+  const logoutHandler = () => {
+    dispatch(logout());
+  };
+
+  useEffect(() => {
+    const userInfo = JSON.parse(localStorage.getItem("userInfo"));
+    console.log(userInfo.token);
+    const config = {
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${userInfo.token}`,
+      },
+    };
+    const res = axios.get(`/api/profile`, config);
+    res.then(res => {
+      setAddress(res.data.address);
+      setCity(res.data.city);
+      setPerson(res.data.person);
+      setPhone(res.data.phone);
+    }).catch(() => {
+      setLogin(true);
+    });
+
+  }, []);
 
   return (
-    <div>
-      <h1>支付</h1>
+    <div className="my-3">
+      {loading ?
+        <Loader />
+        : login ?
+          <Message variant='info'>请重新 <a href="#" onClick={logoutHandler}>登录</a></Message>
+          :
+          <Form onSubmit={submitHandler} className="text-center">
+            <Form.Group controlId='address'>
+              <Form.Label className="float-left">地址</Form.Label>
+              <Form.Control
+                type='text'
+                placeholder='请输入地址'
+                value={address}
+                required
+                onChange={(e) => setAddress(e.target.value)}
+              ></Form.Control>
+            </Form.Group>
+
+            <Form.Group controlId='city'>
+              <Form.Label className="float-left">城市</Form.Label>
+              <Form.Control
+                type='text'
+                placeholder='请输入城市'
+                value={city}
+                required
+                onChange={(e) => setCity(e.target.value)}
+              ></Form.Control>
+            </Form.Group>
+
+            <Form.Group controlId='person'>
+              <Form.Label className="float-left">联系人</Form.Label>
+              <Form.Control
+                type='text'
+                placeholder='请输入联系人'
+                value={person}
+                required
+                onChange={(e) => setPerson(e.target.value)}
+              ></Form.Control>
+            </Form.Group>
+
+            <Form.Group controlId='phone'>
+              <Form.Label className="float-left">联系电话</Form.Label>
+              <Form.Control
+                type='text'
+                placeholder='请输入联系电话'
+                value={phone}
+                required
+                onChange={(e) => setPhone(e.target.value)}
+              ></Form.Control>
+            </Form.Group>
+
+            <Button type='submit' variant='primary'>
+              确定
+            </Button>
+          </Form>
+      }
     </div>
   )
 }

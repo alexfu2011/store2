@@ -89,21 +89,7 @@ export const CategoryList = (props) => {
     const handleCloseSnack = () => {
         setSnackBarOpen(false)
     }
-    const columns = [{ title: "分类名称", field: "name" },
-    {
-        title: "状态", field: "active",
-        render: rowData => {
-            if (rowData.active === 1) {
-                return (
-                    <p style={{ color: "green", fontWeight: "bolder" }}>上架</p>
-                )
-            } else {
-                return (
-                    <p style={{ color: "red", fontWeight: "bolder" }}>下架</p>
-                )
-            }
-        }
-    }]
+    const columns = [{ title: "分类名称", field: "name" }]
 
     const modalOpen = () => {
         setIsEditCategory(false);

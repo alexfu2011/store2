@@ -1,6 +1,7 @@
 import React from "react";
 import classNames from "classnames";
 import HomeScreen from "../screens/HomeScreen";
+import CategoryScreen from "../screens/CategoryScreen";
 import CartScreen from "../screens/CartScreen";
 import ProductScreen from "../screens/ProductScreen";
 import LoginScreen from "../screens/LoginScreen";
@@ -20,6 +21,7 @@ class Content extends React.Component {
         >
           <NavBar toggle={this.props.toggle} />
           <Route path='/' component={HomeScreen} exact />
+          <Route path='/category/:id' component={CategoryScreen} exact />
           <Route path='/product/:id' component={ProductScreen} />
           <Route path='/cart/:id?' component={CartScreen} />
           <Route path='/login' component={LoginScreen} />

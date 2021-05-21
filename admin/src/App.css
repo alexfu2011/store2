@@ -12,3 +12,7 @@
   margin: 10px;
   width: 100%;
 }
+/*
+.modal.show .modal-dialog {
+  max-width: 650px;
+}*/

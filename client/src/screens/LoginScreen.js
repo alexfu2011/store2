@@ -30,7 +30,7 @@ const LoginScreen = ({ location, history }) => {
   };
 
   return (
-    <div className="text-center">
+    <div className="text-center my-3">
     <FormContainer>
       {error && <Message variant='danger'>{error}</Message>}
       {loading && <Loader />}

@@ -24,8 +24,6 @@ const CartScreen = ({ match, location, history }) => {
   const { cartItems } = cart;
 
   useEffect(() => {
-    const el = document.querySelector(".home");
-    el.classList.remove("active");
     if (productId) {
       dispatch(addToCart(productId, qty));
     }
@@ -40,26 +38,26 @@ const CartScreen = ({ match, location, history }) => {
   };
 
   return (
-    <Row>
-      <Col md={8}>
+    <Row className="mt-3">
+      <Col xs={12} md={8}>
         {cartItems.length === 0 ? (
           <Message>
             请添加购物车 <Link to='/'>返回</Link>
           </Message>
         ) : (
-          <ListGroup variant='flush'>
+          <ListGroup variant='flush' className="mb-3">
             {cartItems &&
               cartItems.map((item) => (
                 <ListGroup.Item key={item.product}>
                   <Row>
-                    <Col md={2}>
+                    <Col xs={3}>
                       <Image src={"/"+item.image} alt={item.name} fluid rounded />
                     </Col>
-                    <Col md={3}>
+                    <Col xs={4}>
                       <Link to={`/product/${item.product}`}>{item.name}</Link>
+                      <p>{item.price}元</p>
                     </Col>
-                    <Col md={2}>{item.price} 元</Col>
-                    <Col md={2}>
+                    <Col xs={3}>
                       <Form.Control
                         as='select'
                         value={item.qty}
@@ -76,8 +74,7 @@ const CartScreen = ({ match, location, history }) => {
                         ))}
                       </Form.Control>
                     </Col>
-                    {/* <Col md={1}>Total ₹ {item.price * item.qty}</Col> */}
-                    <Col md={2}>
+                    <Col xs={2}>
                       <Button
                         type='button'
                         variant='light'
