@@ -30,8 +30,7 @@ export const OrderDetails = ({ onSave, isEditOrder, data, ...props }) => {
                 _id: order._id,
                 cartId: order.cartId,
                 products: order.products,
-                total: order.total,
-                status: order.status
+                isActive: order.isActive
             };
             const res = await fetch(url + '/order/update/' + order._id, {
                 method: 'PUT',
@@ -58,7 +57,7 @@ export const OrderDetails = ({ onSave, isEditOrder, data, ...props }) => {
         const res = await updateOrder();
         if (res) {
             setSnackBarOpen(true);
-            //onSave();
+            onSave();
         } else {
             setErrorDb(true);
         }

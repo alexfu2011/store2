@@ -155,11 +155,11 @@ export const Product = (props) => {
             render: rowData => {
                 if (rowData.isActive == 1) {
                     return (
-                        <p style={{ color: 'green', fontWeight: "bolder" }}>上架</p>
+                        <span style={{ color: 'green', fontWeight: "bolder" }}>上架</span>
                     )
                 } else {
                     return (
-                        <p style={{ color: 'red', fontWeight: "bolder" }}>下架</p>
+                        <span style={{ color: 'red', fontWeight: "bolder" }}>下架</span>
                     )
                 }
             }

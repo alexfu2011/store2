@@ -74,6 +74,11 @@ export const OrderList = (props) => {
         setIsEditOrder(true);
         setModalShow(true);
     }
+    
+    const onSave = async () => {
+        setModalShow(false);
+        getOrders();
+    }
 
     const handleCloseSnack = () => {
         setSnackBarOpen(false)
@@ -88,13 +93,13 @@ export const OrderList = (props) => {
         {
             title: "状态", field: 'isActive',
             render: rowData => {
-                if (rowData.isActive) {
+                if (rowData.isActive == 1) {
                     return (
-                        <p style={{ color: 'green', fontWeight: "bolder" }}>已生效</p>
+                        <span style={{ color: 'green', fontWeight: "bolder" }}>已生效</span>
                     )
                 } else {
                     return (
-                        <p style={{ color: 'red', fontWeight: "bolder" }}>已取消</p>
+                        <span style={{ color: 'red', fontWeight: "bolder" }}>已取消</span>
                     )
                 }
             }
@@ -159,7 +164,7 @@ export const OrderList = (props) => {
                             <OrderDetails
                                 onHide={() => { modalClose() }}
                                 show={modalShow}
-                                //onSave={onSave}
+                                onSave={onSave}
                                 isEditOrder={isEditOrder}
                                 data={order}
                             ></OrderDetails>

@@ -90,9 +90,9 @@ router.put("/update/:orderId", auth.isAuth, jsonParser, async (req, res) => {
     const {
       cartId,
       products,
-      status
+      isActive
     } = req.body;
-    const order = await Order.findByIdAndUpdate(orderId, {status});
+    const order = await Order.findByIdAndUpdate(orderId, {isActive});
     products.map(async product => {
       await Cart.updateOne({ "_id": cartId, "products._id": product._id }, {
         "$set": {
