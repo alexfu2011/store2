@@ -8,15 +8,15 @@ import axios from 'axios';
 export const ProductForm = ({ onSave, isEditProduct, data, ...props }) => {
     const styles = {
         margin: "20px 50px"
-    }
-    const [snackBarOpen, setSnackBarOpen] = useState(false)
+    };
+    const [snackBarOpen, setSnackBarOpen] = useState(false);
     const handleCloseSnack = () => {
-        setSnackBarOpen(false)
-    }
+        setSnackBarOpen(false);
+    };
     const [category, setCategory] = useState(null)
-    const [formf, setForm] = useState({ name: "", category: { _id: "" }, brandName: "", summary: "", description: "", price: "", stock: "" })
-    const [isEdit, setIsEdit] = useState(false)
-    const [errorDb, setErrorDb] = useState(false)
+    const [formf, setForm] = useState({ name: "", category: { _id: "" }, brandName: "", summary: "", description: "", price: "", stock: "", isActive: 1 });
+    const [isEdit, setIsEdit] = useState(false);
+    const [errorDb, setErrorDb] = useState(false);
 
     const addProduct = async () => {
         try {
@@ -30,7 +30,7 @@ export const ProductForm = ({ onSave, isEditProduct, data, ...props }) => {
             formData.append("category", formf.category);
             formData.append("price", formf.price);
             formData.append("stock", formf.stock);
-            formData.append("active", formf.active);
+            formData.append("isActive", formf.isActive);
             formData.append("image", formf.image);
 
             const res = await fetch(url + '/product/add', {
@@ -64,10 +64,10 @@ export const ProductForm = ({ onSave, isEditProduct, data, ...props }) => {
             formData.append("category", formf.category._id);
             formData.append("price", formf.price);
             formData.append("stock", formf.stock);
-            formData.append("active", formf.active);
+            formData.append("isActive", formf.isActive);
             formData.append("image", formf.image);
 
-            const res = await fetch(url + '/product/update/' + formf._id , {
+            const res = await fetch(url + '/product/update/' + formf._id, {
                 method: 'PUT',
                 body: formData,
                 headers: {
@@ -126,10 +126,10 @@ export const ProductForm = ({ onSave, isEditProduct, data, ...props }) => {
             setForm(data);
             setIsEdit(true);
         } else {
-            setForm({ name: "", category: { _id: "" }, brandName: "", summary: "", description: "", price: "", stock: "" });
+            setForm({ name: "", category: { _id: "" }, brandName: "", summary: "", description: "", price: "", stock: "", isActive: 1 });
             setIsEdit(false);
         }
-        getValues()
+        getValues();
         setValidated(false)
         setStoreError(false)
     }, [isEditProduct, data]);
@@ -243,7 +243,7 @@ export const ProductForm = ({ onSave, isEditProduct, data, ...props }) => {
                         <Form.Row>
                             <Form.Group as={Col}>
                                 <Form.Label>产品状态</Form.Label>
-                                <Form.Control required as="select" defaultValue="1" value={formf.active} onChange={(e) => setField("active", e.target.value)} >
+                                <Form.Control required as="select" value={formf.isActive} onChange={(e) => setField("isActive", e.target.value)} >
                                     <option value="">请选择产品状态</option>
                                     <option value="1">上架</option>
                                     <option value="2">下架</option>
@@ -263,12 +263,12 @@ export const ProductForm = ({ onSave, isEditProduct, data, ...props }) => {
                             </Form.Group>
                         </Form.Row>
                         {isEdit && formf.image && <img
-                                src={formf.image}
-                                height="50px"
-                                width="50px"
-                                alt="added_image"
-                            />}
-                            <br></br>
+                            src={formf.image}
+                            height="50px"
+                            width="50px"
+                            alt="added_image"
+                        />}
+                        <br></br>
                     </Modal.Body>
                     <Modal.Footer>
                         {errorDb && <p><p style={{ color: "red" }}>无法{isEdit ? "更新" : "保存"}数据</p></p>}
@@ -277,10 +277,10 @@ export const ProductForm = ({ onSave, isEditProduct, data, ...props }) => {
                     </Modal.Footer>
                 </Form>
             </Modal>
-            <Snackbar open={snackBarOpen} message={isEdit ? "Successfully Updated" : "Successfully Added"}
+            <Snackbar open={snackBarOpen} message={isEdit ? "编辑成功" : "添加成功"}
                 autoHideDuration={3500} onClose={handleCloseSnack}>
             </Snackbar>
         </div>
     )
 }
-export default ProductForm;;
+export default ProductForm;

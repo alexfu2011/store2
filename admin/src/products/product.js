@@ -153,7 +153,7 @@ export const Product = (props) => {
         {
             title: "状态", field: 'isActive',
             render: rowData => {
-                if (rowData.isActive) {
+                if (rowData.isActive == 1) {
                     return (
                         <p style={{ color: 'green', fontWeight: "bolder" }}>上架</p>
                     )
