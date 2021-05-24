@@ -7,49 +7,16 @@ import * as axios from 'axios';
 import { url, jwt, userId } from './../constants/auth';
 import localization from "../localization";
 import ProductForm from "./productForm";
+import { TokenProivder, useToken } from "../store";
 
 export const Product = (props) => {
     const [productList, setProductList] = useState([]);
     const [modalShow, setModalShow] = useState(false);
     const [isEditProduct, setIsEditProduct] = useState(false);
     const [product, setProduct] = useState({});
-    const [dbError, setDbError] = useState(false);
     const [barOpen, setBarOpen] = useState(false);
-    const [login, setLogin] = useState(false);
     const [loading, setLoading] = useState(true);
-
-    const getToken = () => {
-        return new Promise((resolve, reject) => {
-            fetch(url + '/auth/token', {
-                method: 'POST', credentials: 'include', headers: {
-                    'Content-Type': 'application/json',
-                }
-            }).then(res => {
-                if (res.status === 200) {
-                    setLoading(false);
-                    return res.json();
-                } else if (res.status === 400) {
-                    setLogin(false);
-                    throw new Error("request error");
-                } else if (res.status === 401) {
-                    setLogin(false);
-                    throw new Error("not login");
-                } else {
-                    setDbError(true);
-                    throw new Error("server error");
-                }
-            }).then(data => {
-                if (!data.token) {
-                    reject(false);
-                    return;
-                }
-                localStorage.setItem("token", data.token);
-                resolve(true);
-            }).catch(err => {
-                reject(false);
-            });
-        });
-    };
+    const { state, dispatch } = useToken();
 
     const deleteProduct = async (productId) => {
         return new Promise(async (resolve, reject) => {
@@ -65,13 +32,10 @@ export const Product = (props) => {
                     if (res.status === 200) {
                         return res.json();
                     } else if (res.status === 400) {
-                        setLogin(false);
                         throw new Error("request error");
                     } else if (res.status === 401) {
-                        setLogin(false);
                         throw new Error("not login");
                     } else {
-                        setDbError(true);
                         throw new Error("server error");
                     }
                 }).then(data => {
@@ -91,58 +55,69 @@ export const Product = (props) => {
         });
     };
 
-    const getProduct = () => {
-        let res;
+    const getProductList = () => {
         return new Promise((resolve, reject) => {
-            const token = localStorage.getItem("token");
-            fetch(url + '/product', {
-                headers: {
-                    'Content-Type': 'application/json',
-                    authorization: `Bearer ${token}`
-                }
-            }).then(res => {
-                if (res.status === 200) {
-                    setLoading(false);
-                    return res.json();
-                } else if (res.status === 400) {
-                    setLogin(true);
-                    throw new Error("request error");
-                } else if (res.status === 401) {
-                    setLogin(true);
-                    throw new Error("not login");
-                } else {
-                    setDbError(true);
-                    throw new Error("server error");
-                }
-            }).then(data => {
-                setProductList(data);
-                resolve(true);
-            }).catch(err => {
+            try {
+                const token = localStorage.getItem("token");
+                fetch(url + '/product', {
+                    headers: {
+                        'Content-Type': 'application/json',
+                        authorization: `Bearer ${token}`
+                    }
+                }).then(res => {
+                    if (res.status === 200) {
+                        return res.json();
+                    } else if (res.status === 400) {
+                        throw new Error("request error");
+                    } else if (res.status === 401) {
+                        throw new Error("not login");
+                    } else {
+                        throw new Error("server error");
+                    }
+                }).then(data => {
+                    resolve(data);
+                }).catch(err => {
+                    reject(false);
+                });
+            } catch (err) {
                 reject(false);
-            });
+            }
         });
     };
 
+    const getProduct = async () => {
+        const data = await getProductList();
+        if (data) {
+            setLoading(false);
+            setProductList(data);
+        }
+        else {
+            dispatch({ type: "LOGOUT" });
+        }
+    };
     const handleClose = () => {
         setBarOpen(false)
-    }
+    };
 
     const modalOpen = () => {
         setIsEditProduct(false);
         setModalShow(true);
-    }
+    };
+
     const modalClose = () => {
         setModalShow(false);
-    }
+    };
+
     const onSave = async () => {
         setModalShow(false);
         getProduct();
-    }
+    };
+
     const editActive = (data) => {
         setProduct(data);
         setIsEditProduct(true);
         setModalShow(true);
-    }
+    };
 
     const columns = [
         { title: "产品名称", field: 'name' },
@@ -164,78 +139,64 @@ export const Product = (props) => {
                 }
             }
         },
-    ]
+    ];
+
     useEffect(() => {
-        getProduct().then(() => getToken());
+        getProduct();
     }, []);
+
     return (
         <div >
             <NavBar></NavBar>
-            {dbError ?
+            {loading ?
                 <div style={{ width: "100%", height: "100px", marginTop: "300px" }} >
+                    <Spinner style={{
+                        display: "block", marginLeft: "auto",
+                        marginRight: "auto", height: "50px", width: "50px"
+                    }} animation="border" variant="primary" />
                     <p style={{
                         display: "block", marginLeft: "auto",
                         marginRight: "auto", textAlign: "center"
-                    }}>服务器宕机</p>
+                    }}>加载中</p>
                 </div>
                 :
-                login ?
-                    <div style={{ width: "100%", height: "100px", marginTop: "300px" }} >
-                        <p style={{
-                            display: "block", marginLeft: "auto",
-                            marginRight: "auto", textAlign: "center"
-                        }}><a href="/login">重新登陆</a></p>
+                <div>
+                    <div style={{ margin: '10px 20px' }}>
+                        <Button style={{ margin: "10px 30px" }} onClick={() => modalOpen()}>添加产品</Button>
                     </div>
-                    :
-                    loading ?
-                        <div style={{ width: "100%", height: "100px", marginTop: "300px" }} >
-                            <Spinner style={{
-                                display: "block", marginLeft: "auto",
-                                marginRight: "auto", height: "50px", width: "50px"
-                            }} animation="border" variant="primary" />
-                            <p style={{
-                                display: "block", marginLeft: "auto",
-                                marginRight: "auto", textAlign: "center"
-                            }}>加载中</p>
-                        </div>
-                        :
-                        <div>
-                            <div style={{ margin: '10px 20px' }}>
-                                <Button style={{ margin: "10px 30px" }} onClick={() => modalOpen()}>添加产品</Button>
-                            </div>
-                            <MaterialTable style={{ margin: '15px' }} title="产品列表" data={productList} columns={columns}
-                                actions={[
-                                    {
-                                        icon: "edit",
-                                        tooltip: "编辑产品",
-                                        onClick: async (event, rowData) => {
-                                            editActive(rowData)
-                                        }
-                                    },
-                                ]}
-                                editable={{
-                                    onRowDelete: selectedRow => new Promise(async (resolve, reject) => {
-                                        const id = selectedRow._id
-                                        const res = await deleteProduct(id)
-                                        console.log(res);
-                                        if (res) {
-                                            setBarOpen(true)
-                                            getProduct()
-                                            resolve();
-                                        } else {
-                                            reject();
-                                        }
-                                    }),
-                                }}
-                                options={{
-                                    actionsColumnIndex: -1,
-                                    showFirstLastPageButtons: false,
-                                    pageSizeOptions: [5, 10, 20, 50]
-                                }}
-                                localization={localization}
-                            >
-                            </MaterialTable>
-                        </div>
+                    <MaterialTable style={{ margin: '15px' }} title="产品列表" data={productList} columns={columns}
+                        actions={[
+                            {
+                                icon: "edit",
+                                tooltip: "编辑产品",
+                                onClick: async (event, rowData) => {
+                                    editActive(rowData)
+                                }
+                            },
+                        ]}
+                        editable={{
+                            onRowDelete: selectedRow => new Promise(async (resolve, reject) => {
+                                const id = selectedRow._id
+                                const res = await deleteProduct(id)
+                                console.log(res);
+                                if (res) {
+                                    setBarOpen(true)
+                                    getProduct()
+                                    resolve();
+                                } else {
+                                    reject();
+                                }
+                            }),
+                        }}
+                        options={{
+                            actionsColumnIndex: -1,
+                            showFirstLastPageButtons: false,
+                            pageSizeOptions: [5, 10, 20, 50]
+                        }}
+                        localization={localization}
+                    >
+                    </MaterialTable>
+                </div>
             }
 
             <ProductForm

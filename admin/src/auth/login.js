@@ -1,14 +1,14 @@
 import React, { useState, useContext, useEffect } from 'react';
-import { useHistory } from "react-router";
 import Form from "react-bootstrap/Form";
 import Button from "react-bootstrap/Button";
 import "./login.css";
 import { url } from '../constants/auth'
+import { useToken } from "../store";
 
 export const LoginPage = (props) => {
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
-  const history = useHistory();
+  const { state , dispatch } = useToken();
 
   function validateForm() {
     return username.length > 0 && password.length > 0;
@@ -32,8 +32,9 @@ export const LoginPage = (props) => {
       if (data.error) {
         return;
       }
+      dispatch({type: "SET_TOKEN", payload: data.token});
       localStorage.setItem("token", data.token);
-      history.push("/home");
+      props.history.push('/order');
     }).catch(() => { });
   }
 
