@@ -1,170 +1,204 @@
 import React, { useEffect, useState } from 'react'
-import { Container, Modal, Form, Button, Col, Row } from 'react-bootstrap'
-import './orderDetails.css'
-import { url, jwt, userId } from './../constants/auth';
+import NavBar from '../components/navBar'
+import { Button, Col, Row, Form } from 'react-bootstrap'
+import Table from '../components/table'
+import Timeline from '@material-ui/lab/Timeline';
+import TimelineItem from '@material-ui/lab/TimelineItem';
+import TimelineSeparator from '@material-ui/lab/TimelineSeparator';
+import TimelineConnector from '@material-ui/lab/TimelineConnector';
+import TimelineContent from '@material-ui/lab/TimelineContent';
+import TimelineDot from '@material-ui/lab/TimelineDot';
+import Typography from '@material-ui/core/Typography';
+import TimelineOppositeContent from '@material-ui/lab/TimelineOppositeContent';
+import {  } from '../services/orderService'
+import SpinLoader from '../components/spinLoader'
 
-export const OrderDetails = ({ onSave, isEditOrder, data, ...props }) => {
-    const [order, setOrder] = useState(null)
-    const [isEdit, setIsEdit] = useState(null)
-    const [snackBarOpen, setSnackBarOpen] = useState(false)
-    const [errorDb, setErrorDb] = useState(false)
+export const OrderDetails = (props) => {
+    const order = props.location.state
+    const [note, setNote] = useState('')
+    const [status, setStatus] = useState(null)
+    const [validated, setValidated] = useState(false)
+    const [mailSending, setMailSending] = useState({ loading: false, sent: false })
+    const orderDetails = {
+        margin: "20px",
+        marginLeft: "30px",
+        backgroundColor: "#fff",
 
-    const changeProductStatus = (value) => {
-        const newOrder = Object.assign({}, order);
-        newOrder.products.map(product => {
-            product.status = value;
-        });
-        setOrder(newOrder);
     }
-
-    const changeStatus = (value) => {
-        const newOrder = Object.assign({}, order);
-        newOrder.isActive = value;
-        setOrder(newOrder);
+    const saveNote = (value) => {
+        setNote(value)
+        setValidated(false)
     }
-
-    const updateOrder = async () => {
-        try {
-            const token = localStorage.getItem("token");
-            const body = {
-                _id: order._id,
-                cartId: order.cartId,
-                products: order.products,
-                isActive: order.isActive
-            };
-            const res = await fetch(url + '/order/update/' + order._id, {
-                method: 'PUT',
-                body: JSON.stringify(body),
-                headers: {
-                    'Content-Type': 'application/json',
-                    authorization: `Bearer ${token}`
-                }
-            });
-            if (res.status === 200) {
-                return true;
-            } else if (res.status === 400 || res.status === 401) {
-                return false;
-            }
-        } catch (err) {
-            if (err) {
-                return false;
-            }
+    const update = async () => {
+    }
+    const setField = (field, value) => {
+        if (value === "Cancelled") {
+            setStatus({
+                ...status,
+                [field]: value,
+                isCancelled: true
+            })
         }
-    };
+        else if (value === "Completed") {
+            setStatus({
+                ...status,
+                [field]: value,
+                isDelivered: true
+            })
+        }
+        else {
+            setStatus({
+                ...status,
+                [field]: value
+            })
+        }
 
-    const handleSubmit = async (e) => {
-        e.preventDefault();
-        const res = await updateOrder();
-        if (res) {
-            setSnackBarOpen(true);
-            onSave();
+    }
+    const handleMail = async () => {
+        if (note === '') {
+            setValidated(true)
         } else {
-            setErrorDb(true);
         }
     };
-
+    
     useEffect(() => {
-        if (isEditOrder) {
-            setOrder(data);
-            setIsEdit(true);
-        } else {
+        setStatus({
+            status: order.status
+        })
+    }, [props]);
+
+    const subcolumn = [
+        {
+            title: "产品图片", field: '',
+            render: rowData => {
+                return (<img
+                    src={"/"+rowData.product.image}
+                    height="100px"
+                    width="100px"
+                    alt="added_image"
+                />)
+            }
+        },
+        { title: "产品名称", field: 'product.name' },
+        {
+            title: "产品价格", field: '',
+            render: rowData => {
+                return (<span>{rowData.product.price} 元</span>)
+            }
+        },
+        { title: "产品数量", field: 'quantity' },
+        {
+            title: "总价", field: '',
+            render: rowData => {
+                return (<span>{rowData.product.price * rowData.quantity} 元</span>)
+            }
+        },
+        {
+            title: "状态", field: 'status',
+            render: rowData => {
+                return <Form.Control name="status" required as="select" value={rowData.status}>
+                    <option value="">请选择状态</option>
+                    <option value="not-processed">未处理</option>
+                    <option value="processing">处理中</option>
+                    <option value="shipped">已发货</option>
+                    <option value="delivered">已交货</option>
+                    <option value="cancelled">已取消</option>
+                </Form.Control>;
+            }
         }
 
-    }, [isEditOrder, data])
-
+    ]
     return (
-        <div>
-            {order &&
-                <Modal centered {...props}>
-                    <Form onSubmit={handleSubmit}>
-                        <Modal.Header closeButton>订单ID：{order._id}</Modal.Header>
-                        <Modal.Body>
-                            <Row >
-                                <Col className='box' >
-                                    <Row className="titleHead"><h4>产品明细</h4></Row>
+        <div style={{ backgroundColor: "#DFE6F1", minHeight: "100vh" }}>
+            <NavBar />
+            {status &&
+                <Row style={{ width: "100%" }}>
+                    <Col xs={9}>
+                        <Row>
+                            <Col style={orderDetails}>
+                                <div style={{ padding: "10px" }}>
+                                    <Row><h3>订单详情</h3></Row>
+                                    <Row><h4>订单编号：{order._id}</h4></Row>
                                     <Row>
                                         <Col>
-                                            <h5 className="title">名称</h5>
-                                            {order.products.map((item) => <p className="name">{item.product.name}</p>)}
-                                        </Col>
-                                        <Col>
-                                            <h5 className="title">数量</h5>
-                                            {order.products.map((item) => <p className="name">{item.quantity}</p> )}
-                                        </Col>
-                                        <Col>
-                                            <h5 className="title">状态</h5>
-                                            {order.products.map((item) =>
-                                                <Form.Control name="status" required as="select" value={item.status} onChange={e => changeProductStatus(e.target.value)}>
-                                                    <option value="">请选择状态</option>
-                                                    <option value="not-processed">未处理</option>
-                                                    <option value="processing">处理中</option>
-                                                    <option value="shipped">已发货</option>
-                                                    <option value="delivered">已交货</option>
-                                                    <option value="cancelled">已取消</option>
-                                                </Form.Control>
-                                            )}
-                                        </Col>
-                                    </Row>
-                                </Col>
-                            </Row>
-
-                            <Row >
-                                <Col className='box'>
-                                    <Row className="titleHead"><h4>产品配送</h4></Row>
-                                    <Row>
-                                        <Col className="title">地址：</Col>
-                                        <Col className="title">{order.profile.address}</Col>
-                                    </Row>
-                                    <Row>
-                                        <Col className="title">城市：</Col>
-                                        <Col className="title">{order.profile.city}</Col>
-                                    </Row>
-                                    <Row>
-                                        <Col className="title">联系人：</Col>
-                                        <Col className="title">{order.profile.person}</Col>
-                                    </Row>
-                                    <Row>
-                                        <Col className="title">电话：</Col>
-                                        <Col className="title">{order.profile.phone}</Col>
-                                    </Row>
-                                </Col>
-                            </Row>
-                            <Row >
-                                <Col className='box'>
-                                    <Row className="titleHead"><h4>会员详情</h4></Row>
-                                    <Row>
-                                        <Col className="title">用户名：</Col>
-                                        <Col className="title">{order.user.username}</Col>
-                                    </Row>
-                                </Col>
-                            </Row>
-                            <Row >
-                                <Col className='box'>
-                                    <Row className="titleHead"><h4>订单详情</h4></Row>
-                                    <Row>
-                                        <Col className="title">总价：</Col>
-                                        <Col><p className="title">{order.total}</p></Col>
-                                    </Row>
-                                    <Row>
-                                        <Col className="name">订单状态：</Col>
-                                        <Col>
-                                            <Form.Control name="status" required as="select" value={order.isActive} onChange={e => changeStatus(e.target.value)}>
+                                            订单状态
+                                            <Form.Control name="status" required as="select" value={order.isActive}>
                                                 <option value="">请选择状态</option>
                                                 <option value="1">已生效</option>
                                                 <option value="2">已取消</option>
                                             </Form.Control>
                                         </Col>
+                                        <Col>
+                                            会员详情
+                      <div>
+                                                收件人：{order.user.name}<br />
+                      地址：{order.user.address}<br />
+                      城市：{order.user.city}<br />
+                                            </div>
+                                        </Col>
+                                        <Col>
+                                            配送详情
+                      <div>
+                                                收件人：{order.profile.person}<br />
+                      地址：{order.profile.address}<br />
+                      城市：{order.profile.city}<br />
+                                            </div>
+                                        </Col>
                                     </Row>
-                                </Col>
-                            </Row>
-                        </Modal.Body>
-                        <Modal.Footer>
-                            {errorDb && <p style={{ color: "red" }}>无法{isEdit ? "更新" : "保存"}数据</p>}
-                            <Button type="submit">{isEdit ? "更新" : "保存"}</Button>
-                            <Button onClick={() => { props.onHide() }}>关闭</Button>
-                        </Modal.Footer>
-                    </Form>
-                </Modal>
+                                </div>
+                            </Col>
+                        </Row>
+                        <Row>
+                            <Col style={{ margin: "20px 20px 0 30px", backgroundColor: "#fff" }}>
+                                <h4 className="my-2">产品详情</h4>
+                                <Table style={{ margin: "0", padding: "0px", borderBottom: "none" }} data={order.products} columns={subcolumn} options={{
+                                    search: false,
+                                    toolbar: false,
+                                    paging: false,
+                                    actionsColumnIndex: -1,
+                                    emptyRowsWhenPaging: false,
+                                }} />
+                                <Row style={{ margin: "10px 0 20px 0" }}>
+                                    <Col xs={8} />
+                                    <Col xs={2}>
+                                        <Row>总价:</Row>
+                                        <Row>税费:</Row>
+                                        <Row>运输费:</Row>
+                                        <Row>折扣:</Row>
+                                        <Row style={{ height: "1px", backgroundColor: '#000' }}></Row>
+                                        <Row>合计:</Row>
+                                    </Col>
+                                    <Col xs={1}><Row>{order.total}</Row>
+                                        <Row>11</Row>
+                                        <Row>11</Row>
+                                        <Row>- 11</Row>
+                                        <Row style={{ height: "1px", backgroundColor: '#000' }}></Row>
+                                        <Row>{order.totalPrice}</Row>
+                                    </Col>
+                                </Row>
+                                <Row><div style={{ margin: "10px" }}><Button>退款</Button></div></Row>
+                            </Col>
+                        </Row>
+
+                    </Col>
+                    <Col xs={3}>
+                        <Row style={{ margin: "20px 0 0 5px", padding: "10px", backgroundColor: "#fff" }}>
+                            <Col><h4>订单操作</h4>
+                                <Button style={{ margin: "10px" }} onClick={() => update()}>更新</Button>
+                                <Button style={{ margin: "10px" }} onClick={() => { props.history.replace("/order") }}>返回</Button><br />
+                            </Col>
+                        </Row>
+                        <Row style={{ margin: "20px 0 0 5px", padding: "10px", backgroundColor: "#fff" }}>
+                            <Col>
+                                <h4>订单记录</h4>
+                                <Row>
+                                    <Timeline>
+                                    </Timeline>
+                                </Row>
+                            </Col>
+                        </Row>
+                    </Col>
+                </Row>
             }
         </div>
     )

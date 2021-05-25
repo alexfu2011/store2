@@ -3,8 +3,9 @@ import NavBar from './../components/navBar';
 import { Col, Row, Spinner } from 'react-bootstrap';
 import { url, jwt, userId } from './../constants/auth';
 import { TokenProivder, useToken } from "../store";
+import { getHome } from "../services/homeService";
+import './home.css';
 
-import './home.css'
 export const Home = (props) => {
     const [data, setData] = useState({
         'TotalProducts': 0,
@@ -15,40 +16,16 @@ export const Home = (props) => {
     const [snackBarOpen, setSnackBarOpen] = useState(false);
     const { state, dispatch } = useToken();
 
-    const getDashboard = () => {
-        return new Promise((resolve, reject) => {
-            fetch(url + '/dashboard', {
-                method: 'GET', headers: {
-                    'Content-Type': 'application/json',
-                }
-            }).then(res => {
-                if (res.status === 200) {
-                    setLoading(false);
-                    return res.json();
-                } else {
-                    setDbError(true);
-                    return;
-                }
-            }).then(data => {
-                if (data.error) {
-                    reject(false);
-                    return;
-                }
-                resolve(data);
-            }).catch(err => {
-                reject(false);
-            });
-
-        });
-    };
-
     const getValues = async () => {
-        const data = await getDashboard();
-        if (data) {
-            setData(data);
-        }
-        else {
-            setDbError(true);
+        try {
+            const data = await getHome();
+            if (data) {
+                setLoading(false);
+                setData(data);
+            } else {
+                throw new Error();
+            }
+        } catch {
             dispatch({ type: "LOGOUT" });
         }
     };

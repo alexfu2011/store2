@@ -4,29 +4,29 @@ import Snackbar from "@material-ui/core/Snackbar"
 import MaterialTable from "material-table"
 import NavBar from "../components/navBar"
 import { url, jwt, userId } from "./../constants/auth";
-import OrderForm from "./orderForm"
+import UserDetails from "./userDetails"
 import localization from "../localization";
 import { getLocalTime } from "../utils/time";
 import { TokenProivder, useToken } from "../store";
-import { getAllOrders } from "../services/orderService";
+import { getAllUsers } from "../services/userService";
 
-export const OrderList = (props) => {
+export const UserList = (props) => {
     const [modalShow, setModalShow] = useState(false);
-    const [orders, setOrders] = useState([]);
-    const [isEditOrder, setIsEditOrder] = useState(false);
-    const [order, setOrder] = useState([]);
+    const [users, setUsers] = useState([]);
+    const [isEditUser, setIsEditUser] = useState(false);
+    const [user, setUser] = useState([]);
     const [dbError, setDbError] = useState(false);
     const [snackBarOpen, setSnackBarOpen] = useState(false)
     const [login, setLogin] = useState(false);
     const [loading, setLoading] = useState(true);
     const { state, dispatch } = useToken();
 
-    const getOrders = async () => {
+    const getUsers = async () => {
         try {
-            const data = await getAllOrders();
+            const data = await getAllUsers()
             if (data) {
                 setLoading(false);
-                setOrders(data);
+                setUsers(data);
             } else {
                 throw new Error();
             }
@@ -37,59 +37,46 @@ export const OrderList = (props) => {
 
     const modalOpen = () => {
         setModalShow(true);
-    };
+    }
 
     const modalClose = () => {
         setModalShow(false);
-    };
+    }
 
-    const editOrder = (data) => {
+    const editUser = (data) => {
         console.log(data);
-        setOrder(data);
-        setIsEditOrder(true);
+        setUser(data);
+        setIsEditUser(true);
         setModalShow(true);
-    };
+    }
 
     const onSave = async () => {
         setModalShow(false);
-        getOrders();
-    };
+        getUsers();
+    }
 
     const handleCloseSnack = () => {
         setSnackBarOpen(false);
     };
-
     const columns = [
+        { title: "用户名", field: "username" },
+        { title: "姓名", field: "name" },
         {
-            title: "订单ID", field: "_id",
+            title: "创建时间", field: "timeStamp",
             render: rowData => {
-                return (
-                    <Button variant="link" onClick={() => {
-                        props.history.replace({
-                            pathname: '/order/orderDetails',
-                            state: rowData
-                        })
-                    }}>{rowData._id}</Button>
-                )
-            }
-        },
-        { title: "总价", field: "total" },
-        {
-            title: "创建时间", field: "created",
-            render: rowData => {
-                return getLocalTime(rowData.created);
+                return getLocalTime(rowData.timeStamp);
             }
         },
         {
-            title: "状态", field: "isActive",
+            title: "状态", field: "status",
             render: rowData => {
-                if (rowData.isActive == 1) {
+                if (rowData.status == 1) {
                     return (
-                        <span style={{ color: "green", fontWeight: "bolder" }}>已生效</span>
+                        <span style={{ color: "green", fontWeight: "bolder" }}>正常</span>
                     )
                 } else {
                     return (
-                        <span style={{ color: "red", fontWeight: "bolder" }}>已取消</span>
+                        <span style={{ color: "red", fontWeight: "bolder" }}>停用</span>
                     )
                 }
             }
@@ -97,7 +84,7 @@ export const OrderList = (props) => {
     ];
 
     useEffect(() => {
-        getOrders();
+        getUsers();
     }, []);
 
     return (
@@ -108,7 +95,7 @@ export const OrderList = (props) => {
                     <Spinner style={{
                         display: "block", marginLeft: "auto",
                         marginRight: "auto", height: "50px", width: "50px"
-                    }} animation="border" variant="primary" />
+                    }} animation="buser" variant="primary" />
                     <p style={{
                         display: "block", marginLeft: "auto",
                         marginRight: "auto", textAlign: "center"
@@ -116,14 +103,14 @@ export const OrderList = (props) => {
                 </div>
                 :
                 <div>
-                    <MaterialTable style={{ marginTop: "15px" }} title="订单列表" data={orders}
+                    <MaterialTable style={{ marginTop: "15px" }} title="用户列表" data={users}
                         columns={columns}
                         actions={[
                             {
                                 icon: "edit",
                                 tooltip: "edit",
                                 onClick: async (event, rowData) => {
-                                    editOrder(rowData)
+                                    editUser(rowData)
                                 }
                             },
                         ]}
@@ -135,13 +122,13 @@ export const OrderList = (props) => {
                         localization={localization}
                     >
                     </MaterialTable>
-                    <OrderForm
+                    <UserDetails
                         onHide={() => { modalClose() }}
                         show={modalShow}
                         onSave={onSave}
-                        isEditOrder={isEditOrder}
-                        data={order}
-                    ></OrderForm>
+                        isEditUser={isEditUser}
+                        data={user}
+                    ></UserDetails>
                     <Snackbar open={snackBarOpen} message="Successfully Deleted"
                         autoHideDuration={3500} onClose={handleCloseSnack}>
                     </Snackbar>
@@ -150,4 +137,4 @@ export const OrderList = (props) => {
         </div>
     )
 }
-export default OrderList
+export default UserList

@@ -1,31 +1,31 @@
 import React, { useState, useEffect } from "react"
 import MaterialTable from "material-table"
-//import { getAllCategory, deleteCategory, deleteSubCategory } from "./../services/categoryService"
+//import { getAllDiscount, deleteDiscount, deleteSubDiscount } from "./../services/discountService"
 import { Button, Spinner } from "react-bootstrap"
-import "./categoryList.css"
-import CategoryForm from "./categoryForm"
+import "./discountList.css"
+import DiscountForm from "./discountForm"
 import Snackbar from "@material-ui/core/Snackbar"
 import NavBar from "./../components/navBar"
 import { url, jwt, userId } from "./../constants/auth";
 import localization from "../localization";
 import { TokenProivder, useToken } from "../store";
-import { getCategoryList } from "../services/categoryService";
+import { getDiscountList } from "../services/discountService";
 
-export const CategoryList = (props) => {
-    const [categoryList, setCategoryList] = useState([])
+export const DiscountList = (props) => {
+    const [discountList, setDiscountList] = useState([])
     const [modalShow, setModalShow] = useState(false)
-    const [isEditCategory, setIsEditCategory] = useState(false)
-    const [category, setCategory] = useState({})
+    const [isEditDiscount, setIsEditDiscount] = useState(false)
+    const [discount, setDiscount] = useState({})
     const [snackBarOpen, setSnackBarOpen] = useState(false)
     const [loading, setLoading] = useState(true);
     const { state, dispatch } = useToken();
 
-    const getCategory = async () => {
+    const getDiscount = async () => {
         try {
-            const data = await getCategoryList();
+            const data = await getDiscountList();
             if (data) {
                 setLoading(false);
-                setCategoryList(data);
+                setDiscountList(data);
             } else {
                 throw new Error();
             }
@@ -40,7 +40,7 @@ export const CategoryList = (props) => {
     const columns = [{ title: "分类名称", field: "name" }]
 
     const modalOpen = () => {
-        setIsEditCategory(false);
+        setIsEditDiscount(false);
         setModalShow(true);
     }
     const modalClose = () => {
@@ -48,19 +48,19 @@ export const CategoryList = (props) => {
     }
     const onSave = async () => {
         setModalShow(false);
-        getCategory();
+        getDiscount();
     }
     const editActive = (data) => {
-        setCategory(data);
-        setIsEditCategory(true);
+        setDiscount(data);
+        setIsEditDiscount(true);
         setModalShow(true);
     }
 
-    const deleteCategory = async (categoryId) => {
+    const deleteDiscount = async (discountId) => {
         return new Promise(async (resolve, reject) => {
             try {
                 const token = localStorage.getItem("token");
-                fetch(url + "/category/delete/" + categoryId, {
+                fetch(url + "/discount/delete/" + discountId, {
                     method: "DELETE",
                     headers: {
                         "Content-Type": "application/json",
@@ -94,7 +94,7 @@ export const CategoryList = (props) => {
     }
 
     useEffect(() => {
-        getCategory();
+        getDiscount();
     }, []);
 
     return (
@@ -113,13 +113,13 @@ export const CategoryList = (props) => {
                 </div>
                 :
                 <div>
-                    <Button style={{ margin: "10px 30px" }} onClick={() => modalOpen()}>添加分类</Button>
-                    <MaterialTable title="分类" data={categoryList}
+                    <Button style={{ margin: "10px 30px" }} onClick={() => modalOpen()}>添加折扣</Button>
+                    <MaterialTable title="折扣" data={discountList}
                         columns={columns}
                         actions={[
                             {
                                 icon: "edit",
-                                tooltip: "编辑分类",
+                                tooltip: "编辑折扣",
                                 onClick: async (event, rowData) => {
                                     editActive(rowData)
                                 }
@@ -128,10 +128,10 @@ export const CategoryList = (props) => {
                         editable={{
                             onRowDelete: selectedRow => new Promise(async (resolve, reject) => {
                                 const id = selectedRow._id
-                                const res = await deleteCategory(id)
+                                const res = await deleteDiscount(id)
                                 if (res) {
                                     setSnackBarOpen(true)
-                                    getCategory()
+                                    getDiscount()
                                     resolve();
                                 } else {
                                     reject();
@@ -150,13 +150,13 @@ export const CategoryList = (props) => {
                 </div>
             }
 
-            <CategoryForm
+            <DiscountForm
                 onHide={() => { modalClose() }}
                 show={modalShow}
                 onSave={onSave}
-                isEditCategory={isEditCategory}
-                data={category}
-            ></CategoryForm>
+                isEditDiscount={isEditDiscount}
+                data={discount}
+            ></DiscountForm>
 
             <Snackbar open={snackBarOpen} message="删除成功"
                 autoHideDuration={3500} onClose={handleCloseSnack}>
@@ -164,4 +164,4 @@ export const CategoryList = (props) => {
         </div>
     )
 }
-export default CategoryList;
+export default DiscountList;

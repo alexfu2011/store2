@@ -9,7 +9,7 @@ const Product = ({ products_data }) => {
       <Link to={`/product/${products_data._id}`}>
         <Image src={"/" + products_data.image} fluid />
       </Link>
-      <Link to={`/product/${products_data._id}`}>
+      <Link to={`/product/id/${products_data._id}`}>
         <h3>{products_data.name}</h3>
       </Link>
       {products_data.price}元

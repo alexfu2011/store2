@@ -3,15 +3,17 @@ import LoginPage from "./auth/login";
 import { Route, Switch, BrowserRouter, Redirect } from "react-router-dom"
 import { Home } from "./home/home";
 import { Product } from "./products/product";
-import { OrderList } from "./orders/orderList"
-import CategoryList from "./category/categoryList";
+import { OrderList } from "./orders/orderList";
+import { OrderDetails } from "./orders/orderDetails";
+import { CategoryList } from "./category/categoryList";
+import { DiscountList } from "./discount/discountList";
+import { UserList } from "./user/userList";
 import "react-bootstrap-table-next/dist/react-bootstrap-table2.min.css";
 import { url } from "./constants/auth";
 import React, { useEffect, useState } from "react";
 import { TokenProivder, useToken } from "./store";
 
 const SecuredRoute = (props) => {
-  const [res, setRes] = useState(true);
   const { state, dispatch } = useToken();
 
   const getToken = () => {
@@ -31,8 +33,7 @@ const SecuredRoute = (props) => {
           if (!data.token) {
             reject(false);
           } else {
-            localStorage.setItem("token", data.token);
-            resolve(true);
+            resolve(data.token);
           }
         }).catch(err => {
           console.log(err);
@@ -46,14 +47,15 @@ const SecuredRoute = (props) => {
   }
 
   useEffect(() => {
-    getToken().then((res) => setRes(res)).catch((err) => {
+    getToken().then(token => {
+      localStorage.setItem("token", token);
+    }).catch(() => {
       dispatch({ type: "LOGOUT" });
-      setRes(false);
     });
   }, []);
 
   return (
-    <Route path={props.path} render={(data) => res ?
+    <Route path={props.path} render={(data) => state.token ?
       <props.component {...data}></props.component> :
       <Redirect to={{ pathname: "/login" }}></Redirect>
     }></Route>
@@ -71,6 +73,9 @@ function App() {
           <SecuredRoute exact path="/product" component={Product} />
           <SecuredRoute exact path="/order" component={OrderList} />
           <SecuredRoute exact path="/category" component={CategoryList} />
+          <SecuredRoute exact path="/discount" component={DiscountList} />
+          <SecuredRoute exact path="/user" component={UserList} />
+          <SecuredRoute exact path='/order/orderDetails' component={OrderDetails} />
         </Switch>
       </BrowserRouter>
     </TokenProivder>

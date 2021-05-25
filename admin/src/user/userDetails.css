@@ -1,0 +1,46 @@
+
+.product_quantity{
+    padding-left:30px ;
+    
+}
+.titleHead{
+    background-color: #F6F6F6;
+    padding: 0 5px;
+}
+.titleHead h4 {
+    margin: 5px;
+}
+.title{
+    margin: 5px 0;
+    overflow-wrap: anywhere;
+}       
+.box{
+    border: 1px solid #F9F9F9;
+    margin:10px
+}
+
+.line{
+    margin-left:  250px;
+    width: 100px;
+    border-top: 1px solid black;
+}
+.success{
+    background-color: rgb(99, 223, 99);
+    border-radius: 30px;
+}
+.warn{
+    background-color: yellow;
+    border-radius: 30px;
+    padding: 2px;
+}
+.danger{
+    color: red;
+}
+
+.form-control {
+    margin: 10px 0;
+}
+
+.name {
+    margin: 15px 0;
+}

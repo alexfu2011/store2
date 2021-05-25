@@ -16,6 +16,17 @@ router.get("/", async (req, res) => {
     }
 });
 
+router.get("/list", auth.isAuth, async (req, res) => {
+    try {
+        const categories = await Category.find({});
+        res.status(200).json(categories);
+    } catch {
+        res.status(400).json({
+            error: "Your request could not be processed. Please try again."
+        });
+    }
+});
+
 router.post("/add", auth.isAuth, jsonParser, async (req, res) => {
     try {
         const userId = req.session._userId;

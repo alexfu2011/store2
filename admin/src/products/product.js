@@ -8,6 +8,7 @@ import { url, jwt, userId } from './../constants/auth';
 import localization from "../localization";
 import ProductForm from "./productForm";
 import { TokenProivder, useToken } from "../store";
+import { getProductList } from "../services/productService";
 
 export const Product = (props) => {
     const [productList, setProductList] = useState([]);
@@ -55,46 +56,20 @@ export const Product = (props) => {
         });
     };
 
-    const getProductList = () => {
-        return new Promise((resolve, reject) => {
-            try {
-                const token = localStorage.getItem("token");
-                fetch(url + '/product', {
-                    headers: {
-                        'Content-Type': 'application/json',
-                        authorization: `Bearer ${token}`
-                    }
-                }).then(res => {
-                    if (res.status === 200) {
-                        return res.json();
-                    } else if (res.status === 400) {
-                        throw new Error("request error");
-                    } else if (res.status === 401) {
-                        throw new Error("not login");
-                    } else {
-                        throw new Error("server error");
-                    }
-                }).then(data => {
-                    resolve(data);
-                }).catch(err => {
-                    reject(false);
-                });
-            } catch (err) {
-                reject(false);
-            }
-        });
-    };
-
     const getProduct = async () => {
-        const data = await getProductList();
-        if (data) {
-            setLoading(false);
-            setProductList(data);
-        }
-        else {
+        try {
+            const data = await getProductList();
+            if (data) {
+                setLoading(false);
+                setProductList(data);
+            } else {
+                throw new Error();
+            }
+        } catch {
             dispatch({ type: "LOGOUT" });
         }
     };
+    
     const handleClose = () => {
         setBarOpen(false)
     };
@@ -164,7 +139,7 @@ export const Product = (props) => {
                     <div style={{ margin: '10px 20px' }}>
                         <Button style={{ margin: "10px 30px" }} onClick={() => modalOpen()}>添加产品</Button>
                     </div>
-                    <MaterialTable style={{ margin: '15px' }} title="产品列表" data={productList} columns={columns}
+                    <MaterialTable style={{ margin: '15px' }} title="产品" data={productList} columns={columns}
                         actions={[
                             {
                                 icon: "edit",
