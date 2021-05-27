@@ -11,9 +11,11 @@ const tokenReducer = (state, action) => {
     switch (action.type) {
         case "SET_TOKEN":
             currentState.token = action.payload;
+            localStorage.setItem("token", action.payload);
             return currentState;
         case "LOGOUT":
             currentState.token = null;
+            localStorage.setItem("token", "");
             return currentState;
         default:
             throw new Error();

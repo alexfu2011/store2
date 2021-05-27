@@ -10,6 +10,7 @@ import { url, jwt, userId } from "./../constants/auth";
 import localization from "../localization";
 import { TokenProivder, useToken } from "../store";
 import { getCategoryList } from "../services/categoryService";
+import { getToken } from "../services/authService";
 
 export const CategoryList = (props) => {
     const [categoryList, setCategoryList] = useState([])
@@ -94,7 +95,13 @@ export const CategoryList = (props) => {
     }
 
     useEffect(() => {
-        getCategory();
+        getCategory().then(() => {
+            getToken().then(token => {
+                dispatch({ type: "SET_TOKEN", payload: token });
+            }).catch(() => {
+                dispatch({ type: "LOGOUT" });
+            });
+        });
     }, []);
 
     return (
@@ -113,8 +120,8 @@ export const CategoryList = (props) => {
                 </div>
                 :
                 <div>
-                    <Button style={{ margin: "10px 30px" }} onClick={() => modalOpen()}>添加分类</Button>
-                    <MaterialTable title="分类" data={categoryList}
+                    <Button style={{ margin: "20px" }} onClick={() => modalOpen()}>添加分类</Button>
+                    <MaterialTable title="分类列表" data={categoryList}
                         columns={columns}
                         actions={[
                             {

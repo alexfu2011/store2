@@ -4,8 +4,10 @@ const { Schema } = Mongoose;
 module.exports = Mongoose.model("User", Schema({
     username: String,
     name: String,
-    telephone: String,
+    phone: String,
     address: String,
+    province: String,
+    city: String,
     email: String,
     password: String,
     description: String,

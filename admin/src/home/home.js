@@ -1,10 +1,10 @@
 import React, { useState, useEffect } from 'react';
 import NavBar from './../components/navBar';
-import { Col, Row, Spinner } from 'react-bootstrap';
-import { url, jwt, userId } from './../constants/auth';
-import { TokenProivder, useToken } from "../store";
+import { Spinner } from 'react-bootstrap';
+import { useToken } from "../store";
 import { getHome } from "../services/homeService";
 import './home.css';
+import { getToken } from "../services/authService";
 
 export const Home = (props) => {
     const [data, setData] = useState({
@@ -12,9 +12,7 @@ export const Home = (props) => {
         'TotalOrders': 0
     });
     const [loading, setLoading] = useState(true);
-    const [dbError, setDbError] = useState(false);
-    const [snackBarOpen, setSnackBarOpen] = useState(false);
-    const { state, dispatch } = useToken();
+    const { dispatch } = useToken();
 
     const getValues = async () => {
         try {
@@ -31,7 +29,13 @@ export const Home = (props) => {
     };
 
     useEffect(() => {
-        getValues();
+        getValues().then(() => {
+            getToken().then(token => {
+                dispatch({ type: "SET_TOKEN", payload: token });
+            }).catch(() => {
+                dispatch({ type: "LOGOUT" });
+            });
+        });
     }, []);
 
     return (
@@ -49,25 +53,25 @@ export const Home = (props) => {
                     }}>加载中</p>
                 </div>
                 :
-                <div class="container-fluid my-4">
-                    <div class="row">
-                        <div class="col-12 col-md-6 col-xl d-flex">
-                            <div class="card flex-fill">
-                                <div class="card-body py-4">
-                                    <div class="float-right text-danger">
+                <div className="container-fluid my-4">
+                    <div className="row">
+                        <div className="col-12 col-md-6 col-xl d-flex">
+                            <div className="card flex-fill">
+                                <div className="card-body py-4">
+                                    <div className="float-right text-danger">
                                     </div>
-                                    <h4 class="mb-2">产品</h4>
+                                    <h4 className="mb-2">产品</h4>
                                     <span style={{ color: "green" }}>{data.TotalActiveProducts || 0} 已上架</span>，
                                             <span style={{ color: "red" }}>{data.TotalInactiveProducts || 0} 已下架</span>
                                 </div>
                             </div>
                         </div>
-                        <div class="col-12 col-md-6 col-xl d-flex">
-                            <div class="card flex-fill">
-                                <div class="card-body py-4">
-                                    <div class="float-right text-success">
+                        <div className="col-12 col-md-6 col-xl d-flex">
+                            <div className="card flex-fill">
+                                <div className="card-body py-4">
+                                    <div className="float-right text-success">
                                     </div>
-                                    <h4 class="mb-2">订单</h4>
+                                    <h4 className="mb-2">订单</h4>
                                     <span style={{ color: "green" }}>{data.TotalActiveOrders || 0} 已生效</span>，
                                             <span style={{ color: "red" }}>{data.TotalInactiveOrders || 0} 无效</span>
                                 </div>

@@ -2,9 +2,12 @@ import { url } from '../constants/auth';
 
 export const getHome = () => {
     return new Promise((resolve, reject) => {
+        const token = localStorage.getItem("token");
         fetch(url + '/home', {
-            method: 'GET', headers: {
+            method: 'GET', 
+            headers: {
                 'Content-Type': 'application/json',
+                authorization: `Bearer ${token}`
             }
         }).then(res => {
             if (res.status === 200) {

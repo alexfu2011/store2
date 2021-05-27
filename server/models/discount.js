@@ -7,7 +7,10 @@ const DiscountSchema = new Schema({
   quantity: Number,
   from: Date,
   to: Date,
-  name: String,
+  isActive: {
+      type: Number,
+      default: 1
+  },
   created: {
     type: Date,
     default: Date.now

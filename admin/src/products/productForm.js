@@ -2,8 +2,7 @@ import React, { useState, useEffect } from 'react'
 import { Form, Col, Modal, Button, Spinner } from 'react-bootstrap';
 import Snackbar from '@material-ui/core/Snackbar';
 import { url, jwt, userId } from "./../constants/auth";
-
-import axios from 'axios';
+import "./productForm.css";
 
 export const ProductForm = ({ onSave, isEditProduct, data, ...props }) => {
     const styles = {
@@ -13,10 +12,11 @@ export const ProductForm = ({ onSave, isEditProduct, data, ...props }) => {
     const handleCloseSnack = () => {
         setSnackBarOpen(false);
     };
-    const [category, setCategory] = useState(null)
+    const [category, setCategory] = useState(null);
     const [formf, setForm] = useState({ name: "", category: { _id: "" }, brandName: "", summary: "", description: "", price: "", stock: "", isActive: 1 });
     const [isEdit, setIsEdit] = useState(false);
     const [errorDb, setErrorDb] = useState(false);
+    const [image, setImage] = useState("");
 
     const addProduct = async () => {
         try {
@@ -50,7 +50,7 @@ export const ProductForm = ({ onSave, isEditProduct, data, ...props }) => {
                 return false;
             }
         }
-    }
+    };
 
     const updateProduct = async () => {
         try {
@@ -84,7 +84,7 @@ export const ProductForm = ({ onSave, isEditProduct, data, ...props }) => {
                 return false;
             }
         }
-    }
+    };
 
     const getCategory = async () => {
         return new Promise(async (resolve, reject) => {
@@ -120,7 +120,8 @@ export const ProductForm = ({ onSave, isEditProduct, data, ...props }) => {
         } catch (err) {
             console.log(err);
         }
-    }
+    };
+
     useEffect(() => {
         if (isEditProduct) {
             setForm(data);
@@ -130,8 +131,7 @@ export const ProductForm = ({ onSave, isEditProduct, data, ...props }) => {
             setIsEdit(false);
         }
         getValues();
-        setValidated(false)
-        setStoreError(false)
+        setValidated(false);
     }, [isEditProduct, data]);
 
     const setField = async (field, value) => {
@@ -139,7 +139,7 @@ export const ProductForm = ({ onSave, isEditProduct, data, ...props }) => {
             ...formf,
             [field]: value
         })
-    }
+    };
 
     const [validated, setValidated] = useState(false);
     const [storeError, setStoreError] = useState(false);
@@ -166,11 +166,11 @@ export const ProductForm = ({ onSave, isEditProduct, data, ...props }) => {
                 }
             }
         }
-    }
+    };
 
     return (
         <div>
-            <Modal centered {...props}>
+            <Modal centered {...props} onHide={() => { setImage(""); props.onHide(); }}>
                 <Form noValidate validated={validated} onSubmit={handleSubmit}>
                     <Modal.Header closeButton>{isEdit ? "编辑产品" : "添加产品"}</Modal.Header>
                     <Modal.Body>
@@ -254,26 +254,27 @@ export const ProductForm = ({ onSave, isEditProduct, data, ...props }) => {
                             </Form.Group>
                         </Form.Row>
                         <Form.Row>
+                            <Form.Group as={Col} className="preview">
+                                {image ? <img src={image} alt="1" /> : (isEdit ? <img src={formf.image} alt="2" /> : "")}
+                            </Form.Group>
+                        </Form.Row>
+                        <Form.Row>
                             <Form.Group as={Col}>
                                 <Form.Label>产品图片</Form.Label>
-                                <Form.File value={formf.url} onChange={(e) => setField("image", e.target.files[0])} placeholder="Enter the url" />
+                                <Form.File value={formf.url} onChange={(e) => {
+                                    setImage(e.target.files[0]);
+                                    setImage(URL.createObjectURL(e.target.files[0]));
+                                }} placeholder="Enter the url" />
                                 <Form.Control.Feedback type="invalid">
                                     请上传产品图片
                                 </Form.Control.Feedback>
                             </Form.Group>
                         </Form.Row>
-                        {isEdit && formf.image && <img
-                            src={formf.image}
-                            height="50px"
-                            width="50px"
-                            alt="added_image"
-                        />}
-                        <br></br>
                     </Modal.Body>
                     <Modal.Footer>
                         {errorDb && <p><p style={{ color: "red" }}>无法{isEdit ? "更新" : "保存"}数据</p></p>}
                         <Button type="submit">{isEdit ? "更新" : "保存"}</Button>
-                        <Button onClick={() => { props.onHide() }}>关闭</Button>
+                        <Button onClick={() => { setImage(""); props.onHide(); }}>关闭</Button>
                     </Modal.Footer>
                 </Form>
             </Modal>
@@ -281,6 +282,6 @@ export const ProductForm = ({ onSave, isEditProduct, data, ...props }) => {
                 autoHideDuration={3500} onClose={handleCloseSnack}>
             </Snackbar>
         </div>
-    )
+    );
 }
 export default ProductForm;

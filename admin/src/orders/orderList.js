@@ -6,9 +6,11 @@ import NavBar from "../components/navBar"
 import { url, jwt, userId } from "./../constants/auth";
 import OrderForm from "./orderForm"
 import localization from "../localization";
-import { getLocalTime } from "../utils/time";
 import { TokenProivder, useToken } from "../store";
 import { getAllOrders } from "../services/orderService";
+import dateFormat from 'dateformat';
+import TabBar from '../components/tabBar';
+import { getToken } from "../services/authService";
 
 export const OrderList = (props) => {
     const [modalShow, setModalShow] = useState(false);
@@ -77,7 +79,7 @@ export const OrderList = (props) => {
         {
             title: "创建时间", field: "created",
             render: rowData => {
-                return getLocalTime(rowData.created);
+                return dateFormat(rowData.created, "yyyy-mm-dd hh:mm:ss");
             }
         },
         {
@@ -97,12 +99,18 @@ export const OrderList = (props) => {
     ];
 
     useEffect(() => {
-        getOrders();
+        getOrders().then(() => {
+            getToken().then(token => {
+                dispatch({ type: "SET_TOKEN", payload: token });
+            }).catch(() => {
+                dispatch({ type: "LOGOUT" });
+            });
+        });
     }, []);
 
     return (
         <div>
-            <NavBar></NavBar>
+            <TabBar></TabBar>
             {loading ?
                 <div style={{ width: "100%", height: "100px", marginTop: "300px" }} >
                     <Spinner style={{
@@ -119,13 +127,13 @@ export const OrderList = (props) => {
                     <MaterialTable style={{ marginTop: "15px" }} title="订单列表" data={orders}
                         columns={columns}
                         actions={[
-                            {
-                                icon: "edit",
-                                tooltip: "edit",
+                            rowData => ({
+                                disabled: rowData.isActive == 2,
+                                icon: 'settings',
                                 onClick: async (event, rowData) => {
                                     editOrder(rowData)
                                 }
-                            },
+                            }),
                         ]}
                         options={{
                             actionsColumnIndex: -1,

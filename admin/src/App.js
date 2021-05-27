@@ -12,50 +12,16 @@ import "react-bootstrap-table-next/dist/react-bootstrap-table2.min.css";
 import { url } from "./constants/auth";
 import React, { useEffect, useState } from "react";
 import { TokenProivder, useToken } from "./store";
+import { getToken } from "./services/authService";
 
 const SecuredRoute = (props) => {
   const { state, dispatch } = useToken();
 
-  const getToken = () => {
-    return new Promise((resolve, reject) => {
-      try {
-        fetch(url + "/auth/token", {
-          method: "POST", credentials: "include", headers: {
-            "Content-Type": "application/json",
-          }
-        }).then(res => {
-          if (res.status === 200) {
-            return res.json();
-          } else {
-            throw new Error();
-          }
-        }).then(data => {
-          if (!data.token) {
-            reject(false);
-          } else {
-            resolve(data.token);
-          }
-        }).catch(err => {
-          console.log(err);
-          reject(false);
-        });
-      } catch (err) {
-        console.log(err);
-        reject(false);
-      }
-    });
-  }
-
   useEffect(() => {
-    getToken().then(token => {
-      localStorage.setItem("token", token);
-    }).catch(() => {
-      dispatch({ type: "LOGOUT" });
-    });
   }, []);
 
   return (
-    <Route path={props.path} render={(data) => state.token ?
+    <Route path={props.path} render={(data) => localStorage.getItem('token') ?
       <props.component {...data}></props.component> :
       <Redirect to={{ pathname: "/login" }}></Redirect>
     }></Route>

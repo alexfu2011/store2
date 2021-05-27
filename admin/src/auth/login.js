@@ -34,7 +34,7 @@ export const LoginPage = (props) => {
       }
       dispatch({type: "SET_TOKEN", payload: data.token});
       localStorage.setItem("token", data.token);
-      props.history.push('/order');
+      props.history.push('/home');
     }).catch(() => { });
   }
 

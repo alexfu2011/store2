@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from "react"
 import MaterialTable from "material-table"
-//import { getAllDiscount, deleteDiscount, deleteSubDiscount } from "./../services/discountService"
 import { Button, Spinner } from "react-bootstrap"
 import "./discountList.css"
 import DiscountForm from "./discountForm"
@@ -10,6 +9,8 @@ import { url, jwt, userId } from "./../constants/auth";
 import localization from "../localization";
 import { TokenProivder, useToken } from "../store";
 import { getDiscountList } from "../services/discountService";
+import dateFormat from 'dateformat';
+import { getToken } from "../services/authService";
 
 export const DiscountList = (props) => {
     const [discountList, setDiscountList] = useState([])
@@ -37,7 +38,37 @@ export const DiscountList = (props) => {
     const handleCloseSnack = () => {
         setSnackBarOpen(false)
     }
-    const columns = [{ title: "分类名称", field: "name" }]
+    const columns = [
+        { title: "折扣码", field: "code" },
+        { title: "折扣比率", field: "percentage" },
+        { title: "折扣数量", field: "quantity" },
+        {
+            title: "开始日期", field: "from",
+            render: rowData => {
+                return dateFormat(rowData.from, "yyyy-mm-dd")
+            }
+        },
+        {
+            title: "结束日期", field: "to",
+            render: rowData => {
+                return dateFormat(rowData.to, "yyyy-mm-dd")
+            }
+        },
+        {
+            title: "状态", field: "isActive",
+            render: rowData => {
+                if (rowData.isActive == 1) {
+                    return (
+                        <span style={{ color: "green", fontWeight: "bolder" }}>有效</span>
+                    )
+                } else {
+                    return (
+                        <span style={{ color: "red", fontWeight: "bolder" }}>无效</span>
+                    )
+                }
+            }
+        }
+    ];
 
     const modalOpen = () => {
         setIsEditDiscount(false);
@@ -94,7 +125,13 @@ export const DiscountList = (props) => {
     }
 
     useEffect(() => {
-        getDiscount();
+        getDiscount().then(() => {
+            getToken().then(token => {
+                dispatch({ type: "SET_TOKEN", payload: token });
+            }).catch(() => {
+                dispatch({ type: "LOGOUT" });
+            });
+        });
     }, []);
 
     return (
@@ -113,8 +150,8 @@ export const DiscountList = (props) => {
                 </div>
                 :
                 <div>
-                    <Button style={{ margin: "10px 30px" }} onClick={() => modalOpen()}>添加折扣</Button>
-                    <MaterialTable title="折扣" data={discountList}
+                    <Button style={{ margin: "30px" }} onClick={() => modalOpen()}>添加折扣</Button>
+                    <MaterialTable title="折扣列表" data={discountList}
                         columns={columns}
                         actions={[
                             {

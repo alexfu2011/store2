@@ -42,72 +42,71 @@ export default function ProductScreen({ history, match }) {
         <Message variant='danger'>{error}</Message>
       ) : (
         <div>
-        <h3>{product.name}</h3>
-        <Row>
-          <Col md={9}>
-            <Image src={"/"+product.image} alt={product.image} fluid className="mb-4"/>
-          </Col>
-
-          <Col md={3}>
-            <Card>
-              <ListGroup variant='flush'>
-                <ListGroup.Item>
-                  <Row>
-                    <Col>价格：</Col>
-                    <Col>
-                      <strong>{product.price}</strong>
-                    </Col>
-                  </Row>
-                </ListGroup.Item>
-                <ListGroup.Item>
-                  <Row>
-                    <Col>库存：</Col>
-                    <Col>
-                      {product.countInStock > 0 ? <p style={{ color: "green", fontWeight: "bolder" }}>有库存</p> : <span style={{ color: "red", fontWeight: "bolder" }}>断货</span>}
-                    </Col>
-                  </Row>
-                </ListGroup.Item>
-              <ListGroup.Item className="text-center">
-                <Rating
-                  value={product.rating || 0}
-                  text={` ${product.numReviews || 0} 好评`}
-                />
-              </ListGroup.Item>
-                {product.countInStock > 0 && (
+          <h3>{product.name}</h3>
+          <Row>
+            <Col md={9}>
+              <Image src={"/" + product.image} alt={product.image} fluid className="mb-4" />
+            </Col>
+            <Col md={3}>
+              <Card>
+                <ListGroup variant='flush'>
                   <ListGroup.Item>
                     <Row>
-                      <Col>数量：</Col>
+                      <Col>价格：</Col>
                       <Col>
-                        <Form.Control
-                          as='select'
-                          value={qty}
-                          onChange={(e) => setQty(e.target.value)}
-                        >
-                          {[...Array(product.countInStock).keys()].map((x) => (
-                            <option key={x + 1} value={x + 1}>
-                              {x + 1}
-                            </option>
-                          ))}
-                        </Form.Control>
+                        <strong>{product.price}</strong>
                       </Col>
                     </Row>
                   </ListGroup.Item>
-                )}
-                <ListGroup.Item>
-                  <Button
-                    onClick={addToCartHandler}
-                    className='btn btn-block'
-                    type='button'
-                    disabled={product.countInStock === 0}
-                  >
-                    添加购物车
+                  <ListGroup.Item>
+                    <Row>
+                      <Col>库存：</Col>
+                      <Col>
+                        {product.stock > 0 ? <span style={{ color: "green", fontWeight: "bolder" }}>有库存</span> : <span style={{ color: "red", fontWeight: "bolder" }}>断货</span>}
+                      </Col>
+                    </Row>
+                  </ListGroup.Item>
+                  <ListGroup.Item className="text-center">
+                    <Rating
+                      value={product.rating || 0}
+                      text={` ${product.numReviews || 0} 好评`}
+                    />
+                  </ListGroup.Item>
+                  {product.stock > 0 && (
+                    <ListGroup.Item>
+                      <Row>
+                        <Col>数量：</Col>
+                        <Col>
+                          <Form.Control
+                            as='select'
+                            value={qty}
+                            onChange={(e) => setQty(e.target.value)}
+                          >
+                            {[...Array(product.stock).keys()].map((x) => (
+                              <option key={x + 1} value={x + 1}>
+                                {x + 1}
+                              </option>
+                            ))}
+                          </Form.Control>
+                        </Col>
+                      </Row>
+                    </ListGroup.Item>
+                  )}
+                  <ListGroup.Item>
+                    <Button
+                      onClick={addToCartHandler}
+                      className='btn btn-block'
+                      type='button'
+                      disabled={product.stock <= 0}
+                    >
+                      添加购物车
                   </Button>
-                </ListGroup.Item>
-              </ListGroup>
-            </Card>
-          </Col>
-        </Row>
-        <p style={{ "margin-top": "20px" }}>{product.description}</p>
+                  </ListGroup.Item>
+                </ListGroup>
+              </Card>
+            </Col>
+          </Row>
+          <p style={{ "margin-top": "20px" }}>{product.description}</p>
         </div>
       )}
     </>

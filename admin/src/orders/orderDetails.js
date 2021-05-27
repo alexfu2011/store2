@@ -18,12 +18,10 @@ export const OrderDetails = (props) => {
     const [note, setNote] = useState('')
     const [status, setStatus] = useState(null)
     const [validated, setValidated] = useState(false)
-    const [mailSending, setMailSending] = useState({ loading: false, sent: false })
     const orderDetails = {
         margin: "20px",
         marginLeft: "30px",
-        backgroundColor: "#fff",
-
+        backgroundColor: "#fff"
     }
     const saveNote = (value) => {
         setNote(value)
@@ -53,12 +51,6 @@ export const OrderDetails = (props) => {
             })
         }
 
-    }
-    const handleMail = async () => {
-        if (note === '') {
-            setValidated(true)
-        } else {
-        }
     };
     
     useEffect(() => {
@@ -120,7 +112,7 @@ export const OrderDetails = (props) => {
                                     <Row><h3>订单详情</h3></Row>
                                     <Row><h4>订单编号：{order._id}</h4></Row>
                                     <Row>
-                                        <Col>
+                                        <Col style={{ "padding-left": 0 }}>
                                             订单状态
                                             <Form.Control name="status" required as="select" value={order.isActive}>
                                                 <option value="">请选择状态</option>
@@ -133,7 +125,7 @@ export const OrderDetails = (props) => {
                       <div>
                                                 收件人：{order.user.name}<br />
                       地址：{order.user.address}<br />
-                      城市：{order.user.city}<br />
+                      地区：{order.user.province}{order.user.city}<br />
                                             </div>
                                         </Col>
                                         <Col>
@@ -163,14 +155,14 @@ export const OrderDetails = (props) => {
                                     <Col xs={2}>
                                         <Row>总价:</Row>
                                         <Row>税费:</Row>
-                                        <Row>运输费:</Row>
+                                        <Row>运费:</Row>
                                         <Row>折扣:</Row>
                                         <Row style={{ height: "1px", backgroundColor: '#000' }}></Row>
                                         <Row>合计:</Row>
                                     </Col>
                                     <Col xs={1}><Row>{order.total}</Row>
-                                        <Row>11</Row>
-                                        <Row>11</Row>
+                                        <Row>0</Row>
+                                        <Row>0</Row>
                                         <Row>- 11</Row>
                                         <Row style={{ height: "1px", backgroundColor: '#000' }}></Row>
                                         <Row>{order.totalPrice}</Row>

@@ -16,4 +16,56 @@ router.get('/', auth.isAuth, async (req, res) => {
   }
 });
 
+router.post("/add", auth.isAuth, jsonParser, async (req, res) => {
+  try {
+    const {
+      code,
+      percentage,
+      quantity,
+      from,
+      to
+    } = req.body;
+    const discount = new Discount({
+      code,
+      percentage,
+      quantity,
+      from,
+      to
+    });
+    await discount.save();
+    res.status(200).json(discount);
+  } catch (err) {
+    res.status(400).json({
+      error: 'Your request could not be processed. Please try again.'
+    });
+  }
+});
+
+router.put("/update/:discountId", auth.isAuth, jsonParser, async (req, res) => {
+  try {
+    const discountId = req.params.discountId;
+    const {
+      code,
+      percentage,
+      quantity,
+      from,
+      to,
+      isActive
+    } = req.body;
+    const discount = await Discount.findByIdAndUpdate(discountId, {
+      code,
+      percentage,
+      quantity,
+      from,
+      to,
+      isActive
+    });
+    res.status(200).json(discount);
+  } catch (err) {
+    res.status(400).json({
+      error: 'Your request could not be processed. Please try again.'
+    });
+  }
+});
+
 module.exports = router;

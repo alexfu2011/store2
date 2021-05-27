@@ -9,6 +9,7 @@ import localization from "../localization";
 import ProductForm from "./productForm";
 import { TokenProivder, useToken } from "../store";
 import { getProductList } from "../services/productService";
+import { getToken } from "../services/authService";
 
 export const Product = (props) => {
     const [productList, setProductList] = useState([]);
@@ -69,7 +70,7 @@ export const Product = (props) => {
             dispatch({ type: "LOGOUT" });
         }
     };
-    
+
     const handleClose = () => {
         setBarOpen(false)
     };
@@ -117,7 +118,13 @@ export const Product = (props) => {
     ];
 
     useEffect(() => {
-        getProduct();
+        getProduct().then(() => {
+            getToken().then(token => {
+                dispatch({ type: "SET_TOKEN", payload: token });
+            }).catch(() => {
+                dispatch({ type: "LOGOUT" });
+            });
+        });
     }, []);
 
     return (
@@ -136,16 +143,14 @@ export const Product = (props) => {
                 </div>
                 :
                 <div>
-                    <div style={{ margin: '10px 20px' }}>
-                        <Button style={{ margin: "10px 30px" }} onClick={() => modalOpen()}>添加产品</Button>
-                    </div>
-                    <MaterialTable style={{ margin: '15px' }} title="产品" data={productList} columns={columns}
+                    <Button style={{ margin: "20px" }} onClick={() => modalOpen()}>添加产品</Button>
+                    <MaterialTable style={{ margin: '15px' }} title="产品列表" data={productList} columns={columns}
                         actions={[
                             {
                                 icon: "edit",
                                 tooltip: "编辑产品",
                                 onClick: async (event, rowData) => {
-                                    editActive(rowData)
+                                    editActive(rowData);
                                 }
                             },
                         ]}
@@ -155,8 +160,8 @@ export const Product = (props) => {
                                 const res = await deleteProduct(id)
                                 console.log(res);
                                 if (res) {
-                                    setBarOpen(true)
-                                    getProduct()
+                                    setBarOpen(true);
+                                    getProduct();
                                     resolve();
                                 } else {
                                     reject();

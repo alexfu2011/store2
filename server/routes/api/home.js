@@ -2,8 +2,9 @@ const express = require("express");
 const Product = require("../../models/product");
 const Order = require("../../models/order");
 const router = express.Router();
+const auth = require("../../middleware/auth");
 
-router.get("/", async (req, res) => {
+router.get("/", auth.isAuth, async (req, res) => {
     try {
         const TotalActiveProducts = await Product.countDocuments({isActive: 1});
         const TotalInctiveProducts = await Product.countDocuments({isActive: 2});

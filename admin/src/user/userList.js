@@ -1,14 +1,14 @@
-import React, { useEffect, useState } from "react"
-import { Button, Spinner } from "react-bootstrap"
-import Snackbar from "@material-ui/core/Snackbar"
-import MaterialTable from "material-table"
-import NavBar from "../components/navBar"
-import { url, jwt, userId } from "./../constants/auth";
-import UserDetails from "./userDetails"
+import React, { useEffect, useState } from "react";
+import { Button, Spinner } from "react-bootstrap";
+import Snackbar from "@material-ui/core/Snackbar";
+import MaterialTable from "material-table";
+import NavBar from "../components/navBar";
+import UserDetails from "./userDetails";
 import localization from "../localization";
-import { getLocalTime } from "../utils/time";
 import { TokenProivder, useToken } from "../store";
 import { getAllUsers } from "../services/userService";
+import dateFormat from 'dateformat';
+import { getToken } from "../services/authService";
 
 export const UserList = (props) => {
     const [modalShow, setModalShow] = useState(false);
@@ -16,14 +16,14 @@ export const UserList = (props) => {
     const [isEditUser, setIsEditUser] = useState(false);
     const [user, setUser] = useState([]);
     const [dbError, setDbError] = useState(false);
-    const [snackBarOpen, setSnackBarOpen] = useState(false)
+    const [snackBarOpen, setSnackBarOpen] = useState(false);
     const [login, setLogin] = useState(false);
     const [loading, setLoading] = useState(true);
     const { state, dispatch } = useToken();
 
     const getUsers = async () => {
         try {
-            const data = await getAllUsers()
+            const data = await getAllUsers();
             if (data) {
                 setLoading(false);
                 setUsers(data);
@@ -37,34 +37,35 @@ export const UserList = (props) => {
 
     const modalOpen = () => {
         setModalShow(true);
-    }
+    };
 
     const modalClose = () => {
         setModalShow(false);
-    }
+    };
 
     const editUser = (data) => {
         console.log(data);
         setUser(data);
         setIsEditUser(true);
         setModalShow(true);
-    }
+    };
 
     const onSave = async () => {
         setModalShow(false);
         getUsers();
-    }
+    };
 
     const handleCloseSnack = () => {
         setSnackBarOpen(false);
     };
+
     const columns = [
         { title: "用户名", field: "username" },
         { title: "姓名", field: "name" },
         {
             title: "创建时间", field: "timeStamp",
             render: rowData => {
-                return getLocalTime(rowData.timeStamp);
+                return dateFormat(rowData.created, "yyyy-mm-dd hh:mm:ss");
             }
         },
         {
@@ -84,7 +85,13 @@ export const UserList = (props) => {
     ];
 
     useEffect(() => {
-        getUsers();
+        getUsers().then(() => {
+            getToken().then(token => {
+                dispatch({type: "SET_TOKEN", payload: token});
+              }).catch(() => {
+                dispatch({ type: "LOGOUT" });
+              });
+        });
     }, []);
 
     return (

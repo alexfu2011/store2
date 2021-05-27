@@ -76,9 +76,11 @@ router.post('/token', async (req, res) => {
             return res.status(400).json({ token: "" });
         }
     }
+    console.log(token);
     const session = await UserSession.findOne({ token });
     if (session) {
         const newToken = createToken(session._userId);
+        console.log(newToken);
         session.token = newToken;
         await session.save();
         res.status(200).cookie('token', newToken, {

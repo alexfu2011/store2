@@ -16,4 +16,36 @@ router.get('/', auth.isAuth, async (req, res) => {
   }
 });
 
+router.put("/update/:userId", auth.isAuth, jsonParser, async (req, res) => {
+  try {
+    const userId = req.params.userId;
+    const {
+      name,
+      phone,
+      province,
+      city,
+      address,
+      email,
+      description,
+      isActive
+    } = req.body;
+    const user = await User.findByIdAndUpdate(userId, {
+      name,
+      phone,
+      province,
+      city,
+      address,
+      email,
+      description,
+      isActive
+    });
+    res.status(200).json(user);
+  } catch (err) {
+    res.status(400).json({
+      error: 'Your request could not be processed. Please try again.'
+    });
+  }
+});
+
+
 module.exports = router;
