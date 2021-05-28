@@ -1,79 +1,24 @@
 import React, { useEffect, useState } from 'react';
 import { Button, Modal, Form, Col } from 'react-bootstrap';
 import Snackbar from '@material-ui/core/Snackbar';
-import { url, jwt, userId } from './../constants/auth';
+import { updateCategory, addCategory } from "../services/categoryService";
 
 export const CategoryForm = ({ onSave, isEditCategory, data, ...props }) => {
-    const [category, setCategory] = useState({ name: "" })
+    const [category, setCategory] = useState({ name: "" });
     const [validated, setValidated] = useState(false);
-    const [errorDb, setErrorDb] = useState(false)
-    const [isEdit, setIsEdit] = useState(false)
+    const [errorDb, setErrorDb] = useState(false);
+    const [isEdit, setIsEdit] = useState(false);
 
     const handleChange = e => {
         setCategory(category => ({ ...category, [e.target.name]: e.target.value }));
-    }
-
-    const addCategory = async () => {
-        try {
-            const token = localStorage.getItem("token");
-            const body = {
-                name: category.name,
-                active: category.active
-            };
-            const res = await fetch(url + '/category/add', {
-                method: 'POST',
-                body: JSON.stringify(body),
-                headers: {
-                    'Content-Type': 'application/json',
-                    authorization: `Bearer ${token}`
-                }
-            });
-            if (res.status === 200) {
-                return true;
-            } else if (res.status === 400 || res.status === 401) {
-                return false;
-            }
-        } catch (err) {
-            if (err) {
-                return false;
-            }
-        }
-    }
-
-    const updateCategory = async () => {
-        try {
-            const token = localStorage.getItem("token");
-            const body = {
-                _id: category._id,
-                name: category.name,
-                active: category.active
-            };
-            const res = await fetch(url + '/category/update', {
-                method: 'POST',
-                body: JSON.stringify(body),
-                headers: {
-                    'Content-Type': 'application/json',
-                    authorization: `Bearer ${token}`
-                }
-            });
-            if (res.status === 200) {
-                return true;
-            } else if (res.status === 400 || res.status === 401) {
-                return false;
-            }
-        } catch (err) {
-            if (err) {
-                return false;
-            }
-        }
-    }
+    };
 
     const handleSubmit = async (e) => {
         e.preventDefault();
         const form = e.currentTarget;
         if (form.checkValidity() === true) {
             if (isEdit) {
-                const res = await updateCategory();
+                const res = await updateCategory(category);
                 if (res) {
                     setSnackBarOpen(true);
                     onSave();
@@ -82,9 +27,9 @@ export const CategoryForm = ({ onSave, isEditCategory, data, ...props }) => {
                     setErrorDb(true);
                 }
             } else {
-                const res = await addCategory();
+                const res = await addCategory(category);
                 if (res) {
-                    setCategory({name: ""});
+                    setCategory({ name: "" });
                     setSnackBarOpen(true);
                     onSave();
                     //setValidated(false);
@@ -93,21 +38,24 @@ export const CategoryForm = ({ onSave, isEditCategory, data, ...props }) => {
                 }
             }
         }
-    }
+    };
 
     const [snackBarOpen, setSnackBarOpen] = useState(false);
+
     const handleCloseSnack = () => {
         setSnackBarOpen(false);
-    }
+    };
+
     useEffect(() => {
         if (isEditCategory) {
             setCategory(data);
             setIsEdit(true);
         } else {
-            setCategory({name: ""});
+            setCategory({ name: "" });
             setIsEdit(false);
         }
     }, [isEditCategory, data]);
+
     return (
         <div>
             <Modal centered {...props}>
@@ -119,6 +67,19 @@ export const CategoryForm = ({ onSave, isEditCategory, data, ...props }) => {
                                 <Form.Label>分类名称</Form.Label>
                                 <Form.Control required type="text" value={category.name} name="name" onChange={handleChange} placeholder="分类名称" />
                                 <Form.Control.Feedback type="invalid">请输入分类名称</Form.Control.Feedback>
+                            </Form.Group>
+                        </Form.Row>
+                        <Form.Row>
+                            <Form.Group as={Col}>
+                                <Form.Label>分类状态</Form.Label>
+                                <Form.Control required as="select" value={category.isActive} name="isActive" onChange={handleChange} >
+                                    <option value="">请选择分类状态</option>
+                                    <option value="1">有效</option>
+                                    <option value="2">无效</option>
+                                </Form.Control>
+                                <Form.Control.Feedback type="invalid">
+                                    请选择产品状态
+                                </Form.Control.Feedback>
                             </Form.Group>
                         </Form.Row>
                     </Modal.Body>

@@ -1,12 +1,10 @@
-import React, { useEffect, useState } from "react"
-import { Button, Spinner } from "react-bootstrap"
-import Snackbar from "@material-ui/core/Snackbar"
-import MaterialTable from "material-table"
-import NavBar from "../components/navBar"
-import { url, jwt, userId } from "./../constants/auth";
-import OrderForm from "./orderForm"
+import React, { useEffect, useState } from "react";
+import { Button, Spinner } from "react-bootstrap";
+import Snackbar from "@material-ui/core/Snackbar";
+import MaterialTable from "material-table";
+import OrderForm from "./orderForm";
 import localization from "../localization";
-import { TokenProivder, useToken } from "../store";
+import { useToken } from "../store";
 import { getAllOrders } from "../services/orderService";
 import dateFormat from 'dateformat';
 import TabBar from '../components/tabBar';
@@ -17,9 +15,7 @@ export const OrderList = (props) => {
     const [orders, setOrders] = useState([]);
     const [isEditOrder, setIsEditOrder] = useState(false);
     const [order, setOrder] = useState([]);
-    const [dbError, setDbError] = useState(false);
     const [snackBarOpen, setSnackBarOpen] = useState(false)
-    const [login, setLogin] = useState(false);
     const [loading, setLoading] = useState(true);
     const { state, dispatch } = useToken();
 
@@ -46,7 +42,6 @@ export const OrderList = (props) => {
     };
 
     const editOrder = (data) => {
-        console.log(data);
         setOrder(data);
         setIsEditOrder(true);
         setModalShow(true);
@@ -88,24 +83,26 @@ export const OrderList = (props) => {
                 if (rowData.isActive == 1) {
                     return (
                         <span style={{ color: "green", fontWeight: "bolder" }}>已生效</span>
-                    )
+                    );
                 } else {
                     return (
                         <span style={{ color: "red", fontWeight: "bolder" }}>已取消</span>
-                    )
+                    );
                 }
             }
         }
     ];
 
     useEffect(() => {
-        getOrders().then(() => {
-            getToken().then(token => {
-                dispatch({ type: "SET_TOKEN", payload: token });
-            }).catch(() => {
-                dispatch({ type: "LOGOUT" });
+        try {
+            getOrders().then(() => {
+                getToken().then(token => {
+                    dispatch({ type: "SET_TOKEN", payload: token });
+                });
             });
-        });
+        } catch {
+            dispatch({ type: "LOGOUT" });
+        }
     }, []);
 
     return (
@@ -131,7 +128,7 @@ export const OrderList = (props) => {
                                 disabled: rowData.isActive == 2,
                                 icon: 'settings',
                                 onClick: async (event, rowData) => {
-                                    editOrder(rowData)
+                                    editOrder(rowData);
                                 }
                             }),
                         ]}
@@ -150,7 +147,7 @@ export const OrderList = (props) => {
                         isEditOrder={isEditOrder}
                         data={order}
                     ></OrderForm>
-                    <Snackbar open={snackBarOpen} message="Successfully Deleted"
+                    <Snackbar open={snackBarOpen} message="删除成功"
                         autoHideDuration={3500} onClose={handleCloseSnack}>
                     </Snackbar>
                 </div>

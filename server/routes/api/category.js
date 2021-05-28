@@ -30,7 +30,7 @@ router.get("/list", auth.isAuth, async (req, res) => {
 router.post("/add", auth.isAuth, jsonParser, async (req, res) => {
     try {
         const userId = req.session._userId;
-        const category = new Category({_userId: userId, name: req.body.name, active: req.body.active});
+        const category = new Category({_userId: userId, name: req.body.name, isActive: req.body.isActive});
         await category.save();
         res.status(200).json({category});
     } catch {

@@ -1,10 +1,75 @@
-import { url } from '../constants/auth';
+import { url } from "../constants/auth";
 
 export const getCategoryList = () => {
     return new Promise((resolve, reject) => {
         const token = localStorage.getItem("token");
         fetch(url + "/category/list", {
             method: "GET",
+            headers: {
+                "Content-Type": "application/json",
+                authorization: `Bearer ${token}`
+            }
+        }).then(res => {
+            if (res.status === 200) {
+                return res.json();
+            } else if (res.status === 400) {
+                throw new Error("request error");
+            } else if (res.status === 401) {
+                throw new Error("not login");
+            } else {
+                throw new Error("server error");
+            }
+        }).then(data => {
+            resolve(data);
+        }).catch(err => {
+            reject(false);
+        });
+    });
+};
+
+export const addCategory = (category) => {
+    return new Promise((resolve, reject) => {
+        const token = localStorage.getItem("token");
+        const body = {
+            name: category.name,
+            isActive: category.isActive
+        };
+        fetch(url + "/category/add", {
+            method: "POST",
+            body: JSON.stringify(body),
+            headers: {
+                "Content-Type": "application/json",
+                authorization: `Bearer ${token}`
+            }
+        }).then(res => {
+            if (res.status === 200) {
+                return res.json();
+            } else if (res.status === 400) {
+                throw new Error("request error");
+            } else if (res.status === 401) {
+                throw new Error("not login");
+            } else {
+                throw new Error("server error");
+            }
+        }).then(data => {
+            resolve(data);
+        }).catch(err => {
+            reject(false);
+        });
+    });
+};
+
+export const updateCategory = (category) => {
+    return new Promise((resolve, reject) => {
+        const token = localStorage.getItem("token");
+        const body = {
+            _id: category._id,
+            name: category.name,
+            isActive: category.isActive
+        };
+        fetch(url + "/category/update", {
+            method: "POST",
+            body: JSON.stringify(body),
             headers: {
                 "Content-Type": "application/json",
                 authorization: `Bearer ${token}`

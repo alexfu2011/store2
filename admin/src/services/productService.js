@@ -88,13 +88,48 @@ export const updateProduct = async (formf) => {
             }
         });
         if (res.status === 200) {
-            return true;
-        } else if (res.status === 400 || res.status === 401) {
-            return false;
+            return res.json();
+        } else if (res.status === 400) {
+            throw new Error("request error");
+        } else if (res.status === 401) {
+            throw new Error("not login");
+        } else {
+            throw new Error("server error");
         }
     } catch (err) {
         if (err) {
             return false;
         }
     }
+};
+
+export const deleteProduct = async (productId) => {
+    return new Promise(async (resolve, reject) => {
+        const token = localStorage.getItem("token");
+        fetch(url + "/product/delete/" + productId, {
+            method: "DELETE",
+            headers: {
+                "Content-Type": "application/json",
+                authorization: `Bearer ${token}`
+            }
+        }).then(res => {
+            if (res.status === 200) {
+                return res.json();
+            } else if (res.status === 400) {
+                throw new Error("request error");
+            } else if (res.status === 401) {
+                throw new Error("not login");
+            } else {
+                throw new Error("server error");
+            }
+        }).then(data => {
+            if (!data.error) {
+                resolve(true);
+            } else {
+                reject(false);
+            }
+        }).catch(err => {
+            reject(false);
+        });
+    });
 };

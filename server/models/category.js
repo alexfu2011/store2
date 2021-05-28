@@ -7,7 +7,7 @@ module.exports = Mongoose.model("Category", Schema({
         type: Schema.Types.ObjectId,
         ref: "User",
     },
-    active: {
+    isActive: {
         type: Number,
         default: 1
     },

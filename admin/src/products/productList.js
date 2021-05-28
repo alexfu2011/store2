@@ -3,15 +3,13 @@ import MaterialTable from 'material-table';
 import { Button, Spinner, } from 'react-bootstrap';
 import Snackbar from '@material-ui/core/Snackbar';
 import NavBar from '../components/navBar';
-import * as axios from 'axios';
-import { url, jwt, userId } from './../constants/auth';
 import localization from "../localization";
 import ProductForm from "./productForm";
-import { TokenProivder, useToken } from "../store";
-import { getProductList } from "../services/productService";
+import { useToken } from "../store";
+import { getProductList, deleteProduct } from "../services/productService";
 import { getToken } from "../services/authService";
 
-export const Product = (props) => {
+export const ProductList = (props) => {
     const [productList, setProductList] = useState([]);
     const [modalShow, setModalShow] = useState(false);
     const [isEditProduct, setIsEditProduct] = useState(false);
@@ -19,43 +17,6 @@ export const Product = (props) => {
     const [barOpen, setBarOpen] = useState(false);
     const [loading, setLoading] = useState(true);
     const { state, dispatch } = useToken();
-
-    const deleteProduct = async (productId) => {
-        return new Promise(async (resolve, reject) => {
-            try {
-                const token = localStorage.getItem("token");
-                fetch(url + "/product/delete/" + productId, {
-                    method: "DELETE",
-                    headers: {
-                        "Content-Type": "application/json",
-                        authorization: `Bearer ${token}`
-                    }
-                }).then(res => {
-                    if (res.status === 200) {
-                        return res.json();
-                    } else if (res.status === 400) {
-                        throw new Error("request error");
-                    } else if (res.status === 401) {
-                        throw new Error("not login");
-                    } else {
-                        throw new Error("server error");
-                    }
-                }).then(data => {
-                    if (!data.error) {
-                        resolve(true);
-                    } else {
-                        reject(false);
-                    }
-                }).catch(err => {
-                    reject(false);
-                });
-            } catch (error) {
-                if (error) {
-                    reject(false);
-                }
-            }
-        });
-    };
 
     const getProduct = async () => {
         try {
@@ -72,7 +33,7 @@ export const Product = (props) => {
     };
 
     const handleClose = () => {
-        setBarOpen(false)
+        setBarOpen(false);
     };
 
     const modalOpen = () => {
@@ -107,24 +68,26 @@ export const Product = (props) => {
                 if (rowData.isActive == 1) {
                     return (
                         <span style={{ color: 'green', fontWeight: "bolder" }}>上架</span>
-                    )
+                    );
                 } else {
                     return (
                         <span style={{ color: 'red', fontWeight: "bolder" }}>下架</span>
-                    )
+                    );
                 }
             }
         },
     ];
 
     useEffect(() => {
-        getProduct().then(() => {
-            getToken().then(token => {
-                dispatch({ type: "SET_TOKEN", payload: token });
-            }).catch(() => {
-                dispatch({ type: "LOGOUT" });
+        try {
+            getProduct().then(() => {
+                getToken().then(token => {
+                    dispatch({ type: "SET_TOKEN", payload: token });
+                });
             });
-        });
+        } catch {
+            dispatch({ type: "LOGOUT" });
+        }
     }, []);
 
     return (
@@ -156,9 +119,8 @@ export const Product = (props) => {
                         ]}
                         editable={{
                             onRowDelete: selectedRow => new Promise(async (resolve, reject) => {
-                                const id = selectedRow._id
-                                const res = await deleteProduct(id)
-                                console.log(res);
+                                const id = selectedRow._id;
+                                const res = await deleteProduct(id);
                                 if (res) {
                                     setBarOpen(true);
                                     getProduct();
@@ -187,10 +149,9 @@ export const Product = (props) => {
                 data={product}
             ></ProductForm>
 
-            <Snackbar open={barOpen} message="Successfully Deleted" autoHideDuration={3500} onClose={handleClose}>
-
+            <Snackbar open={barOpen} message="删除成功" autoHideDuration={3500} onClose={handleClose}>
             </Snackbar>
         </div>
     )
 }
-export default Product
+export default ProductList

@@ -85,13 +85,15 @@ export const UserList = (props) => {
     ];
 
     useEffect(() => {
-        getUsers().then(() => {
-            getToken().then(token => {
-                dispatch({type: "SET_TOKEN", payload: token});
-              }).catch(() => {
-                dispatch({ type: "LOGOUT" });
-              });
-        });
+        try {
+            getUsers().then(() => {
+                getToken().then(token => {
+                    dispatch({ type: "SET_TOKEN", payload: token });
+                });
+            });
+        } catch {
+            dispatch({ type: "LOGOUT" });
+        }
     }, []);
 
     return (

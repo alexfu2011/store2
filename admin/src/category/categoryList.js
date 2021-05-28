@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from "react"
 import MaterialTable from "material-table"
-//import { getAllCategory, deleteCategory, deleteSubCategory } from "./../services/categoryService"
 import { Button, Spinner } from "react-bootstrap"
 import "./categoryList.css"
 import CategoryForm from "./categoryForm"
@@ -37,25 +36,45 @@ export const CategoryList = (props) => {
 
     const handleCloseSnack = () => {
         setSnackBarOpen(false)
-    }
-    const columns = [{ title: "分类名称", field: "name" }]
+    };
+
+    const columns = [
+        { title: "分类名称", field: "name" },
+        {
+            title: "状态", field: 'isActive',
+            render: rowData => {
+                if (rowData.isActive == 1) {
+                    return (
+                        <span style={{ color: 'green', fontWeight: "bolder" }}>有效</span>
+                    )
+                } else {
+                    return (
+                        <span style={{ color: 'red', fontWeight: "bolder" }}>无效</span>
+                    )
+                }
+            }
+        }
+    ];
 
     const modalOpen = () => {
         setIsEditCategory(false);
         setModalShow(true);
-    }
+    };
+
     const modalClose = () => {
         setModalShow(false);
-    }
+    };
+
     const onSave = async () => {
         setModalShow(false);
         getCategory();
-    }
+    };
+
     const editActive = (data) => {
         setCategory(data);
         setIsEditCategory(true);
         setModalShow(true);
-    }
+    };
 
     const deleteCategory = async (categoryId) => {
         return new Promise(async (resolve, reject) => {
@@ -92,16 +111,18 @@ export const CategoryList = (props) => {
                 }
             }
         });
-    }
+    };
 
     useEffect(() => {
-        getCategory().then(() => {
-            getToken().then(token => {
-                dispatch({ type: "SET_TOKEN", payload: token });
-            }).catch(() => {
-                dispatch({ type: "LOGOUT" });
+        try {
+            getCategory().then(() => {
+                getToken().then(token => {
+                    dispatch({ type: "SET_TOKEN", payload: token });
+                });
             });
-        });
+        } catch {
+            dispatch({ type: "LOGOUT" });
+        }
     }, []);
 
     return (

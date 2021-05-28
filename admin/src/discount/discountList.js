@@ -1,10 +1,10 @@
-import React, { useState, useEffect } from "react"
-import MaterialTable from "material-table"
-import { Button, Spinner } from "react-bootstrap"
-import "./discountList.css"
-import DiscountForm from "./discountForm"
-import Snackbar from "@material-ui/core/Snackbar"
-import NavBar from "./../components/navBar"
+import React, { useState, useEffect } from "react";
+import MaterialTable from "material-table";
+import { Button, Spinner } from "react-bootstrap";
+import "./discountList.css";
+import DiscountForm from "./discountForm";
+import Snackbar from "@material-ui/core/Snackbar";
+import NavBar from "./../components/navBar";
 import { url, jwt, userId } from "./../constants/auth";
 import localization from "../localization";
 import { TokenProivder, useToken } from "../store";
@@ -13,11 +13,11 @@ import dateFormat from 'dateformat';
 import { getToken } from "../services/authService";
 
 export const DiscountList = (props) => {
-    const [discountList, setDiscountList] = useState([])
-    const [modalShow, setModalShow] = useState(false)
-    const [isEditDiscount, setIsEditDiscount] = useState(false)
-    const [discount, setDiscount] = useState({})
-    const [snackBarOpen, setSnackBarOpen] = useState(false)
+    const [discountList, setDiscountList] = useState([]);
+    const [modalShow, setModalShow] = useState(false);
+    const [isEditDiscount, setIsEditDiscount] = useState(false);
+    const [discount, setDiscount] = useState({});
+    const [snackBarOpen, setSnackBarOpen] = useState(false);
     const [loading, setLoading] = useState(true);
     const { state, dispatch } = useToken();
 
@@ -37,7 +37,8 @@ export const DiscountList = (props) => {
 
     const handleCloseSnack = () => {
         setSnackBarOpen(false)
-    }
+    };
+
     const columns = [
         { title: "折扣码", field: "code" },
         { title: "折扣比率", field: "percentage" },
@@ -73,19 +74,22 @@ export const DiscountList = (props) => {
     const modalOpen = () => {
         setIsEditDiscount(false);
         setModalShow(true);
-    }
+    };
+
     const modalClose = () => {
         setModalShow(false);
-    }
+    };
+
     const onSave = async () => {
         setModalShow(false);
         getDiscount();
-    }
+    };
+
     const editActive = (data) => {
         setDiscount(data);
         setIsEditDiscount(true);
         setModalShow(true);
-    }
+    };
 
     const deleteDiscount = async (discountId) => {
         return new Promise(async (resolve, reject) => {
@@ -122,16 +126,18 @@ export const DiscountList = (props) => {
                 }
             }
         });
-    }
+    };
 
     useEffect(() => {
-        getDiscount().then(() => {
-            getToken().then(token => {
-                dispatch({ type: "SET_TOKEN", payload: token });
-            }).catch(() => {
-                dispatch({ type: "LOGOUT" });
+        try {
+            getDiscount().then(() => {
+                getToken().then(token => {
+                    dispatch({ type: "SET_TOKEN", payload: token });
+                });
             });
-        });
+        } catch {
+            dispatch({ type: "LOGOUT" });
+        }
     }, []);
 
     return (

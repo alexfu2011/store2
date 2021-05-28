@@ -2,7 +2,7 @@ import "./App.css";
 import LoginPage from "./auth/login";
 import { Route, Switch, BrowserRouter, Redirect } from "react-router-dom"
 import { Home } from "./home/home";
-import { Product } from "./products/product";
+import { ProductList } from "./products/productList";
 import { OrderList } from "./orders/orderList";
 import { OrderDetails } from "./orders/orderDetails";
 import { CategoryList } from "./category/categoryList";
@@ -36,7 +36,7 @@ function App() {
           <Redirect exact from="/" to="/login" component={LoginPage} />
           <Route path="/login" component={LoginPage} />
           <SecuredRoute exact path="/home" component={Home} />
-          <SecuredRoute exact path="/product" component={Product} />
+          <SecuredRoute exact path="/product" component={ProductList} />
           <SecuredRoute exact path="/order" component={OrderList} />
           <SecuredRoute exact path="/category" component={CategoryList} />
           <SecuredRoute exact path="/discount" component={DiscountList} />

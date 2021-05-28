@@ -29,13 +29,15 @@ export const Home = (props) => {
     };
 
     useEffect(() => {
-        getValues().then(() => {
-            getToken().then(token => {
-                dispatch({ type: "SET_TOKEN", payload: token });
-            }).catch(() => {
-                dispatch({ type: "LOGOUT" });
+        try {
+            getValues().then(() => {
+                getToken().then(token => {
+                    dispatch({ type: "SET_TOKEN", payload: token });
+                });
             });
-        });
+        } catch {
+            dispatch({ type: "LOGOUT" });
+        }
     }, []);
 
     return (
