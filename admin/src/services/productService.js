@@ -30,3 +30,71 @@ export const getProductList = () => {
         });
     });
 };
+
+export const addProduct = async (formf) => {
+    try {
+        const token = localStorage.getItem("token");
+        const formData = new FormData();
+
+        formData.append("name", formf.name);
+        formData.append("brandName", formf.brandName);
+        formData.append("summary", formf.summary);
+        formData.append("description", formf.description);
+        formData.append("category", formf.category);
+        formData.append("price", formf.price);
+        formData.append("stock", formf.stock);
+        formData.append("isActive", formf.isActive);
+        formData.append("image", formf.image);
+
+        const res = await fetch(url + '/product/add', {
+            method: 'POST',
+            body: formData,
+            headers: {
+                authorization: `Bearer ${token}`
+            }
+        });
+        if (res.status === 200) {
+            return true;
+        } else if (res.status === 400 || res.status === 401) {
+            return false;
+        }
+    } catch (err) {
+        if (err) {
+            return false;
+        }
+    }
+};
+
+export const updateProduct = async (formf) => {
+    try {
+        const token = localStorage.getItem("token");
+        const formData = new FormData();
+
+        formData.append("name", formf.name);
+        formData.append("brandName", formf.brandName);
+        formData.append("summary", formf.summary);
+        formData.append("description", formf.description);
+        formData.append("category", formf.category._id);
+        formData.append("price", formf.price);
+        formData.append("stock", formf.stock);
+        formData.append("isActive", formf.isActive);
+        formData.append("image", formf.image);
+
+        const res = await fetch(url + '/product/update/' + formf._id, {
+            method: 'PUT',
+            body: formData,
+            headers: {
+                authorization: `Bearer ${token}`
+            }
+        });
+        if (res.status === 200) {
+            return true;
+        } else if (res.status === 400 || res.status === 401) {
+            return false;
+        }
+    } catch (err) {
+        if (err) {
+            return false;
+        }
+    }
+};

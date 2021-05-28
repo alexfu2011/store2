@@ -1,8 +1,9 @@
 import React, { useState, useEffect } from 'react'
 import { Form, Col, Modal, Button, Spinner } from 'react-bootstrap';
 import Snackbar from '@material-ui/core/Snackbar';
-import { url, jwt, userId } from "./../constants/auth";
 import "./productForm.css";
+import { addProduct, updateProduct } from "../services/productService";
+import { getCategoryList } from "../services/categoryService";
 
 export const ProductForm = ({ onSave, isEditProduct, data, ...props }) => {
     const styles = {
@@ -18,104 +19,9 @@ export const ProductForm = ({ onSave, isEditProduct, data, ...props }) => {
     const [errorDb, setErrorDb] = useState(false);
     const [image, setImage] = useState("");
 
-    const addProduct = async () => {
-        try {
-            const token = localStorage.getItem("token");
-            const formData = new FormData();
-
-            formData.append("name", formf.name);
-            formData.append("brandName", formf.brandName);
-            formData.append("summary", formf.summary);
-            formData.append("description", formf.description);
-            formData.append("category", formf.category);
-            formData.append("price", formf.price);
-            formData.append("stock", formf.stock);
-            formData.append("isActive", formf.isActive);
-            formData.append("image", formf.image);
-
-            const res = await fetch(url + '/product/add', {
-                method: 'POST',
-                body: formData,
-                headers: {
-                    authorization: `Bearer ${token}`
-                }
-            });
-            if (res.status === 200) {
-                return true;
-            } else if (res.status === 400 || res.status === 401) {
-                return false;
-            }
-        } catch (err) {
-            if (err) {
-                return false;
-            }
-        }
-    };
-
-    const updateProduct = async () => {
-        try {
-            const token = localStorage.getItem("token");
-            const formData = new FormData();
-
-            formData.append("name", formf.name);
-            formData.append("brandName", formf.brandName);
-            formData.append("summary", formf.summary);
-            formData.append("description", formf.description);
-            formData.append("category", formf.category._id);
-            formData.append("price", formf.price);
-            formData.append("stock", formf.stock);
-            formData.append("isActive", formf.isActive);
-            formData.append("image", formf.image);
-
-            const res = await fetch(url + '/product/update/' + formf._id, {
-                method: 'PUT',
-                body: formData,
-                headers: {
-                    authorization: `Bearer ${token}`
-                }
-            });
-            if (res.status === 200) {
-                return true;
-            } else if (res.status === 400 || res.status === 401) {
-                return false;
-            }
-        } catch (err) {
-            if (err) {
-                return false;
-            }
-        }
-    };
-
-    const getCategory = async () => {
-        return new Promise(async (resolve, reject) => {
-            try {
-                const token = localStorage.getItem("token");
-                fetch(url + "/category", {
-                    method: "GET",
-                    headers: {
-                        "Content-Type": "application/json",
-                        authorization: `Bearer ${token}`
-                    }
-                }).then(res => {
-                    if (res.status === 200) {
-                        return res.json();
-                    } else if (res.status === 401) {
-                        reject(false);
-                    }
-                }).then(data => {
-                    resolve(data);
-                });
-            } catch (error) {
-                if (error) {
-                    reject(false);
-                }
-            }
-        });
-    };
-
     const getValues = async () => {
         try {
-            const category = await getCategory();
+            const category = await getCategoryList();
             setCategory(category);
         } catch (err) {
             console.log(err);
@@ -149,7 +55,7 @@ export const ProductForm = ({ onSave, isEditProduct, data, ...props }) => {
         const form = e.currentTarget;
         if (form.checkValidity() === true) {
             if (isEdit) {
-                const res = await updateProduct();
+                const res = await updateProduct(formf);
                 if (res) {
                     setSnackBarOpen(true);
                     onSave();
@@ -157,7 +63,7 @@ export const ProductForm = ({ onSave, isEditProduct, data, ...props }) => {
                     setErrorDb(true);
                 }
             } else {
-                const res = await addProduct();
+                const res = await addProduct(formf);
                 if (res) {
                     setSnackBarOpen(true);
                     onSave();
@@ -213,7 +119,7 @@ export const ProductForm = ({ onSave, isEditProduct, data, ...props }) => {
                         <Form.Row>
                             <Form.Group as={Col}>
                                 <Form.Label>分类</Form.Label>
-                                <Form.Control required as="select" value={formf.category._id} onChange={(e) => setField('category', e.target.value)} >
+                                <Form.Control required as="select" value={formf.category._id} onChange={(e) => setField('category', {"_id": e.target.value})} >
                                     <option value="">请选择分类</option>
                                     {category && category.map((item) => <option key={item._id} value={item._id}>{item.name}</option>)}
                                 </Form.Control>
