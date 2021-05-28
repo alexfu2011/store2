@@ -24,6 +24,8 @@ export const ProductList = (props) => {
             if (data) {
                 setLoading(false);
                 setProductList(data);
+                const token = await getToken();
+                dispatch({ type: "SET_TOKEN", payload: token });
             } else {
                 throw new Error();
             }
@@ -79,15 +81,7 @@ export const ProductList = (props) => {
     ];
 
     useEffect(() => {
-        try {
-            getProduct().then(() => {
-                getToken().then(token => {
-                    dispatch({ type: "SET_TOKEN", payload: token });
-                });
-            });
-        } catch {
-            dispatch({ type: "LOGOUT" });
-        }
+        getProduct();
     }, []);
 
     return (

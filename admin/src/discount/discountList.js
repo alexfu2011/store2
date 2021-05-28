@@ -27,6 +27,8 @@ export const DiscountList = (props) => {
             if (data) {
                 setLoading(false);
                 setDiscountList(data);
+                const token = await getToken();
+                dispatch({ type: "SET_TOKEN", payload: token });
             } else {
                 throw new Error();
             }
@@ -129,15 +131,7 @@ export const DiscountList = (props) => {
     };
 
     useEffect(() => {
-        try {
-            getDiscount().then(() => {
-                getToken().then(token => {
-                    dispatch({ type: "SET_TOKEN", payload: token });
-                });
-            });
-        } catch {
-            dispatch({ type: "LOGOUT" });
-        }
+        getDiscount();
     }, []);
 
     return (

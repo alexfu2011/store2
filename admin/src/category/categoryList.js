@@ -26,6 +26,8 @@ export const CategoryList = (props) => {
             if (data) {
                 setLoading(false);
                 setCategoryList(data);
+                const token = await getToken();
+                dispatch({ type: "SET_TOKEN", payload: token });
             } else {
                 throw new Error();
             }
@@ -114,15 +116,7 @@ export const CategoryList = (props) => {
     };
 
     useEffect(() => {
-        try {
-            getCategory().then(() => {
-                getToken().then(token => {
-                    dispatch({ type: "SET_TOKEN", payload: token });
-                });
-            });
-        } catch {
-            dispatch({ type: "LOGOUT" });
-        }
+        getCategory();
     }, []);
 
     return (

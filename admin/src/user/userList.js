@@ -27,6 +27,8 @@ export const UserList = (props) => {
             if (data) {
                 setLoading(false);
                 setUsers(data);
+                const token = await getToken();
+                dispatch({ type: "SET_TOKEN", payload: token });
             } else {
                 throw new Error();
             }
@@ -85,15 +87,7 @@ export const UserList = (props) => {
     ];
 
     useEffect(() => {
-        try {
-            getUsers().then(() => {
-                getToken().then(token => {
-                    dispatch({ type: "SET_TOKEN", payload: token });
-                });
-            });
-        } catch {
-            dispatch({ type: "LOGOUT" });
-        }
+        getUsers();
     }, []);
 
     return (
@@ -104,7 +98,7 @@ export const UserList = (props) => {
                     <Spinner style={{
                         display: "block", marginLeft: "auto",
                         marginRight: "auto", height: "50px", width: "50px"
-                    }} animation="buser" variant="primary" />
+                    }} animation="border" variant="primary" />
                     <p style={{
                         display: "block", marginLeft: "auto",
                         marginRight: "auto", textAlign: "center"

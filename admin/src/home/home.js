@@ -20,6 +20,8 @@ export const Home = (props) => {
             if (data) {
                 setLoading(false);
                 setData(data);
+                const token = await getToken();
+                dispatch({ type: "SET_TOKEN", payload: token });
             } else {
                 throw new Error();
             }
@@ -29,15 +31,7 @@ export const Home = (props) => {
     };
 
     useEffect(() => {
-        try {
-            getValues().then(() => {
-                getToken().then(token => {
-                    dispatch({ type: "SET_TOKEN", payload: token });
-                });
-            });
-        } catch {
-            dispatch({ type: "LOGOUT" });
-        }
+        getValues();
     }, []);
 
     return (

@@ -10,8 +10,6 @@ import TimelineContent from '@material-ui/lab/TimelineContent';
 import TimelineDot from '@material-ui/lab/TimelineDot';
 import Typography from '@material-ui/core/Typography';
 import TimelineOppositeContent from '@material-ui/lab/TimelineOppositeContent';
-import {  } from '../services/orderService'
-import SpinLoader from '../components/spinLoader'
 
 export const OrderDetails = (props) => {
     const order = props.location.state

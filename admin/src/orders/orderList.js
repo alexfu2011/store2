@@ -17,7 +17,7 @@ export const OrderList = (props) => {
     const [order, setOrder] = useState([]);
     const [snackBarOpen, setSnackBarOpen] = useState(false)
     const [loading, setLoading] = useState(true);
-    const { state, dispatch } = useToken();
+    const { dispatch } = useToken();
 
     const getOrders = async () => {
         try {
@@ -25,6 +25,8 @@ export const OrderList = (props) => {
             if (data) {
                 setLoading(false);
                 setOrders(data);
+                const token = await getToken();
+                dispatch({ type: "SET_TOKEN", payload: token });
             } else {
                 throw new Error();
             }
@@ -94,15 +96,7 @@ export const OrderList = (props) => {
     ];
 
     useEffect(() => {
-        try {
-            getOrders().then(() => {
-                getToken().then(token => {
-                    dispatch({ type: "SET_TOKEN", payload: token });
-                });
-            });
-        } catch {
-            dispatch({ type: "LOGOUT" });
-        }
+        getOrders();
     }, []);
 
     return (
@@ -153,6 +147,7 @@ export const OrderList = (props) => {
                 </div>
             }
         </div>
-    )
-}
-export default OrderList
+    );
+};
+
+export default OrderList;

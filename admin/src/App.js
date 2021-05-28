@@ -37,7 +37,7 @@ function App() {
           <Route path="/login" component={LoginPage} />
           <SecuredRoute exact path="/home" component={Home} />
           <SecuredRoute exact path="/product" component={ProductList} />
-          <SecuredRoute exact path="/order" component={OrderList} />
+          <SecuredRoute exact path="/order(/:isActive)?" component={OrderList} />
           <SecuredRoute exact path="/category" component={CategoryList} />
           <SecuredRoute exact path="/discount" component={DiscountList} />
           <SecuredRoute exact path="/user" component={UserList} />
