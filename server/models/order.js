@@ -10,6 +10,10 @@ const OrderSchema = new Schema({
     type: Schema.Types.ObjectId,
     ref: 'User'
   },
+  orderID: {
+    type: Number,
+    default: 567899096756
+  },
   total: {
     type: Number,
     default: 0

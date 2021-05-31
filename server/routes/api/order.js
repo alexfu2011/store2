@@ -1,6 +1,7 @@
 const express = require('express');
 const bodyParser = require('body-parser');
 const jsonParser = bodyParser.json();
+const Counter = require("../../models/counter");
 const Cart = require("../../models/cart");
 const Order = require("../../models/order");
 const Profile = require("../../models/profile");
@@ -19,14 +20,33 @@ router.post('/add', auth.isAuth, jsonParser, async (req, res) => {
       total
     });
 
-    const orderDoc = await order.save();
-
-    res.status(200).json({
-      success: true,
-      message: `Your order has been placed successfully!`,
-      order: { _id: orderDoc._id }
-    });
+    Counter.findOneAndUpdate(
+      { _id: 'orderIdSeqGenerator' },
+      { $inc: { seq: 1 } },
+      {
+        new: true,
+        upsert: true
+      }, (error, counter) => {
+        if (error) {
+          console.log("find counter sequence encountered error ", error);
+          throw error;
+        }
+        order.orderID += counter.seq;
+        Order.create(order, (error, doc) => {
+          if (error) {
+            console.log("save order encountered error ", error);
+            throw error;
+          } else {
+            res.status(200).json({
+              success: true,
+              message: `Your order has been placed successfully!`,
+              order: { _id: order._id }
+            });
+          }
+        })
+      });
   } catch (error) {
+    console.log(error);
     res.status(400).json({
       error: 'Your request could not be processed. Please try again.'
     });
@@ -55,6 +75,7 @@ router.get('/', auth.isAuth, async (req, res) => {
 
         const order = {
           _id: doc._id,
+          orderID: doc.orderID,
           total: parseFloat(Number(doc.total.toFixed(2))),
           created: doc.created,
           isActive: doc.isActive,
@@ -92,7 +113,7 @@ router.put("/update/:orderId", auth.isAuth, jsonParser, async (req, res) => {
       products,
       isActive
     } = req.body;
-    const order = await Order.findByIdAndUpdate(orderId, {isActive});
+    const order = await Order.findByIdAndUpdate(orderId, { isActive });
     products.map(async product => {
       await Cart.updateOne({ "_id": cartId, "products._id": product._id }, {
         "$set": {

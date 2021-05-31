@@ -108,7 +108,7 @@ export const OrderDetails = (props) => {
                             <Col style={orderDetails}>
                                 <div style={{ padding: "10px" }}>
                                     <Row><h3>订单详情</h3></Row>
-                                    <Row><h4>订单编号：{order._id}</h4></Row>
+                                    <Row><h4>订单编号：{order.orderID}</h4></Row>
                                     <Row>
                                         <Col style={{ "padding-left": 0 }}>
                                             订单状态

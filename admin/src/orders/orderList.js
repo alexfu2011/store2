@@ -60,7 +60,7 @@ export const OrderList = (props) => {
 
     const columns = [
         {
-            title: "订单ID", field: "_id",
+            title: "订单ID", field: "orderID",
             render: rowData => {
                 return (
                     <Button variant="link" onClick={() => {
@@ -68,7 +68,7 @@ export const OrderList = (props) => {
                             pathname: '/order/orderDetails',
                             state: rowData
                         })
-                    }}>{rowData._id}</Button>
+                    }}>{rowData.orderID}</Button>
                 )
             }
         },
