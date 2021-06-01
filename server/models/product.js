@@ -19,6 +19,14 @@ module.exports = Mongoose.model("Product", Schema({
     brandName: String,
     stock: Number,
     price: Number,
+    tax: {
+        type: Number,
+        default: 0
+    },
+    shipping: {
+        type: Number,
+        default: 0
+    },
     summary: String,
     description: String,
     image: String,

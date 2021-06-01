@@ -14,17 +14,17 @@ export const ProductForm = ({ onSave, isEditProduct, data, ...props }) => {
         setSnackBarOpen(false);
     };
     const [category, setCategory] = useState(null);
-    const [formf, setForm] = useState({ name: "", category: { _id: "" }, brandName: "", summary: "", description: "", price: "", stock: "", isActive: 1 });
+    const [formf, setForm] = useState({ name: "", category: { _id: "" }, brandName: "", summary: "", description: "", price: "", tax: "", shipping: "", stock: "", isActive: "" });
     const [isEdit, setIsEdit] = useState(false);
-    const [errorDb, setErrorDb] = useState(false);
     const [image, setImage] = useState("");
+    const [validated, setValidated] = useState(false);
+    const [errorDb, setErrorDb] = useState(false);
 
     const getValues = async () => {
         try {
             const category = await getCategoryList();
             setCategory(category);
-        } catch (err) {
-            console.log(err);
+        } catch {
         }
     };
 
@@ -33,50 +33,65 @@ export const ProductForm = ({ onSave, isEditProduct, data, ...props }) => {
             setForm(data);
             setIsEdit(true);
         } else {
-            setForm({ name: "", category: { _id: "" }, brandName: "", summary: "", description: "", price: "", stock: "", isActive: 1 });
             setIsEdit(false);
         }
         getValues();
-        setValidated(false);
     }, [isEditProduct, data]);
 
     const setField = async (field, value) => {
         setForm({
             ...formf,
             [field]: value
-        })
+        });
     };
-
-    const [validated, setValidated] = useState(false);
-    const [storeError, setStoreError] = useState(false);
 
     const handleSubmit = async (e) => {
         e.preventDefault();
         const form = e.currentTarget;
+
         if (form.checkValidity() === true) {
             if (isEdit) {
-                const res = await updateProduct(formf);
-                if (res) {
-                    setSnackBarOpen(true);
-                    onSave();
-                } else {
+                try {
+                    const res = await updateProduct(formf);
+                    if (res) {
+                        setSnackBarOpen(true);
+                        onSave();
+                    } else {
+                        throw new Error();
+                    }
+                } catch {
                     setErrorDb(true);
                 }
             } else {
-                const res = await addProduct(formf);
-                if (res) {
-                    setSnackBarOpen(true);
-                    onSave();
-                } else {
+                try {
+                    const res = await addProduct(formf);
+                    if (res) {
+                        setSnackBarOpen(true);
+                        onSave();
+                    } else {
+                        throw new Error();
+                    }
+                } catch {
                     setErrorDb(true);
                 }
             }
+            setValidated(false);
+        } else {
+            setValidated(true);
         }
+    };
+
+    const onHide = () => {
+        setValidated(false);
+        setErrorDb(false);
+        setForm({ name: "", category: { _id: "" }, brandName: "", summary: "", description: "", price: "", tax: "", shipping: "", stock: "", isActive: "" });
+        setImage("");
+        props.onHide();
     };
 
     return (
         <div>
-            <Modal centered {...props} onHide={() => { setImage(""); props.onHide(); }}>
+            <Modal centered {...props} onHide={onHide}>
                 <Form noValidate validated={validated} onSubmit={handleSubmit}>
                     <Modal.Header closeButton>{isEdit ? "编辑产品" : "添加产品"}</Modal.Header>
                     <Modal.Body>
@@ -119,7 +134,7 @@ export const ProductForm = ({ onSave, isEditProduct, data, ...props }) => {
                         <Form.Row>
                             <Form.Group as={Col}>
                                 <Form.Label>分类</Form.Label>
-                                <Form.Control required as="select" value={formf.category._id} onChange={(e) => setField('category', {"_id": e.target.value})} >
+                                <Form.Control required as="select" value={formf.category._id} onChange={(e) => setField('category', { "_id": e.target.value })} >
                                     <option value="">请选择分类</option>
                                     {category && category.map((item) => <option key={item._id} value={item._id}>{item.name}</option>)}
                                 </Form.Control>
@@ -134,6 +149,24 @@ export const ProductForm = ({ onSave, isEditProduct, data, ...props }) => {
                                 <Form.Control required type="number" value={formf.price} onChange={(e) => setField('price', e.target.value)} placeholder="请输入产品价格" />
                                 <Form.Control.Feedback type="invalid">
                                     请输入产品价格
+                                </Form.Control.Feedback>
+                            </Form.Group>
+                        </Form.Row>
+                        <Form.Row>
+                            <Form.Group as={Col}>
+                                <Form.Label>产品税费</Form.Label>
+                                <Form.Control required type="number" value={formf.tax} onChange={(e) => setField('tax', e.target.value)} placeholder="请输入产品价格" />
+                                <Form.Control.Feedback type="invalid">
+                                    请输入产品税费
+                                </Form.Control.Feedback>
+                            </Form.Group>
+                        </Form.Row>
+                        <Form.Row>
+                            <Form.Group as={Col}>
+                                <Form.Label>产品运费</Form.Label>
+                                <Form.Control required type="number" value={formf.shipping} onChange={(e) => setField('shipping', e.target.value)} placeholder="请输入产品价格" />
+                                <Form.Control.Feedback type="invalid">
+                                    请输入产品运费
                                 </Form.Control.Feedback>
                             </Form.Group>
                         </Form.Row>
@@ -178,9 +211,9 @@ export const ProductForm = ({ onSave, isEditProduct, data, ...props }) => {
                         </Form.Row>
                     </Modal.Body>
                     <Modal.Footer>
-                        {errorDb && <p><p style={{ color: "red" }}>无法{isEdit ? "更新" : "保存"}数据</p></p>}
+                        {errorDb && <p style={{ color: "red" }}>无法{isEdit ? "更新" : "保存"}数据</p>}
                         <Button type="submit">{isEdit ? "更新" : "保存"}</Button>
-                        <Button onClick={() => { setImage(""); props.onHide(); }}>关闭</Button>
+                        <Button onClick={onHide}>关闭</Button>
                     </Modal.Footer>
                 </Form>
             </Modal>

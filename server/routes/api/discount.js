@@ -4,6 +4,7 @@ const jsonParser = bodyParser.json();
 const Discount = require("../../models/discount");
 const router = express.Router();
 const auth = require("../../middleware/auth");
+const shortId = require("../../utils/shortid");
 
 router.get('/', auth.isAuth, async (req, res) => {
   try {
@@ -19,14 +20,13 @@ router.get('/', auth.isAuth, async (req, res) => {
 router.post("/add", auth.isAuth, jsonParser, async (req, res) => {
   try {
     const {
-      code,
       percentage,
       quantity,
       from,
       to
     } = req.body;
     const discount = new Discount({
-      code,
+      code: shortId(),
       percentage,
       quantity,
       from,
@@ -39,6 +39,18 @@ router.post("/add", auth.isAuth, jsonParser, async (req, res) => {
       error: 'Your request could not be processed. Please try again.'
     });
   }
+});
+
+router.delete("/delete/:id", auth.isAuth, jsonParser, async (req, res) => {
+    try {
+        const discountId = req.params.id;
+        await Discount.findByIdAndDelete(discountId);
+        res.status(200).json({});
+    } catch {
+        res.status(400).json({
+            error: "Your request could not be processed. Please try again."
+        });
+    }
 });
 
 router.put("/update/:discountId", auth.isAuth, jsonParser, async (req, res) => {

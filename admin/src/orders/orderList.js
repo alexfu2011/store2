@@ -4,34 +4,34 @@ import Snackbar from "@material-ui/core/Snackbar";
 import MaterialTable from "material-table";
 import OrderForm from "./orderForm";
 import localization from "../localization";
-import { useToken } from "../store";
 import { getAllOrders } from "../services/orderService";
 import dateFormat from 'dateformat';
 import TabBar from '../components/tabBar';
 import { getToken } from "../services/authService";
 
 export const OrderList = (props) => {
+    const { page } = props.match.params;
     const [modalShow, setModalShow] = useState(false);
     const [orders, setOrders] = useState([]);
     const [isEditOrder, setIsEditOrder] = useState(false);
     const [order, setOrder] = useState([]);
     const [snackBarOpen, setSnackBarOpen] = useState(false)
     const [loading, setLoading] = useState(true);
-    const { dispatch } = useToken();
 
-    const getOrders = async () => {
+    const getOrders = async (order) => {
         try {
-            const data = await getAllOrders();
+            const data = await getAllOrders(order);
             if (data) {
                 setLoading(false);
                 setOrders(data);
                 const token = await getToken();
-                dispatch({ type: "SET_TOKEN", payload: token });
+                localStorage.setItem("token", token);
             } else {
                 throw new Error();
             }
         } catch {
-            dispatch({ type: "LOGOUT" });
+            localStorage.setItem("token", "");
+            props.history.push("/login");
         }
     };
 
@@ -44,7 +44,7 @@ export const OrderList = (props) => {
     };
 
     const editOrder = (data) => {
-        setOrder(data);
+        setOrder(Object.assign({}, data));
         setIsEditOrder(true);
         setModalShow(true);
     };
@@ -65,7 +65,7 @@ export const OrderList = (props) => {
                 return (
                     <Button variant="link" onClick={() => {
                         props.history.replace({
-                            pathname: '/order/orderDetails',
+                            pathname: '/order/order/detail',
                             state: rowData
                         })
                     }}>{rowData.orderID}</Button>
@@ -80,11 +80,23 @@ export const OrderList = (props) => {
             }
         },
         {
-            title: "状态", field: "isActive",
+            title: "状态", field: "status",
             render: rowData => {
-                if (rowData.isActive == 1) {
+                if (rowData.status == "not-processed") {
                     return (
-                        <span style={{ color: "green", fontWeight: "bolder" }}>已生效</span>
+                        <span style={{ color: "green", fontWeight: "bolder" }}>未处理</span>
+                    );
+                } else if (rowData.status == "processing") {
+                    return (
+                        <span style={{ color: "green", fontWeight: "bolder" }}>处理中</span>
+                    );
+                } else if (rowData.status == "shipped") {
+                    return (
+                        <span style={{ color: "green", fontWeight: "bolder" }}>已发货</span>
+                    );
+                } else if (rowData.status == "delivered") {
+                    return (
+                        <span style={{ color: "green", fontWeight: "bolder" }}>已交货</span>
                     );
                 } else {
                     return (
@@ -96,8 +108,8 @@ export const OrderList = (props) => {
     ];
 
     useEffect(() => {
-        getOrders();
-    }, []);
+        getOrders(page ? page : "all");
+    }, [page]);
 
     return (
         <div>

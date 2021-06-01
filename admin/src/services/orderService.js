@@ -1,9 +1,9 @@
 import { url } from '../constants/auth';
 
-export const getAllOrders = () => {
+export const getAllOrders = (order) => {
     return new Promise((resolve, reject) => {
         const token = localStorage.getItem("token");
-        fetch(url + "/order", {
+        fetch(url + `/order/${order}`, {
             headers: {
                 method: "GET",
                 "Content-Type": "application/json",

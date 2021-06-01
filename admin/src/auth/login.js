@@ -1,14 +1,12 @@
-import React, { useState, useContext, useEffect } from 'react';
+import React, { useState, useContext, useEffect } from "react";
 import Form from "react-bootstrap/Form";
 import Button from "react-bootstrap/Button";
 import "./login.css";
-import { url } from '../constants/auth'
-import { useToken } from "../store";
+import { url } from "../constants/auth"
 
 export const LoginPage = (props) => {
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
-  const { state , dispatch } = useToken();
 
   function validateForm() {
     return username.length > 0 && password.length > 0;
@@ -16,8 +14,8 @@ export const LoginPage = (props) => {
 
   const Login = async (username, password) => {
     const res = await fetch(url + "/auth/login", {
-      method: 'POST', headers: {
-        'Content-Type': 'application/json',
+      method: "POST", headers: {
+        "Content-Type": "application/json",
       },
       body: JSON.stringify({
         username,
@@ -32,9 +30,8 @@ export const LoginPage = (props) => {
       if (data.error) {
         return;
       }
-      dispatch({type: "SET_TOKEN", payload: data.token});
       localStorage.setItem("token", data.token);
-      props.history.push('/home');
+      props.history.push("/home");
     }).catch(() => { });
   }
 

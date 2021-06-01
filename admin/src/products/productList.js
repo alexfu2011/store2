@@ -5,8 +5,7 @@ import Snackbar from '@material-ui/core/Snackbar';
 import NavBar from '../components/navBar';
 import localization from "../localization";
 import ProductForm from "./productForm";
-import { useToken } from "../store";
-import { getProductList, deleteProduct } from "../services/productService";
+import { getProductList, deleteProduct, updateProduct } from "../services/productService";
 import { getToken } from "../services/authService";
 
 export const ProductList = (props) => {
@@ -16,7 +15,6 @@ export const ProductList = (props) => {
     const [product, setProduct] = useState({});
     const [barOpen, setBarOpen] = useState(false);
     const [loading, setLoading] = useState(true);
-    const { state, dispatch } = useToken();
 
     const getProduct = async () => {
         try {
@@ -25,12 +23,13 @@ export const ProductList = (props) => {
                 setLoading(false);
                 setProductList(data);
                 const token = await getToken();
-                dispatch({ type: "SET_TOKEN", payload: token });
+                localStorage.setItem("token", token);
             } else {
                 throw new Error();
             }
         } catch {
-            dispatch({ type: "LOGOUT" });
+            localStorage.setItem("token", "");
+            props.history.push("/login");
         }
     };
 
@@ -53,7 +52,7 @@ export const ProductList = (props) => {
     };
 
     const editActive = (data) => {
-        setProduct(data);
+        setProduct(Object.assign({}, data));
         setIsEditProduct(true);
         setModalShow(true);
     };
@@ -132,19 +131,17 @@ export const ProductList = (props) => {
                         localization={localization}
                     >
                     </MaterialTable>
+                    <ProductForm
+                        onHide={() => { modalClose() }}
+                        show={modalShow}
+                        onSave={onSave}
+                        isEditProduct={isEditProduct}
+                        data={product}
+                    ></ProductForm>
+                    <Snackbar open={barOpen} message="删除成功" autoHideDuration={3500} onClose={handleClose}>
+                    </Snackbar>
                 </div>
             }
-
-            <ProductForm
-                onHide={() => { modalClose() }}
-                show={modalShow}
-                onSave={onSave}
-                isEditProduct={isEditProduct}
-                data={product}
-            ></ProductForm>
-
-            <Snackbar open={barOpen} message="删除成功" autoHideDuration={3500} onClose={handleClose}>
-            </Snackbar>
         </div>
     )
 }

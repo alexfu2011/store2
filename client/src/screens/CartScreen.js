@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import React, { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import {
@@ -17,6 +17,7 @@ const CartScreen = ({ match, location, history }) => {
   const productId = match.params.id;
 
   const qty = location.search ? Number(location.search.split("=")[1]) : 1;
+  const [code, setCode] = useState("");
 
   const dispatch = useDispatch();
 
@@ -34,6 +35,7 @@ const CartScreen = ({ match, location, history }) => {
   };
 
   const checkoutHandler = () => {
+    localStorage.setItem("code", code);
     history.push("/login?redirect=shipping");
   };
 
@@ -99,6 +101,13 @@ const CartScreen = ({ match, location, history }) => {
               {cartItems
                 .reduce((acc, item) => acc + item.qty * item.price, 0)
                 .toFixed(2)}元
+            </ListGroup.Item>
+            <ListGroup.Item>
+          <Form.Control
+            type='text'
+            placeholder='请输入折扣码'
+            onChange={e => setCode(e.target.value)}
+          ></Form.Control>
             </ListGroup.Item>
             <ListGroup.Item>
               <Button

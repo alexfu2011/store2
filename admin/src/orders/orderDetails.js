@@ -12,21 +12,23 @@ import Typography from '@material-ui/core/Typography';
 import TimelineOppositeContent from '@material-ui/lab/TimelineOppositeContent';
 
 export const OrderDetails = (props) => {
-    const order = props.location.state
-    const [note, setNote] = useState('')
-    const [status, setStatus] = useState(null)
-    const [validated, setValidated] = useState(false)
+    const order = props.location.state;
+    const [note, setNote] = useState('');
+    const [status, setStatus] = useState(null);
+    const [validated, setValidated] = useState(false);
+    const [tax, setTax] = useState(0);
+    const [shipping, setShipping] = useState(0);
     const orderDetails = {
         margin: "20px",
         marginLeft: "30px",
         backgroundColor: "#fff"
-    }
+    };
     const saveNote = (value) => {
         setNote(value)
         setValidated(false)
-    }
+    };
     const update = async () => {
-    }
+    };
     const setField = (field, value) => {
         if (value === "Cancelled") {
             setStatus({
@@ -50,8 +52,15 @@ export const OrderDetails = (props) => {
         }
 
     };
-    
     useEffect(() => {
+        const totalTax = order.products.reduce(function (total, i) {
+            return total + i.product.tax;
+        }, 0);
+        setTax(totalTax);
+        const totalShipping = order.products.reduce(function (total, i) {
+            return total + i.product.shipping;
+        }, 0);
+        setShipping(totalShipping);
         setStatus({
             status: order.status
         })
@@ -62,7 +71,7 @@ export const OrderDetails = (props) => {
             title: "产品图片", field: '',
             render: rowData => {
                 return (<img
-                    src={"/"+rowData.product.image}
+                    src={"/" + rowData.product.image}
                     height="100px"
                     width="100px"
                     alt="added_image"
@@ -108,30 +117,36 @@ export const OrderDetails = (props) => {
                             <Col style={orderDetails}>
                                 <div style={{ padding: "10px" }}>
                                     <Row><h3>订单详情</h3></Row>
-                                    <Row><h4>订单编号：{order.orderID}</h4></Row>
+                                    <Row><h4>订单号：{order.orderID}</h4></Row>
                                     <Row>
                                         <Col style={{ "padding-left": 0 }}>
-                                            订单状态
-                                            <Form.Control name="status" required as="select" value={order.isActive}>
+                                            <strong>订单状态</strong>
+                                            <Form.Control name="status" required as="select" value={order.status}>
                                                 <option value="">请选择状态</option>
-                                                <option value="1">已生效</option>
-                                                <option value="2">已取消</option>
+                                                <option value="not-processed">未处理</option>
+                                                <option value="processing">处理中</option>
+                                                <option value="shipped">已发货</option>
+                                                <option value="delivered">已交货</option>
+                                                <option value="cancelled">已取消</option>
                                             </Form.Control>
                                         </Col>
                                         <Col>
-                                            会员详情
-                      <div>
-                                                收件人：{order.user.name}<br />
-                      地址：{order.user.address}<br />
-                      地区：{order.user.province}{order.user.city}<br />
+                                            <strong>会员详情</strong>
+                                            <div>
+                                                <strong>姓名：</strong>{order.user.name}<br />
+                                                <strong>地址：</strong>{order.user.address}<br />
+                                                <strong>地区：</strong>{order.user.province}{order.user.city}<br />
+                                                <strong>电话：</strong>{order.user.phone}<br />
+                                                <strong>邮箱：</strong>{order.user.email}<br />
                                             </div>
                                         </Col>
                                         <Col>
-                                            配送详情
-                      <div>
-                                                收件人：{order.profile.person}<br />
-                      地址：{order.profile.address}<br />
-                      城市：{order.profile.city}<br />
+                                            <strong>配送详情</strong>
+                                            <div>
+                                                <strong>收件人：</strong>{order.profile.person}<br />
+                                                <strong>地址：</strong>{order.profile.address}<br />
+                                                <strong>城市：</strong>{order.profile.city}<br /><br />
+                                                <strong>电话：</strong>{order.profile.phone}
                                             </div>
                                         </Col>
                                     </Row>
@@ -140,7 +155,6 @@ export const OrderDetails = (props) => {
                         </Row>
                         <Row>
                             <Col style={{ margin: "20px 20px 0 30px", backgroundColor: "#fff" }}>
-                                <h4 className="my-2">产品详情</h4>
                                 <Table style={{ margin: "0", padding: "0px", borderBottom: "none" }} data={order.products} columns={subcolumn} options={{
                                     search: false,
                                     toolbar: false,
@@ -159,17 +173,15 @@ export const OrderDetails = (props) => {
                                         <Row>合计:</Row>
                                     </Col>
                                     <Col xs={1}><Row>{order.total}</Row>
-                                        <Row>0</Row>
-                                        <Row>0</Row>
-                                        <Row>- 11</Row>
+                                        <Row>{tax}</Row>
+                                        <Row>{shipping}</Row>
+                                        <Row>- {order.discount}</Row>
                                         <Row style={{ height: "1px", backgroundColor: '#000' }}></Row>
-                                        <Row>{order.totalPrice}</Row>
+                                        <Row>{order.total + tax + shipping - order.discount}</Row>
                                     </Col>
                                 </Row>
-                                <Row><div style={{ margin: "10px" }}><Button>退款</Button></div></Row>
                             </Col>
                         </Row>
-
                     </Col>
                     <Col xs={3}>
                         <Row style={{ margin: "20px 0 0 5px", padding: "10px", backgroundColor: "#fff" }}>
@@ -193,4 +205,4 @@ export const OrderDetails = (props) => {
         </div>
     )
 }
-export default OrderDetails
+export default OrderDetails;

@@ -1,7 +1,7 @@
-import React, { useEffect, useState } from 'react'
-import { Container, Modal, Form, Button, Col, Row } from 'react-bootstrap'
-import './orderForm.css'
-import { url, jwt, userId } from './../constants/auth';
+import React, { useEffect, useState } from "react"
+import { Container, Modal, Form, Button, Col, Row } from "react-bootstrap"
+import "./orderForm.css"
+import { url, jwt, userId } from "./../constants/auth";
 
 export const OrderFrom = ({ onSave, isEditOrder, data, ...props }) => {
     const [order, setOrder] = useState(null)
@@ -32,11 +32,11 @@ export const OrderFrom = ({ onSave, isEditOrder, data, ...props }) => {
                 products: order.products,
                 isActive: order.isActive
             };
-            const res = await fetch(url + '/order/update/' + order._id, {
-                method: 'PUT',
+            const res = await fetch(url + "/order/update/" + order._id, {
+                method: "PUT",
                 body: JSON.stringify(body),
                 headers: {
-                    'Content-Type': 'application/json',
+                    "Content-Type": "application/json",
                     authorization: `Bearer ${token}`
                 }
             });
@@ -67,9 +67,7 @@ export const OrderFrom = ({ onSave, isEditOrder, data, ...props }) => {
         if (isEditOrder) {
             setOrder(data);
             setIsEdit(true);
-        } else {
         }
-
     }, [isEditOrder, data])
 
     return (
@@ -80,7 +78,7 @@ export const OrderFrom = ({ onSave, isEditOrder, data, ...props }) => {
                         <Modal.Header closeButton>订单ID：{order._id}</Modal.Header>
                         <Modal.Body>
                             <Row >
-                                <Col className='box' >
+                                <Col className="box" >
                                     <Row className="titleHead"><h4>产品明细</h4></Row>
                                     <Row>
                                         <Col>
@@ -108,7 +106,7 @@ export const OrderFrom = ({ onSave, isEditOrder, data, ...props }) => {
                                 </Col>
                             </Row>
                             <Row >
-                                <Col className='box'>
+                                <Col className="box">
                                     <Row className="titleHead"><h4>订单详情</h4></Row>
                                     <Row>
                                         <Col className="name">订单状态：</Col>

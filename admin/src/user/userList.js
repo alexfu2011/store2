@@ -5,7 +5,6 @@ import MaterialTable from "material-table";
 import NavBar from "../components/navBar";
 import UserDetails from "./userDetails";
 import localization from "../localization";
-import { TokenProivder, useToken } from "../store";
 import { getAllUsers } from "../services/userService";
 import dateFormat from 'dateformat';
 import { getToken } from "../services/authService";
@@ -15,11 +14,8 @@ export const UserList = (props) => {
     const [users, setUsers] = useState([]);
     const [isEditUser, setIsEditUser] = useState(false);
     const [user, setUser] = useState([]);
-    const [dbError, setDbError] = useState(false);
     const [snackBarOpen, setSnackBarOpen] = useState(false);
-    const [login, setLogin] = useState(false);
     const [loading, setLoading] = useState(true);
-    const { state, dispatch } = useToken();
 
     const getUsers = async () => {
         try {
@@ -28,12 +24,13 @@ export const UserList = (props) => {
                 setLoading(false);
                 setUsers(data);
                 const token = await getToken();
-                dispatch({ type: "SET_TOKEN", payload: token });
+                localStorage.setItem("token", token);
             } else {
                 throw new Error();
             }
         } catch {
-            dispatch({ type: "LOGOUT" });
+            localStorage.setItem("token", "");
+            props.history.push("/login");
         }
     };
 
@@ -46,8 +43,7 @@ export const UserList = (props) => {
     };
 
     const editUser = (data) => {
-        console.log(data);
-        setUser(data);
+        setUser(Object.assign({}, data));
         setIsEditUser(true);
         setModalShow(true);
     };

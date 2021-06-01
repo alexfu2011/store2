@@ -12,12 +12,13 @@ const OrderSchema = new Schema({
   },
   orderID: {
     type: Number,
-    default: 567899096756
+    default: Math.random().toString().substr(2, 8)
   },
   total: {
     type: Number,
     default: 0
   },
+  discount: Number,
   isActive: {
       type: Number,
       default: 1

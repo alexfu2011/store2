@@ -1,18 +1,16 @@
-import React, { useState, useEffect } from 'react';
-import NavBar from './../components/navBar';
-import { Spinner } from 'react-bootstrap';
-import { useToken } from "../store";
+import React, { useState, useEffect } from "react";
+import NavBar from "./../components/navBar";
+import { Spinner } from "react-bootstrap";
 import { getHome } from "../services/homeService";
-import './home.css';
+import "./home.css";
 import { getToken } from "../services/authService";
 
 export const Home = (props) => {
     const [data, setData] = useState({
-        'TotalProducts': 0,
-        'TotalOrders': 0
+        "TotalProducts": 0,
+        "TotalOrders": 0
     });
     const [loading, setLoading] = useState(true);
-    const { dispatch } = useToken();
 
     const getValues = async () => {
         try {
@@ -21,12 +19,13 @@ export const Home = (props) => {
                 setLoading(false);
                 setData(data);
                 const token = await getToken();
-                dispatch({ type: "SET_TOKEN", payload: token });
+                localStorage.setItem("token", token);
             } else {
                 throw new Error();
             }
         } catch {
-            dispatch({ type: "LOGOUT" });
+            localStorage.setItem("token", "");
+            props.history.push("/login");
         }
     };
 

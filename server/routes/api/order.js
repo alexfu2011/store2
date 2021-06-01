@@ -1,27 +1,32 @@
-const express = require('express');
-const bodyParser = require('body-parser');
+const express = require("express");
+const bodyParser = require("body-parser");
 const jsonParser = bodyParser.json();
 const Counter = require("../../models/counter");
+const Discount = require("../../models/discount");
 const Cart = require("../../models/cart");
 const Order = require("../../models/order");
 const Profile = require("../../models/profile");
 const router = express.Router();
 const auth = require("../../middleware/auth");
 
-router.post('/add', auth.isAuth, jsonParser, async (req, res) => {
+router.post("/add", auth.isAuth, jsonParser, async (req, res) => {
   try {
     const cart = req.body.cartId;
     const total = req.body.total;
+    const code = req.body.code;
     const user = req.session._userId;
+    const discount = await Discount.findOne({ code });
+    const discountTotal = (1 - discount.percentage / 100) * total;
 
     const order = new Order({
       cart,
       user,
-      total
+      total,
+      discount: discountTotal
     });
 
     Counter.findOneAndUpdate(
-      { _id: 'orderIdSeqGenerator' },
+      { _id: "orderIdSeqGenerator" },
       { $inc: { seq: 1 } },
       {
         new: true,
@@ -48,16 +53,23 @@ router.post('/add', auth.isAuth, jsonParser, async (req, res) => {
   } catch (error) {
     console.log(error);
     res.status(400).json({
-      error: 'Your request could not be processed. Please try again.'
+      error: "Your request could not be processed. Please try again."
     });
   }
 });
 
-router.get('/', auth.isAuth, async (req, res) => {
+router.get("/:page", auth.isAuth, async (req, res) => {
   try {
-    const user = req.session._userId;
-
-    const orders = await Order.find({ user }).populate("cart");
+    const page = req.params.page;
+    let options;
+    if (page == "active") {
+      options = { isActive: 1 };
+    } else if (page == "cancelled") {
+      options = { isActive: 2 };
+    } else {
+      options = {};
+    }
+    const orders = await Order.find(options).populate("cart");
 
     const newOrders = orders.filter(order => order.cart);
 
@@ -67,8 +79,8 @@ router.get('/', auth.isAuth, async (req, res) => {
       newOrders.map(async doc => {
         const cartId = doc.cart._id;
 
-        const cart = await Cart.findById(cartId).populate('user', '-password').populate({
-          path: 'products.product'
+        const cart = await Cart.findById(cartId).populate("user", "-password").populate({
+          path: "products.product"
         });
 
         const profile = await Profile.findOne({ _userId: cart.user._id });
@@ -77,6 +89,7 @@ router.get('/', auth.isAuth, async (req, res) => {
           _id: doc._id,
           orderID: doc.orderID,
           total: parseFloat(Number(doc.total.toFixed(2))),
+          discount: doc.discount,
           created: doc.created,
           isActive: doc.isActive,
           cartId: cartId,
@@ -100,7 +113,7 @@ router.get('/', auth.isAuth, async (req, res) => {
     }
   } catch (error) {
     res.status(400).json({
-      error: 'Your request could not be processed. Please try again.'
+      error: "Your request could not be processed. Please try again."
     });
   }
 });
@@ -126,19 +139,19 @@ router.put("/update/:orderId", auth.isAuth, jsonParser, async (req, res) => {
   }
   catch (err) {
     res.status(400).json({
-      error: 'Your request could not be processed. Please try again.'
+      error: "Your request could not be processed. Please try again."
     });
   }
 });
 
 // fetch order api
-router.get('/:orderId', auth.isAuth, async (req, res) => {
+router.get("/:orderId", auth.isAuth, async (req, res) => {
   try {
     const orderId = req.params.orderId;
     const user = req.user._id;
 
     const orderDoc = await Order.findOne({ _id: orderId, user }).populate({
-      path: 'cart'
+      path: "cart"
     });
 
     if (!orderDoc) {
@@ -148,9 +161,9 @@ router.get('/:orderId', auth.isAuth, async (req, res) => {
     }
 
     const cart = await Cart.findById(orderDoc.cart._id).populate({
-      path: 'products.product',
+      path: "products.product",
       populate: {
-        path: 'brand'
+        path: "brand"
       }
     });
 
@@ -170,12 +183,12 @@ router.get('/:orderId', auth.isAuth, async (req, res) => {
     });
   } catch (error) {
     res.status(400).json({
-      error: 'Your request could not be processed. Please try again.'
+      error: "Your request could not be processed. Please try again."
     });
   }
 });
 
-router.delete('/cancel/:orderId', auth.isAuth, async (req, res) => {
+router.delete("/cancel/:orderId", auth.isAuth, async (req, res) => {
   try {
     const orderId = req.params.orderId;
 
@@ -192,24 +205,24 @@ router.delete('/cancel/:orderId', auth.isAuth, async (req, res) => {
     });
   } catch (error) {
     res.status(400).json({
-      error: 'Your request could not be processed. Please try again.'
+      error: "Your request could not be processed. Please try again."
     });
   }
 });
 
-router.put('/cancel/item/:itemId', auth.isAuth, async (req, res) => {
+router.put("/cancel/item/:itemId", auth.isAuth, async (req, res) => {
   try {
     const itemId = req.params.itemId;
     const orderId = req.body.orderId;
     const cartId = req.body.cartId;
 
-    const foundCart = await Cart.findOne({ 'products._id': itemId });
+    const foundCart = await Cart.findOne({ "products._id": itemId });
     const foundCartProduct = foundCart.products.find(p => p._id == itemId);
 
     await Cart.updateOne(
-      { 'products._id': itemId },
+      { "products._id": itemId },
       {
-        'products.$.status': 'Cancelled'
+        "products.$.status": "Cancelled"
       }
     );
 
@@ -219,7 +232,7 @@ router.put('/cancel/item/:itemId', auth.isAuth, async (req, res) => {
     );
 
     const cart = await Cart.findOne({ _id: cartId });
-    const items = cart.products.filter(item => item.status === 'Cancelled');
+    const items = cart.products.filter(item => item.status === "Cancelled");
 
     // All items are cancelled => Cancel order
     if (cart.products.length === items.length) {
@@ -229,17 +242,17 @@ router.put('/cancel/item/:itemId', auth.isAuth, async (req, res) => {
       return res.status(200).json({
         success: true,
         orderCancelled: true,
-        message: 'You order has been cancelled successfully!'
+        message: "You order has been cancelled successfully!"
       });
     }
 
     res.status(200).json({
       success: true,
-      message: 'Item has been cancelled successfully!'
+      message: "Item has been cancelled successfully!"
     });
   } catch (error) {
     res.status(400).json({
-      error: 'Your request could not be processed. Please try again.'
+      error: "Your request could not be processed. Please try again."
     });
   }
 });

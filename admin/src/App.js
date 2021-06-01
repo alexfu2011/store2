@@ -9,19 +9,14 @@ import { CategoryList } from "./category/categoryList";
 import { DiscountList } from "./discount/discountList";
 import { UserList } from "./user/userList";
 import "react-bootstrap-table-next/dist/react-bootstrap-table2.min.css";
-import { url } from "./constants/auth";
 import React, { useEffect, useState } from "react";
-import { TokenProivder, useToken } from "./store";
-import { getToken } from "./services/authService";
 
 const SecuredRoute = (props) => {
-  const { state, dispatch } = useToken();
-
   useEffect(() => {
   }, []);
 
   return (
-    <Route path={props.path} render={(data) => localStorage.getItem('token') ?
+    <Route path={props.path} render={(data) => localStorage.getItem("token") ?
       <props.component {...data}></props.component> :
       <Redirect to={{ pathname: "/login" }}></Redirect>
     }></Route>
@@ -30,21 +25,19 @@ const SecuredRoute = (props) => {
 
 function App() {
   return (
-    <TokenProivder>
-      <BrowserRouter>
-        <Switch>
-          <Redirect exact from="/" to="/login" component={LoginPage} />
-          <Route path="/login" component={LoginPage} />
-          <SecuredRoute exact path="/home" component={Home} />
-          <SecuredRoute exact path="/product" component={ProductList} />
-          <SecuredRoute exact path="/order" component={OrderList} />
-          <SecuredRoute exact path="/category" component={CategoryList} />
-          <SecuredRoute exact path="/discount" component={DiscountList} />
-          <SecuredRoute exact path="/user" component={UserList} />
-          <SecuredRoute exact path='/order/orderDetails' component={OrderDetails} />
-        </Switch>
-      </BrowserRouter>
-    </TokenProivder>
+    <BrowserRouter>
+      <Switch>
+        <Redirect exact from="/" to="/login" component={LoginPage} />
+        <Route path="/login" component={LoginPage} />
+        <SecuredRoute exact path="/home" component={Home} />
+        <SecuredRoute exact path="/product" component={ProductList} />
+        <SecuredRoute exact path="/order/:page?" component={OrderList} />
+        <SecuredRoute exact path="/category" component={CategoryList} />
+        <SecuredRoute exact path="/discount" component={DiscountList} />
+        <SecuredRoute exact path="/user" component={UserList} />
+        <SecuredRoute exact path="/order/order/detail" component={OrderDetails} />
+      </Switch>
+    </BrowserRouter>
   );
 }
 

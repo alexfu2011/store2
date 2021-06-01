@@ -42,6 +42,8 @@ export const addProduct = async (formf) => {
         formData.append("description", formf.description);
         formData.append("category", formf.category);
         formData.append("price", formf.price);
+        formData.append("tax", formf.tax);
+        formData.append("shipping", formf.shipping);
         formData.append("stock", formf.stock);
         formData.append("isActive", formf.isActive);
         formData.append("image", formf.image);
@@ -76,6 +78,8 @@ export const updateProduct = async (formf) => {
         formData.append("description", formf.description);
         formData.append("category", formf.category._id);
         formData.append("price", formf.price);
+        formData.append("tax", formf.tax);
+        formData.append("shipping", formf.shipping);
         formData.append("stock", formf.stock);
         formData.append("isActive", formf.isActive);
         formData.append("image", formf.image);

@@ -68,8 +68,9 @@ export const saveShippingAddress = (data) => async (dispatch, getState) => {
 
     const cartItems = JSON.parse(localStorage.getItem('cartItems'));
     const { products, total } = getCartItems(cartItems);
+    const code = localStorage.getItem("code");
     axios.post(`/api/cart/add`, { products }, config).then(res => res.data.cartId).then(async cartId => {
-      await axios.post(`/api/order/add`, { cartId, total }, config);
+      await axios.post(`/api/order/add`, { cartId, total, code }, config);
     });
 
   } catch (error) {
