@@ -6,8 +6,8 @@ import MaterialTable from "material-table";
 import OrderForm from "./orderForm";
 import localization from "../localization";
 import { getAllOrders } from "../services/orderService";
-import dateFormat from 'dateformat';
-import NavBar from '../components/navBar';
+import dateFormat from "dateformat";
+import NavBar from "../components/navBar";
 import { getToken } from "../services/authService";
 
 export const OrderList = (props) => {
@@ -66,7 +66,7 @@ export const OrderList = (props) => {
                 return (
                     <Button variant="link" onClick={() => {
                         props.history.replace({
-                            pathname: '/order/order/detail',
+                            pathname: "/order/order/detail",
                             state: rowData
                         })
                     }}>{rowData.orderID}</Button>
@@ -83,21 +83,13 @@ export const OrderList = (props) => {
         {
             title: "状态", field: "status",
             render: rowData => {
-                if (rowData.status == "not-processed") {
+                if (rowData.isActive == 1) {
                     return (
-                        <span style={{ color: "green", fontWeight: "bolder" }}>未处理</span>
+                        <span style={{ color: "green", fontWeight: "bolder" }}>有效</span>
                     );
-                } else if (rowData.status == "processing") {
+                } else if (rowData.isActive == 2) {
                     return (
-                        <span style={{ color: "green", fontWeight: "bolder" }}>处理中</span>
-                    );
-                } else if (rowData.status == "shipped") {
-                    return (
-                        <span style={{ color: "green", fontWeight: "bolder" }}>已发货</span>
-                    );
-                } else if (rowData.status == "delivered") {
-                    return (
-                        <span style={{ color: "green", fontWeight: "bolder" }}>已交货</span>
+                        <span style={{ color: "gray", fontWeight: "bolder" }}>已完成</span>
                     );
                 } else {
                     return (
@@ -134,6 +126,9 @@ export const OrderList = (props) => {
                     <Link to="/order/active">
                         <Button style={{ margin: "20px 10px" }} variant="primary" >有效订单</Button>
                     </Link>
+                    <Link to="/order/completed">
+                        <Button style={{ margin: "20px 10px" }} variant="primary">已完成订单</Button>
+                    </Link>
                     <Link to="/order/cancelled">
                         <Button style={{ margin: "20px 10px" }} variant="primary">已取消订单</Button>
                     </Link>
@@ -141,8 +136,8 @@ export const OrderList = (props) => {
                         columns={columns}
                         actions={[
                             rowData => ({
-                                disabled: rowData.isActive == 2,
-                                icon: 'settings',
+                                disabled: rowData.isActive != 1,
+                                icon: "settings",
                                 onClick: async (event, rowData) => {
                                     editOrder(rowData);
                                 }
@@ -156,6 +151,7 @@ export const OrderList = (props) => {
                         localization={localization}
                     >
                     </MaterialTable>
+                    
                     <OrderForm
                         onHide={() => { modalClose() }}
                         show={modalShow}
@@ -163,6 +159,7 @@ export const OrderList = (props) => {
                         isEditOrder={isEditOrder}
                         data={order}
                     ></OrderForm>
+
                     <Snackbar open={snackBarOpen} message="删除成功"
                         autoHideDuration={3500} onClose={handleCloseSnack}>
                     </Snackbar>

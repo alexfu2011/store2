@@ -131,6 +131,7 @@ export const ProductList = (props) => {
                         localization={localization}
                     >
                     </MaterialTable>
+
                     <ProductForm
                         onHide={() => { modalClose() }}
                         show={modalShow}
@@ -138,6 +139,7 @@ export const ProductList = (props) => {
                         isEditProduct={isEditProduct}
                         data={product}
                     ></ProductForm>
+                    
                     <Snackbar open={barOpen} message="删除成功" autoHideDuration={3500} onClose={handleClose}>
                     </Snackbar>
                 </div>

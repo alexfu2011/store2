@@ -45,6 +45,10 @@ export const ProductForm = ({ onSave, isEditProduct, data, ...props }) => {
         });
     };
 
+    const resetFrom = () => {
+        setForm({ name: "", category: { _id: "" }, brandName: "", summary: "", description: "", price: "", tax: "", shipping: "", stock: "", isActive: "" });
+    };
+
     const handleSubmit = async (e) => {
         e.preventDefault();
         const form = e.currentTarget;
@@ -55,6 +59,7 @@ export const ProductForm = ({ onSave, isEditProduct, data, ...props }) => {
                     const res = await updateProduct(formf);
                     if (res) {
                         setSnackBarOpen(true);
+                        resetFrom();
                         onSave();
                     } else {
                         throw new Error();
@@ -67,6 +72,7 @@ export const ProductForm = ({ onSave, isEditProduct, data, ...props }) => {
                     const res = await addProduct(formf);
                     if (res) {
                         setSnackBarOpen(true);
+                        resetFrom();
                         onSave();
                     } else {
                         throw new Error();
@@ -84,7 +90,7 @@ export const ProductForm = ({ onSave, isEditProduct, data, ...props }) => {
     const onHide = () => {
         setValidated(false);
         setErrorDb(false);
-        setForm({ name: "", category: { _id: "" }, brandName: "", summary: "", description: "", price: "", tax: "", shipping: "", stock: "", isActive: "" });
+        resetFrom();
         setImage("");
         props.onHide();
     };
@@ -158,7 +164,7 @@ export const ProductForm = ({ onSave, isEditProduct, data, ...props }) => {
                                     <Form.Group as={Col}>
                                         <Form.Label>产品图片</Form.Label>
                                         <Form.File value={formf.url} onChange={(e) => {
-                                            setImage(e.target.files[0]);
+                                            setField("image", e.target.files[0]);
                                             setImage(URL.createObjectURL(e.target.files[0]));
                                         }} placeholder="Enter the url" />
                                         <Form.Control.Feedback type="invalid">

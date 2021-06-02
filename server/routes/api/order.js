@@ -15,8 +15,10 @@ router.post("/add", auth.isAuth, jsonParser, async (req, res) => {
     const total = req.body.total;
     const code = req.body.code;
     const user = req.session._userId;
-    const discount = await Discount.findOne({ code });
-    const discountTotal = (1 - discount.percentage / 100) * total;
+    let discountTotal = 0;
+    Discount.findOne({ code }).then(discount => {
+      discountTotal = (1 - discount.percentage / 100) * total;
+    });
 
     const order = new Order({
       cart,
@@ -64,8 +66,10 @@ router.get("/:page", auth.isAuth, async (req, res) => {
     let options;
     if (page == "active") {
       options = { isActive: 1 };
-    } else if (page == "cancelled") {
+    } else if (page == "completed") {
       options = { isActive: 2 };
+    } else if (page == "cancelled") {
+      options = { isActive: 3 };
     } else {
       options = {};
     }

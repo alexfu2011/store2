@@ -40,7 +40,7 @@ export const addProduct = async (formf) => {
         formData.append("brandName", formf.brandName);
         formData.append("summary", formf.summary);
         formData.append("description", formf.description);
-        formData.append("category", formf.category);
+        formData.append("category", formf.category._id);
         formData.append("price", formf.price);
         formData.append("tax", formf.tax);
         formData.append("shipping", formf.shipping);

@@ -121,6 +121,7 @@ export const UserList = (props) => {
                         localization={localization}
                     >
                     </MaterialTable>
+
                     <UserDetails
                         onHide={() => { modalClose() }}
                         show={modalShow}
@@ -128,7 +129,8 @@ export const UserList = (props) => {
                         isEditUser={isEditUser}
                         data={user}
                     ></UserDetails>
-                    <Snackbar open={snackBarOpen} message="Successfully Deleted"
+                    
+                    <Snackbar open={snackBarOpen} message="删除成功"
                         autoHideDuration={3500} onClose={handleCloseSnack}>
                     </Snackbar>
                 </div>

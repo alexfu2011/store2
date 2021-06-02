@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from "react"
 import MaterialTable from "material-table"
 import { Button, Spinner } from "react-bootstrap"
-import "./categoryList.css"
 import CategoryForm from "./categoryForm"
 import Snackbar from "@material-ui/core/Snackbar"
 import NavBar from "./../components/navBar"

@@ -1,7 +1,7 @@
 import React from "react";
 const Rating = ({ value, text, color }) => {
   return (
-    <div className='rating'>
+    <div className="rating">
       <span>
         <i
           style={{ color: color }}

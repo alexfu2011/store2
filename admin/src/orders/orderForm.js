@@ -75,7 +75,7 @@ export const OrderFrom = ({ onSave, isEditOrder, data, ...props }) => {
             {order &&
                 <Modal centered {...props}>
                     <Form onSubmit={handleSubmit}>
-                        <Modal.Header closeButton>订单ID：{order._id}</Modal.Header>
+                        <Modal.Header closeButton>订单ID：{order.orderID}</Modal.Header>
                         <Modal.Body>
                             <Row >
                                 <Col className="box" >
@@ -113,8 +113,9 @@ export const OrderFrom = ({ onSave, isEditOrder, data, ...props }) => {
                                         <Col>
                                             <Form.Control name="status" required as="select" value={order.isActive} onChange={e => changeStatus(e.target.value)}>
                                                 <option value="">请选择状态</option>
-                                                <option value="1">已生效</option>
-                                                <option value="2">已取消</option>
+                                                <option value="1">有效</option>
+                                                <option value="2">已完成</option>
+                                                <option value="3">已取消</option>
                                             </Form.Control>
                                         </Col>
                                     </Row>

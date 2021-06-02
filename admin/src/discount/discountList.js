@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from "react";
 import MaterialTable from "material-table";
 import { Button, Spinner } from "react-bootstrap";
-import "./discountList.css";
 import DiscountForm from "./discountForm";
 import Snackbar from "@material-ui/core/Snackbar";
 import NavBar from "./../components/navBar";
@@ -145,20 +144,20 @@ export const DiscountList = (props) => {
                         localization={localization}
                     >
                     </MaterialTable>
+
+                    <DiscountForm
+                        onHide={() => { modalClose() }}
+                        show={modalShow}
+                        onSave={onSave}
+                        isEditDiscount={isEditDiscount}
+                        data={discount}
+                    ></DiscountForm>
+
+                    <Snackbar open={snackBarOpen} message="删除成功"
+                        autoHideDuration={3500} onClose={handleCloseSnack}>
+                    </Snackbar>
                 </div>
             }
-
-            <DiscountForm
-                onHide={() => { modalClose() }}
-                show={modalShow}
-                onSave={onSave}
-                isEditDiscount={isEditDiscount}
-                data={discount}
-            ></DiscountForm>
-
-            <Snackbar open={snackBarOpen} message="删除成功"
-                autoHideDuration={3500} onClose={handleCloseSnack}>
-            </Snackbar>
         </div>
     )
 }

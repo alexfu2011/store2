@@ -20,13 +20,13 @@ class Content extends React.Component {
           className={classNames("content", { "is-open": this.props.isOpen })}
         >
           <NavBar toggle={this.props.toggle} />
-          <Route path='/' component={HomeScreen} exact />
-          <Route path='/category/:id' component={CategoryScreen} exact />
-          <Route path='/product/:id' component={ProductScreen} />
-          <Route path='/cart/:id?' component={CartScreen} />
-          <Route path='/login' component={LoginScreen} />
-          <Route path='/register' component={RegisterScreen} />
-          <Route path='/shipping' component={ShippingScreen} />
+          <Route path="/" component={HomeScreen} exact />
+          <Route path="/category/:id" component={CategoryScreen} exact />
+          <Route path="/product/:id" component={ProductScreen} />
+          <Route path="/cart/:id?" component={CartScreen} />
+          <Route path="/login" component={LoginScreen} />
+          <Route path="/register" component={RegisterScreen} />
+          <Route path="/shipping" component={ShippingScreen} />
         </Container>
       </Router>
     );

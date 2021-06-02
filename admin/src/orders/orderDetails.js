@@ -1,19 +1,19 @@
-import React, { useEffect, useState } from 'react'
-import NavBar from '../components/navBar'
-import { Button, Col, Row, Form } from 'react-bootstrap'
-import Table from '../components/table'
-import Timeline from '@material-ui/lab/Timeline';
-import TimelineItem from '@material-ui/lab/TimelineItem';
-import TimelineSeparator from '@material-ui/lab/TimelineSeparator';
-import TimelineConnector from '@material-ui/lab/TimelineConnector';
-import TimelineContent from '@material-ui/lab/TimelineContent';
-import TimelineDot from '@material-ui/lab/TimelineDot';
-import Typography from '@material-ui/core/Typography';
-import TimelineOppositeContent from '@material-ui/lab/TimelineOppositeContent';
+import React, { useEffect, useState } from "react"
+import NavBar from "../components/navBar"
+import { Button, Col, Row, Form } from "react-bootstrap"
+import Table from "../components/table"
+import Timeline from "@material-ui/lab/Timeline";
+import TimelineItem from "@material-ui/lab/TimelineItem";
+import TimelineSeparator from "@material-ui/lab/TimelineSeparator";
+import TimelineConnector from "@material-ui/lab/TimelineConnector";
+import TimelineContent from "@material-ui/lab/TimelineContent";
+import TimelineDot from "@material-ui/lab/TimelineDot";
+import Typography from "@material-ui/core/Typography";
+import TimelineOppositeContent from "@material-ui/lab/TimelineOppositeContent";
 
 export const OrderDetails = (props) => {
     const order = props.location.state;
-    const [note, setNote] = useState('');
+    const [note, setNote] = useState("");
     const [status, setStatus] = useState(null);
     const [validated, setValidated] = useState(false);
     const [tax, setTax] = useState(0);
@@ -68,7 +68,7 @@ export const OrderDetails = (props) => {
 
     const subcolumn = [
         {
-            title: "产品图片", field: '',
+            title: "产品图片", field: "",
             render: rowData => {
                 return (<img
                     src={"/" + rowData.product.image}
@@ -78,22 +78,22 @@ export const OrderDetails = (props) => {
                 />)
             }
         },
-        { title: "产品名称", field: 'product.name' },
+        { title: "产品名称", field: "product.name" },
         {
-            title: "产品价格", field: '',
+            title: "产品价格", field: "",
             render: rowData => {
                 return (<span>{rowData.product.price} 元</span>)
             }
         },
-        { title: "产品数量", field: 'quantity' },
+        { title: "产品数量", field: "quantity" },
         {
-            title: "总价", field: '',
+            title: "总价", field: "",
             render: rowData => {
                 return (<span>{rowData.product.price * rowData.quantity} 元</span>)
             }
         },
         {
-            title: "状态", field: 'status',
+            title: "状态", field: "status",
             render: rowData => {
                 return <Form.Control name="status" required as="select" value={rowData.status}>
                     <option value="">请选择状态</option>
@@ -121,13 +121,11 @@ export const OrderDetails = (props) => {
                                     <Row>
                                         <Col style={{ "padding-left": 0 }}>
                                             <strong>订单状态</strong>
-                                            <Form.Control name="status" required as="select" value={order.status}>
+                                            <Form.Control name="isActive" required as="select" value={order.isActive}>
                                                 <option value="">请选择状态</option>
-                                                <option value="not-processed">未处理</option>
-                                                <option value="processing">处理中</option>
-                                                <option value="shipped">已发货</option>
-                                                <option value="delivered">已交货</option>
-                                                <option value="cancelled">已取消</option>
+                                                <option value="1">已生效</option>
+                                                <option value="2">已完成</option>
+                                                <option value="3">已取消</option>
                                             </Form.Control>
                                         </Col>
                                         <Col>
@@ -169,15 +167,15 @@ export const OrderDetails = (props) => {
                                         <Row>税费:</Row>
                                         <Row>运费:</Row>
                                         <Row>折扣:</Row>
-                                        <Row style={{ height: "1px", backgroundColor: '#000' }}></Row>
+                                        <Row style={{ height: "1px", backgroundColor: "#000" }}></Row>
                                         <Row>合计:</Row>
                                     </Col>
                                     <Col xs={1}><Row>{order.total}</Row>
                                         <Row>{tax}</Row>
                                         <Row>{shipping}</Row>
-                                        <Row>- {order.discount}</Row>
-                                        <Row style={{ height: "1px", backgroundColor: '#000' }}></Row>
-                                        <Row>{order.total + tax + shipping - order.discount}</Row>
+                                        <Row>- {order.discount.toFixed(2)}</Row>
+                                        <Row style={{ height: "1px", backgroundColor: "#000" }}></Row>
+                                        <Row>{(order.total + tax + shipping - order.discount).toFixed(2)}</Row>
                                     </Col>
                                 </Row>
                             </Col>

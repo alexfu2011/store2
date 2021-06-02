@@ -3,7 +3,7 @@ import { Route } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import { LinkContainer } from "react-router-bootstrap";
 import { Navbar, Nav, Container, NavDropdown } from "react-bootstrap";
-// import SearchBox from './SearchBox'
+// import SearchBox from "./SearchBox"
 import { logout } from "../actions/userActions";
 const Header = () => {
   const dispatch = useDispatch();
@@ -16,21 +16,21 @@ const Header = () => {
   };
   return (
     <header>
-      <Navbar bg='primary' variant="dark" collapseOnSelect expand='lg'>
+      <Navbar bg="primary" variant="dark" collapseOnSelect expand="lg">
         <Container>
-          <Navbar.Toggle aria-controls='basic-navbar-nav' />
-          <Navbar.Collapse id='basic-navbar-nav'>
+          <Navbar.Toggle aria-controls="basic-navbar-nav" />
+          <Navbar.Collapse id="basic-navbar-nav">
             <Nav>
-              <LinkContainer to={'/'} className="home">
+              <LinkContainer to={"/"} className="home">
                 <Nav.Link>
                   {" "}
-                  <i className='fas fa-home'></i> 首页
+                  <i className="fas fa-home"></i> 首页
                 </Nav.Link>
               </LinkContainer>
-              <LinkContainer to='/cart'>
+              <LinkContainer to="/cart">
                 <Nav.Link>
                   {" "}
-                  <i className='fas fa-shopping-cart'></i> 购物车
+                  <i className="fas fa-shopping-cart"></i> 购物车
                 </Nav.Link>
               </LinkContainer>
               {userInfo ? (
@@ -38,9 +38,9 @@ const Header = () => {
                   <Nav.Link>退出</Nav.Link>
                 </LinkContainer>
               ) : (
-                <LinkContainer to='/login'>
+                <LinkContainer to="/login">
                   <Nav.Link>
-                    <i className='fas fa-user'></i> 登录
+                    <i className="fas fa-user"></i> 登录
                   </Nav.Link>
                 </LinkContainer>
               )}

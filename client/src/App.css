@@ -1,11 +1,9 @@
 .App {
-  display: flex;
+  display: -webkit-inline-box;
   width: 100%;
+  min-width: 370px;
   align-items: stretch;
 }
-
-@import "https://fonts.googleapis.com/css?family=Poppins:300,400,500,600,700";
-@import "https://fonts.googleapis.com/css?family=Nunito+Sans:300,400,500,600,700";
 
 
 body {
@@ -65,7 +63,7 @@ a:focus {
   color: #adb5bd;
   font-weight: 300;
   background-color: #fff;
-    border-bottom: 1px solid rgba(0,0,0,.125);
+  border-bottom: 1px solid rgba(0,0,0,.125);
 }
 
 .nav-item.open {
