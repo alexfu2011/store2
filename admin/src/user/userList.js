@@ -102,7 +102,7 @@ export const UserList = (props) => {
                 </div>
                 :
                 <div>
-                    <MaterialTable style={{ marginTop: "15px" }} title="用户列表" data={users}
+                    <MaterialTable title="用户列表" data={users}
                         columns={columns}
                         actions={[
                             {

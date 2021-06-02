@@ -100,7 +100,7 @@ export const ProductList = (props) => {
                 :
                 <div>
                     <Button style={{ margin: "20px" }} onClick={() => modalOpen()}>添加产品</Button>
-                    <MaterialTable style={{ margin: '15px' }} title="产品列表" data={productList} columns={columns}
+                    <MaterialTable title="产品列表" data={productList} columns={columns}
                         actions={[
                             {
                                 icon: "edit",

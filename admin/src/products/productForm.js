@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react'
-import { Form, Col, Modal, Button, Spinner } from 'react-bootstrap';
+import { Form, Col, Modal, Tabs, Tab, Button, Spinner } from 'react-bootstrap';
 import Snackbar from '@material-ui/core/Snackbar';
 import "./productForm.css";
 import { addProduct, updateProduct } from "../services/productService";
@@ -95,120 +95,126 @@ export const ProductForm = ({ onSave, isEditProduct, data, ...props }) => {
                 <Form noValidate validated={validated} onSubmit={handleSubmit}>
                     <Modal.Header closeButton>{isEdit ? "编辑产品" : "添加产品"}</Modal.Header>
                     <Modal.Body>
-                        <Form.Row>
-                            <Form.Group as={Col} >
-                                <Form.Label>产品名称</Form.Label>
-                                <Form.Control required type="text" value={formf.name} onChange={(e) => setField('name', e.target.value)} placeholder="请输入产品名称" />
-                                <Form.Control.Feedback type="invalid">
-                                    请输入产品名称
+                        <Tabs defaultActiveKey="tab1" transition={false} id="noanim-tab-example">
+                            <Tab eventKey="tab1" title="产品详情" className="my-4">
+                                <Form.Row>
+                                    <Form.Group as={Col} >
+                                        <Form.Label>产品名称</Form.Label>
+                                        <Form.Control required type="text" value={formf.name} onChange={(e) => setField('name', e.target.value)} placeholder="请输入产品名称" />
+                                        <Form.Control.Feedback type="invalid">
+                                            请输入产品名称
                                 </Form.Control.Feedback>
-                            </Form.Group>
-                        </Form.Row>
-                        <Form.Row>
-                            <Form.Group as={Col} >
-                                <Form.Label>品牌名称</Form.Label>
-                                <Form.Control required type="text" value={formf.brandName} onChange={(e) => setField('brandName', e.target.value)} placeholder="请输入品牌名称" />
-                                <Form.Control.Feedback type="invalid">
-                                    请输入品牌名称
+                                    </Form.Group>
+                                </Form.Row>
+                                <Form.Row>
+                                    <Form.Group as={Col}>
+                                        <Form.Label>分类</Form.Label>
+                                        <Form.Control required as="select" value={formf.category._id} onChange={(e) => setField('category', { "_id": e.target.value })} >
+                                            <option value="">请选择分类</option>
+                                            {category && category.map((item) => <option key={item._id} value={item._id}>{item.name}</option>)}
+                                        </Form.Control>
+                                        <Form.Control.Feedback type="invalid">
+                                            请输入产品分类
                                 </Form.Control.Feedback>
-                            </Form.Group>
-                        </Form.Row>
-                        <Form.Row>
-                            <Form.Group as={Col}>
-                                <Form.Label>产品简介</Form.Label>
-                                <Form.Control required type="text" value={formf.summary} onChange={(e) => setField('summary', e.target.value)} placeholder="请输入产品简述" />
-                                <Form.Control.Feedback type="invalid">
-                                    请输入产品简介
+                                    </Form.Group>
+                                </Form.Row>
+                                <Form.Row>
+                                    <Form.Group as={Col}>
+                                        <Form.Label>产品简介</Form.Label>
+                                        <Form.Control required type="text" value={formf.summary} onChange={(e) => setField('summary', e.target.value)} placeholder="请输入产品简述" />
+                                        <Form.Control.Feedback type="invalid">
+                                            请输入产品简介
                                 </Form.Control.Feedback>
-                            </Form.Group>
-                        </Form.Row>
-                        <Form.Row>
-                            <Form.Group as={Col}>
-                                <Form.Label>产品描述</Form.Label>
-                                <Form.Control required as="textarea" value={formf.description} onChange={(e) => setField('description', e.target.value)} placeholder="请输入产品描述" />
-                                <Form.Control.Feedback type="invalid">
-                                    请输入产品描述
+                                    </Form.Group>
+                                </Form.Row>
+                                <Form.Row>
+                                    <Form.Group as={Col}>
+                                        <Form.Label>产品描述</Form.Label>
+                                        <Form.Control required as="textarea" value={formf.description} onChange={(e) => setField('description', e.target.value)} placeholder="请输入产品描述" />
+                                        <Form.Control.Feedback type="invalid">
+                                            请输入产品描述
                                 </Form.Control.Feedback>
-                            </Form.Group>
-                        </Form.Row>
-                        <Form.Row>
-                            <Form.Group as={Col}>
-                                <Form.Label>分类</Form.Label>
-                                <Form.Control required as="select" value={formf.category._id} onChange={(e) => setField('category', { "_id": e.target.value })} >
-                                    <option value="">请选择分类</option>
-                                    {category && category.map((item) => <option key={item._id} value={item._id}>{item.name}</option>)}
-                                </Form.Control>
-                                <Form.Control.Feedback type="invalid">
-                                    请输入产品分类
+                                    </Form.Group>
+                                </Form.Row>
+                                <Form.Row>
+                                    <Form.Group as={Col}>
+                                        <Form.Label>产品状态</Form.Label>
+                                        <Form.Control required as="select" value={formf.isActive} onChange={(e) => setField("isActive", e.target.value)} >
+                                            <option value="">请选择产品状态</option>
+                                            <option value="1">上架</option>
+                                            <option value="2">下架</option>
+                                        </Form.Control>
+                                        <Form.Control.Feedback type="invalid">
+                                            请选择产品状态
                                 </Form.Control.Feedback>
-                            </Form.Group>
-                        </Form.Row>
-                        <Form.Row>
-                            <Form.Group as={Col}>
-                                <Form.Label>产品价格</Form.Label>
-                                <Form.Control required type="number" value={formf.price} onChange={(e) => setField('price', e.target.value)} placeholder="请输入产品价格" />
-                                <Form.Control.Feedback type="invalid">
-                                    请输入产品价格
+                                    </Form.Group>
+                                </Form.Row>
+                                <Form.Row>
+                                    <Form.Group as={Col} className="preview">
+                                        {image ? <img src={image} alt="1" /> : (isEdit ? <img src={formf.image} alt="2" /> : "")}
+                                    </Form.Group>
+                                </Form.Row>
+                                <Form.Row>
+                                    <Form.Group as={Col}>
+                                        <Form.Label>产品图片</Form.Label>
+                                        <Form.File value={formf.url} onChange={(e) => {
+                                            setImage(e.target.files[0]);
+                                            setImage(URL.createObjectURL(e.target.files[0]));
+                                        }} placeholder="Enter the url" />
+                                        <Form.Control.Feedback type="invalid">
+                                            请上传产品图片
                                 </Form.Control.Feedback>
-                            </Form.Group>
-                        </Form.Row>
-                        <Form.Row>
-                            <Form.Group as={Col}>
-                                <Form.Label>产品税费</Form.Label>
-                                <Form.Control required type="number" value={formf.tax} onChange={(e) => setField('tax', e.target.value)} placeholder="请输入产品价格" />
-                                <Form.Control.Feedback type="invalid">
-                                    请输入产品税费
+                                    </Form.Group>
+                                </Form.Row>
+                            </Tab>
+                            <Tab eventKey="tab2" title="产品明细" className="my-4">
+                                <Form.Row>
+                                    <Form.Group as={Col} >
+                                        <Form.Label>品牌名称</Form.Label>
+                                        <Form.Control required type="text" value={formf.brandName} onChange={(e) => setField('brandName', e.target.value)} placeholder="请输入品牌名称" />
+                                        <Form.Control.Feedback type="invalid">
+                                            请输入品牌名称
                                 </Form.Control.Feedback>
-                            </Form.Group>
-                        </Form.Row>
-                        <Form.Row>
-                            <Form.Group as={Col}>
-                                <Form.Label>产品运费</Form.Label>
-                                <Form.Control required type="number" value={formf.shipping} onChange={(e) => setField('shipping', e.target.value)} placeholder="请输入产品价格" />
-                                <Form.Control.Feedback type="invalid">
-                                    请输入产品运费
+                                    </Form.Group>
+                                </Form.Row>
+                                <Form.Row>
+                                    <Form.Group as={Col}>
+                                        <Form.Label>产品价格</Form.Label>
+                                        <Form.Control required type="number" value={formf.price} onChange={(e) => setField('price', e.target.value)} placeholder="请输入产品价格" />
+                                        <Form.Control.Feedback type="invalid">
+                                            请输入产品价格
                                 </Form.Control.Feedback>
-                            </Form.Group>
-                        </Form.Row>
-                        <Form.Row>
-                            <Form.Group as={Col}>
-                                <Form.Label>产品库存</Form.Label>
-                                <Form.Control required type="number" value={formf.stock} onChange={(e) => setField('stock', e.target.value)} placeholder="请输入产品库存" />
-                                <Form.Control.Feedback type="invalid">
-                                    请输入产品库存
+                                    </Form.Group>
+                                </Form.Row>
+                                <Form.Row>
+                                    <Form.Group as={Col}>
+                                        <Form.Label>产品税费</Form.Label>
+                                        <Form.Control required type="number" value={formf.tax} onChange={(e) => setField('tax', e.target.value)} placeholder="请输入产品价格" />
+                                        <Form.Control.Feedback type="invalid">
+                                            请输入产品税费
                                 </Form.Control.Feedback>
-                            </Form.Group>
-                        </Form.Row>
-                        <Form.Row>
-                            <Form.Group as={Col}>
-                                <Form.Label>产品状态</Form.Label>
-                                <Form.Control required as="select" value={formf.isActive} onChange={(e) => setField("isActive", e.target.value)} >
-                                    <option value="">请选择产品状态</option>
-                                    <option value="1">上架</option>
-                                    <option value="2">下架</option>
-                                </Form.Control>
-                                <Form.Control.Feedback type="invalid">
-                                    请选择产品状态
+                                    </Form.Group>
+                                </Form.Row>
+                                <Form.Row>
+                                    <Form.Group as={Col}>
+                                        <Form.Label>产品运费</Form.Label>
+                                        <Form.Control required type="number" value={formf.shipping} onChange={(e) => setField('shipping', e.target.value)} placeholder="请输入产品价格" />
+                                        <Form.Control.Feedback type="invalid">
+                                            请输入产品运费
                                 </Form.Control.Feedback>
-                            </Form.Group>
-                        </Form.Row>
-                        <Form.Row>
-                            <Form.Group as={Col} className="preview">
-                                {image ? <img src={image} alt="1" /> : (isEdit ? <img src={formf.image} alt="2" /> : "")}
-                            </Form.Group>
-                        </Form.Row>
-                        <Form.Row>
-                            <Form.Group as={Col}>
-                                <Form.Label>产品图片</Form.Label>
-                                <Form.File value={formf.url} onChange={(e) => {
-                                    setImage(e.target.files[0]);
-                                    setImage(URL.createObjectURL(e.target.files[0]));
-                                }} placeholder="Enter the url" />
-                                <Form.Control.Feedback type="invalid">
-                                    请上传产品图片
+                                    </Form.Group>
+                                </Form.Row>
+                                <Form.Row>
+                                    <Form.Group as={Col}>
+                                        <Form.Label>产品库存</Form.Label>
+                                        <Form.Control required type="number" value={formf.stock} onChange={(e) => setField('stock', e.target.value)} placeholder="请输入产品库存" />
+                                        <Form.Control.Feedback type="invalid">
+                                            请输入产品库存
                                 </Form.Control.Feedback>
-                            </Form.Group>
-                        </Form.Row>
+                                    </Form.Group>
+                                </Form.Row>
+                            </Tab>
+                        </Tabs>
                     </Modal.Body>
                     <Modal.Footer>
                         {errorDb && <p style={{ color: "red" }}>无法{isEdit ? "更新" : "保存"}数据</p>}

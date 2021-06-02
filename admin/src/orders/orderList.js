@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from "react";
+import { Link } from "react-router-dom";
 import { Button, Spinner } from "react-bootstrap";
 import Snackbar from "@material-ui/core/Snackbar";
 import MaterialTable from "material-table";
@@ -6,7 +7,7 @@ import OrderForm from "./orderForm";
 import localization from "../localization";
 import { getAllOrders } from "../services/orderService";
 import dateFormat from 'dateformat';
-import TabBar from '../components/tabBar';
+import NavBar from '../components/navBar';
 import { getToken } from "../services/authService";
 
 export const OrderList = (props) => {
@@ -113,7 +114,7 @@ export const OrderList = (props) => {
 
     return (
         <div>
-            <TabBar></TabBar>
+            <NavBar></NavBar>
             {loading ?
                 <div style={{ width: "100%", height: "100px", marginTop: "300px" }} >
                     <Spinner style={{
@@ -127,7 +128,16 @@ export const OrderList = (props) => {
                 </div>
                 :
                 <div>
-                    <MaterialTable style={{ marginTop: "15px" }} title="订单列表" data={orders}
+                    <Link to="/order/all">
+                        <Button style={{ margin: "20px 10px" }} variant="primary">所有订单</Button>
+                    </Link>
+                    <Link to="/order/active">
+                        <Button style={{ margin: "20px 10px" }} variant="primary" >有效订单</Button>
+                    </Link>
+                    <Link to="/order/cancelled">
+                        <Button style={{ margin: "20px 10px" }} variant="primary">已取消订单</Button>
+                    </Link>
+                    <MaterialTable title="订单列表" data={orders}
                         columns={columns}
                         actions={[
                             rowData => ({

@@ -111,7 +111,7 @@ export const DiscountList = (props) => {
                 </div>
                 :
                 <div>
-                    <Button style={{ margin: "30px" }} onClick={() => modalOpen()}>添加折扣</Button>
+                    <Button style={{ margin: "20px" }} onClick={() => modalOpen()}>添加折扣</Button>
                     <MaterialTable title="折扣列表" data={discountList}
                         columns={columns}
                         actions={[
