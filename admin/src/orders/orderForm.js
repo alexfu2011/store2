@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react"
 import { Container, Modal, Form, Button, Col, Row } from "react-bootstrap"
 import "./orderForm.css"
-import { url, jwt, userId } from "./../constants/auth";
+import { updateOrder } from "../services/orderService";
 
 export const OrderFrom = ({ onSave, isEditOrder, data, ...props }) => {
     const [order, setOrder] = useState(null)
@@ -23,38 +23,9 @@ export const OrderFrom = ({ onSave, isEditOrder, data, ...props }) => {
         setOrder(newOrder);
     }
 
-    const updateOrder = async () => {
-        try {
-            const token = localStorage.getItem("token");
-            const body = {
-                _id: order._id,
-                cartId: order.cartId,
-                products: order.products,
-                isActive: order.isActive
-            };
-            const res = await fetch(url + "/order/update/" + order._id, {
-                method: "PUT",
-                body: JSON.stringify(body),
-                headers: {
-                    "Content-Type": "application/json",
-                    authorization: `Bearer ${token}`
-                }
-            });
-            if (res.status === 200) {
-                return true;
-            } else if (res.status === 400 || res.status === 401) {
-                return false;
-            }
-        } catch (err) {
-            if (err) {
-                return false;
-            }
-        }
-    };
-
     const handleSubmit = async (e) => {
         e.preventDefault();
-        const res = await updateOrder();
+        const res = await updateOrder(order);
         if (res) {
             setSnackBarOpen(true);
             onSave();

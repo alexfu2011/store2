@@ -20,16 +20,16 @@ const SideBar = (props) => {
 
       <Nav className="flex-column pt-2">
         <Nav.Link onClick={props.toggle}>返回</Nav.Link>
-        <Nav.Item className="active">
-          <Nav.Link href="/">
+        <Nav.Item className={ localStorage.getItem("category") == "" ? "active" : ""}>
+          <Nav.Link onClick={() => { localStorage.setItem("category", ""); window.location.href = "/"; }}>
             <strong>首页</strong>
-          </Nav.Link>
+            </Nav.Link>
         </Nav.Item>
 
         {categories &&
           categories.map((category) => (
-            <Nav.Item key={category._id}>
-              <Nav.Link href={"/category/"+category._id}>
+            <Nav.Item key={category._id} className={ localStorage.getItem("category") == category._id ? "active" : ""}>
+              <Nav.Link onClick={() => { localStorage.setItem("category", category._id); window.location.href = "/category/" + category._id; }}>
                 <strong>{category.name}</strong>
               </Nav.Link>
             </Nav.Item>

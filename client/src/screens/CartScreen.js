@@ -44,10 +44,10 @@ const CartScreen = ({ match, location, history }) => {
       <Col xs={12} md={8}>
         {cartItems.length === 0 ? (
           <Message>
-            请添加购物车 <Link to='/'>返回</Link>
+            请添加购物车 <Link to="/">返回</Link>
           </Message>
         ) : (
-          <ListGroup variant='flush' className="mb-3">
+          <ListGroup variant="flush" className="mb-3">
             {cartItems &&
               cartItems.map((item) => (
                 <ListGroup.Item key={item.product}>
@@ -61,7 +61,7 @@ const CartScreen = ({ match, location, history }) => {
                     </Col>
                     <Col xs={3}>
                       <Form.Control
-                        as='select'
+                        as="select"
                         value={item.qty}
                         onChange={(e) =>
                           dispatch(
@@ -78,11 +78,11 @@ const CartScreen = ({ match, location, history }) => {
                     </Col>
                     <Col xs={2}>
                       <Button
-                        type='button'
-                        variant='light'
+                        type="button"
+                        variant="light"
                         onClick={() => removeFromCartHandler(item.product)}
                       >
-                        <i className='fas fa-trash'></i>
+                        <i className="fas fa-trash"></i>
                       </Button>
                     </Col>
                   </Row>
@@ -93,7 +93,7 @@ const CartScreen = ({ match, location, history }) => {
       </Col>
       <Col md={4}>
         <Card>
-          <ListGroup variant='flush'>
+          <ListGroup variant="flush">
             <ListGroup.Item>
               <h2>
                 {cartItems.reduce((acc, item) => acc + item.qty, 0)}件商品
@@ -104,15 +104,15 @@ const CartScreen = ({ match, location, history }) => {
             </ListGroup.Item>
             <ListGroup.Item>
           <Form.Control
-            type='text'
-            placeholder='请输入折扣码'
+            type="text"
+            placeholder="请输入折扣码"
             onChange={e => setCode(e.target.value)}
           ></Form.Control>
             </ListGroup.Item>
             <ListGroup.Item>
               <Button
-                type='button'
-                className='btn-block'
+                type="button"
+                className="btn-block"
                 disabled={cartItems.length === 0}
                 onClick={checkoutHandler}
               >
