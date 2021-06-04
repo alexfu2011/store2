@@ -131,11 +131,11 @@ export const saveCart = () => (dispatch, getState) => {
 
   axios.post(`/api/cart/add`, { products }, config).then(res => res.data.cartId).then(async cartId => {
     const res = await axios.post(`/api/order/add`, { cartId, total, code }, config);
-    console.log(res);
     dispatch({
       type: CART_SAVE,
       payload: res.data.order.orderID,
     });
+    localStorage.removeItem("cartItems");
   });
   
 };

@@ -11,6 +11,7 @@ import TimelineDot from "@material-ui/lab/TimelineDot";
 import Typography from "@material-ui/core/Typography";
 import TimelineOppositeContent from "@material-ui/lab/TimelineOppositeContent";
 import { updateOrder } from "../services/orderService";
+import dateFormat from "dateformat";
 
 export const OrderDetails = (props) => {
     const [order, setOrder] = useState(props.location.state);
@@ -24,7 +25,7 @@ export const OrderDetails = (props) => {
         marginLeft: "30px",
         backgroundColor: "#fff"
     };
-    
+
     const changeProductStatus = (value) => {
         const newOrder = Object.assign({}, order);
         newOrder.products.map(product => {
@@ -197,6 +198,30 @@ export const OrderDetails = (props) => {
                                     <h4>订单记录</h4>
                                     <Row>
                                         <Timeline>
+                                            {order.logs.map((result) =>
+                                                <TimelineItem>
+                                                    <TimelineOppositeContent>
+                                                        <Typography>{dateFormat(result.created, "yyyy-mm-dd hh:mm:ss")}</Typography>
+                                                    </TimelineOppositeContent>
+                                                    <TimelineSeparator>
+                                                        <TimelineDot variant="outlined" color="primary" />
+                                                        <TimelineConnector />
+                                                    </TimelineSeparator>
+                                                    <TimelineContent>
+                                                        <Typography>{(() => {
+                                                            switch (result.status) {
+                                                                case 1:
+                                                                    return "已生效";
+                                                                case 2:
+                                                                    return "已完成";
+                                                                case 3:
+                                                                    return "已取消";
+                                                            }
+                                                        }
+                                                        )()}</Typography>
+                                                    </TimelineContent>
+                                                </TimelineItem>
+                                            )}
                                         </Timeline>
                                     </Row>
                                 </Col>

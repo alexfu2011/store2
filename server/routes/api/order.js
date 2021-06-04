@@ -17,14 +17,14 @@ router.post("/add", auth.isAuth, jsonParser, async (req, res) => {
     const user = req.session._userId;
     let discountTotal = 0;
     if (code) {
-      Discount.findOne({ code }).then(discount => {
-        discountTotal = (1 - discount.percentage / 100) * total;
-      });
+      const discount = await Discount.findOne({ code });
+      discountTotal = (1 - discount.percentage / 100) * total;
     }
     const order = new Order({
       cart,
       user,
       total,
+      logs: [{ status: 1 }],
       discount: discountTotal
     });
 
@@ -40,7 +40,7 @@ router.post("/add", auth.isAuth, jsonParser, async (req, res) => {
           throw error;
         }
         order.orderID += counter.seq;
-        Order.create(order, (error, doc) => {
+        Order.create(order, async (error, doc) => {
           if (error) {
             console.log("save order encountered error ", error);
             throw error;
@@ -74,7 +74,7 @@ router.get("/:page", auth.isAuth, async (req, res) => {
     } else {
       options = {};
     }
-    const orders = await Order.find(options).populate("cart");
+    const orders = await Order.find(options).populate("cart,logs");
 
     const newOrders = orders.filter(order => order.cart);
 
@@ -97,6 +97,7 @@ router.get("/:page", auth.isAuth, async (req, res) => {
           discount: doc.discount,
           created: doc.created,
           isActive: doc.isActive,
+          logs: doc.logs,
           cartId: cartId,
           user: cart.user,
           profile: profile,
@@ -130,9 +131,10 @@ router.put("/update/:orderId", auth.isAuth, jsonParser, async (req, res) => {
     const {
       cartId,
       products,
-      isActive
+      isActive,
     } = req.body;
-    const order = await Order.findByIdAndUpdate(orderId, { isActive });
+    const order = await Order.findByIdAndUpdate(orderId, { isActive, $push: { logs: { status: isActive } } });
+    /*
     products.map(async product => {
       await Cart.updateOne({ "_id": cartId, "products._id": product._id }, {
         "$set": {
@@ -141,6 +143,7 @@ router.put("/update/:orderId", auth.isAuth, jsonParser, async (req, res) => {
         }
       });
     });
+    */
     res.status(200).json(order);
   }
   catch (err) {
