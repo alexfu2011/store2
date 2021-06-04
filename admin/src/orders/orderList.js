@@ -85,7 +85,7 @@ export const OrderList = (props) => {
             render: rowData => {
                 if (rowData.isActive == 1) {
                     return (
-                        <span style={{ color: "green", fontWeight: "bolder" }}>有效</span>
+                        <span style={{ color: "green", fontWeight: "bolder" }}>已生成</span>
                     );
                 } else if (rowData.isActive == 2) {
                     return (
@@ -124,7 +124,7 @@ export const OrderList = (props) => {
                         <Button style={{ margin: "20px 10px" }} variant="primary">所有订单</Button>
                     </Link>
                     <Link to="/order/active">
-                        <Button style={{ margin: "20px 10px" }} variant="primary" >有效订单</Button>
+                        <Button style={{ margin: "20px 10px" }} variant="primary" >已生成订单</Button>
                     </Link>
                     <Link to="/order/completed">
                         <Button style={{ margin: "20px 10px" }} variant="primary">已完成订单</Button>

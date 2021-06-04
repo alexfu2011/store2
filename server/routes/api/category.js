@@ -52,10 +52,11 @@ router.delete("/delete/:id", auth.isAuth, jsonParser, async (req, res) => {
     }
 });
 
-router.post("/update", auth.isAuth, jsonParser, async (req, res) => {
+router.post("/update/:id", auth.isAuth, jsonParser, async (req, res) => {
     try {
-        const {_id, name, isActive, ...rest} = req.body;
-        const category = await Category.findByIdAndUpdate(_id, {name, isActive});
+        const categoryId = req.params.id;
+        const {name, isActive, ...rest} = req.body;
+        const category = await Category.findByIdAndUpdate(categoryId, {name, isActive});
         res.status(200).json({category});
     } catch {
         res.status(400).json({

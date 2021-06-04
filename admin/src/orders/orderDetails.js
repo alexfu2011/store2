@@ -128,7 +128,7 @@ export const OrderDetails = (props) => {
                                                 <strong>订单状态</strong>
                                                 <Form.Control name="isActive" required as="select" value={order.isActive} onChange={e => changeStatus(e.target.value)}>
                                                     <option value="">请选择状态</option>
-                                                    <option value="1">已生效</option>
+                                                    <option value="1">已生成</option>
                                                     <option value="2">已完成</option>
                                                     <option value="3">已取消</option>
                                                 </Form.Control>
@@ -211,11 +211,11 @@ export const OrderDetails = (props) => {
                                                         <Typography>{(() => {
                                                             switch (result.status) {
                                                                 case 1:
-                                                                    return "已生效";
+                                                                    return <span style={{ color: 'green', fontWeight: "bolder" }}>已生成</span>;
                                                                 case 2:
-                                                                    return "已完成";
+                                                                    return <span style={{ color: 'gray', fontWeight: "bolder" }}>已完成</span>;
                                                                 case 3:
-                                                                    return "已取消";
+                                                                    return <span style={{ color: 'red', fontWeight: "bolder" }}>已取消</span>;
                                                             }
                                                         }
                                                         )()}</Typography>

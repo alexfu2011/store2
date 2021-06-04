@@ -94,11 +94,10 @@ export const updateCategory = (category) => {
     return new Promise((resolve, reject) => {
         const token = localStorage.getItem("token");
         const body = {
-            _id: category._id,
             name: category.name,
             isActive: category.isActive
         };
-        fetch(url + "/category/update", {
+        fetch(url + "/category/update/" + category._id, {
             method: "POST",
             body: JSON.stringify(body),
             headers: {

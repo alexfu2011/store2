@@ -14,6 +14,13 @@ export const CategoryForm = ({ onSave, isEditCategory, data, ...props }) => {
         setCategory({ ...category, [e.target.name]: e.target.value });
     };
 
+    const setField = (field, value) => {
+        setCategory({
+            ...category,
+            [field]: value
+        });
+    };
+
     const handleSubmit = async (e) => {
         e.preventDefault();
         const form = e.currentTarget;
@@ -60,7 +67,7 @@ export const CategoryForm = ({ onSave, isEditCategory, data, ...props }) => {
 
     useEffect(() => {
         if (isEditCategory) {
-            setCategory(data);
+            setCategory({_id: data._id, name: data.name, isActive: data.isActive == 1 ? true : false});
             setIsEdit(true);
         } else {
             setIsEdit(false);
@@ -83,22 +90,28 @@ export const CategoryForm = ({ onSave, isEditCategory, data, ...props }) => {
                         <Form.Row>
                             <Form.Group as={Col}>
                                 <Form.Label>分类名称</Form.Label>
-                                <Form.Control required type="text" value={category.name} name="name" onChange={handleChange} placeholder="分类名称" />
+                                <Form.Control required type="text" value={category.name} name="name" onChange={e => setField("name", e.target.value)} placeholder="分类名称" />
                                 <Form.Control.Feedback type="invalid">请输入分类名称</Form.Control.Feedback>
                             </Form.Group>
                         </Form.Row>
                         <Form.Row>
-                            <Form.Group as={Col}>
-                                <Form.Label>分类状态</Form.Label>
-                                <Form.Control required as="select" value={category.isActive} name="isActive" onChange={handleChange} >
-                                    <option value="">请选择分类状态</option>
-                                    <option value="1">有效</option>
-                                    <option value="2">无效</option>
-                                </Form.Control>
-                                <Form.Control.Feedback type="invalid">
-                                    请选择产品状态
-                                </Form.Control.Feedback>
-                            </Form.Group>
+                        {isEdit && 
+                        <Form.Group >
+                            <Form.Check
+                                checked={category.isActive === true}
+                                type="radio"
+                                label="有效"
+                                onChange={() => setField("isActive", true)}
+                                name="isActive"
+                            />
+                            <Form.Check
+                                checked={category.isActive === false}
+                                type="radio"
+                                label="无效"
+                                onChange={() => setField("isActive", false)}
+                                name="isActive"
+                            />
+                        </Form.Group>}
                         </Form.Row>
                     </Modal.Body>
                     <Modal.Footer>

@@ -84,7 +84,7 @@ export const OrderFrom = ({ onSave, isEditOrder, data, ...props }) => {
                                         <Col>
                                             <Form.Control name="status" required as="select" value={order.isActive} onChange={e => changeStatus(e.target.value)}>
                                                 <option value="">请选择状态</option>
-                                                <option value="1">有效</option>
+                                                <option value="1">已生成</option>
                                                 <option value="2">已完成</option>
                                                 <option value="3">已取消</option>
                                             </Form.Control>
