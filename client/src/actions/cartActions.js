@@ -9,6 +9,7 @@ import {
   CART_SHIPPING_ADDRESS_SUCCESS,
   CART_SHIPPING_ADDRESS_FAIL,
   CART_SAVE_PAYMENT_METHOD,
+  CART_SAVE,
 } from "../constants/cartConstants";
 
 
@@ -111,4 +112,45 @@ export const savePaymentMethod = (data) => (dispatch) => {
   });
 
   localStorage.setItem("paymentMethod", JSON.stringify(data));
+};
+
+export const saveCart = () => (dispatch, getState) => {
+  const {
+    userLogin: { userInfo },
+  } = getState();
+
+  const config = {
+    headers: {
+      "Content-Type": "application/json",
+      Authorization: `Bearer ${userInfo.token}`,
+    },
+  };
+  const cartItems = JSON.parse(localStorage.getItem('cartItems'));
+  const { products, total } = getCartItems(cartItems);
+  const code = localStorage.getItem("code");
+
+  axios.post(`/api/cart/add`, { products }, config).then(res => res.data.cartId).then(async cartId => {
+    const res = await axios.post(`/api/order/add`, { cartId, total, code }, config);
+    console.log(res);
+    dispatch({
+      type: CART_SAVE,
+      payload: res.data.order.orderID,
+    });
+  });
+  
+};
+
+const getCartItems = cartItems => {
+  const newCartItems = [];
+  let total = 0;
+  cartItems.map(item => {
+      const newItem = {};
+      newItem.quantity = item.qty;
+      newItem.totalPrice = item.price * item.qty;
+      total += newItem.totalPrice;
+      newItem.product = item.product;
+      newCartItems.push(newItem);
+  });
+
+  return { products: newCartItems, total };
 };

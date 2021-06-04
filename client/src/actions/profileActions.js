@@ -65,33 +65,10 @@ export const saveShippingAddress = (data) => async (dispatch, getState) => {
     });
 
     localStorage.setItem("shippingAddress", JSON.stringify(data));
-
-    const cartItems = JSON.parse(localStorage.getItem('cartItems'));
-    const { products, total } = getCartItems(cartItems);
-    const code = localStorage.getItem("code");
-    axios.post(`/api/cart/add`, { products }, config).then(res => res.data.cartId).then(async cartId => {
-      await axios.post(`/api/order/add`, { cartId, total, code }, config);
-    });
-
   } catch (error) {
     dispatch({
       type: CART_SAVE_SHIPPING_ADDRESS_FAIL,
       payload: error.message,
     });
   }
-};
-
-const getCartItems = cartItems => {
-  const newCartItems = [];
-  let total = 0;
-  cartItems.map(item => {
-      const newItem = {};
-      newItem.quantity = item.qty;
-      newItem.totalPrice = item.price * item.qty;
-      total += newItem.totalPrice;
-      newItem.product = item.product;
-      newCartItems.push(newItem);
-  });
-
-  return { products: newCartItems, total };
 };

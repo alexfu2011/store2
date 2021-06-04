@@ -16,10 +16,11 @@ router.post("/add", auth.isAuth, jsonParser, async (req, res) => {
     const code = req.body.code;
     const user = req.session._userId;
     let discountTotal = 0;
-    Discount.findOne({ code }).then(discount => {
-      discountTotal = (1 - discount.percentage / 100) * total;
-    });
-
+    if (code) {
+      Discount.findOne({ code }).then(discount => {
+        discountTotal = (1 - discount.percentage / 100) * total;
+      });
+    }
     const order = new Order({
       cart,
       user,
@@ -47,7 +48,7 @@ router.post("/add", auth.isAuth, jsonParser, async (req, res) => {
             res.status(200).json({
               success: true,
               message: `Your order has been placed successfully!`,
-              order: { _id: order._id }
+              order: order
             });
           }
         })
@@ -103,7 +104,7 @@ router.get("/:page", auth.isAuth, async (req, res) => {
         };
 
         newDataSet.push(order);
-        newDataSet.sort((a, b) => { return a.orderID - b.orderID });
+        newDataSet.sort((a, b) => { return b.created - a.created });
 
         if (newDataSet.length === newOrders.length) {
           res.status(200).json({

@@ -21,7 +21,6 @@ export const profileDetailsReducer = (
     case CART_SHIPPING_ADDRESS_REQUEST:
       return { loading: true, profile: {} };
     case CART_SHIPPING_ADDRESS_SUCCESS:
-      console.log(action.payload);
       return { loading: false, profile: action.payload };
     case CART_SHIPPING_ADDRESS_FAIL:
       return { loading: false, error: action.payload };

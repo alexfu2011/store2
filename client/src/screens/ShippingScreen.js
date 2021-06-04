@@ -8,10 +8,13 @@ import Message from "../components/Message";
 import Loader from "../components/Loader";
 import axios from "axios";
 import { logout } from "../actions/userActions";
+import { saveCart } from "../actions/cartActions";
 
 const ShippingScreen = ({ history }) => {
   const profileDetail = useSelector((state) => state.profile);
-  const {loading, error, profile} = profileDetail;
+  const cartDetail = useSelector((state) => state.cart);
+  const { loading, error, profile } = profileDetail;
+  const { cart } = cartDetail;
   const [address, setAddress] = useState("")
   const [city, setCity] = useState("")
   const [person, setPerson] = useState("")
@@ -23,6 +26,7 @@ const ShippingScreen = ({ history }) => {
   const submitHandler = (e) => {
     e.preventDefault()
     dispatch(saveShippingAddress({ address, city, person, phone }));
+    dispatch(saveCart());
   }
   const logoutHandler = () => {
     dispatch(logout());
@@ -55,8 +59,11 @@ const ShippingScreen = ({ history }) => {
         : login ?
           <Message variant='info'>请重新 <a href="#" onClick={logoutHandler}>登录</a></Message>
           :
+          cart ? <Message variant='success'>订单已生成，订单号 {cart} </Message>
+          :
           <Form onSubmit={submitHandler} className="text-center">
-          {error && <Message variant='danger'>{error}</Message>}
+            {error && <Message variant='danger'>{error}</Message>}
+
             <Form.Group controlId='address'>
               <Form.Label className="float-left">地址</Form.Label>
               <Form.Control
