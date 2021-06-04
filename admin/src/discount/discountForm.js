@@ -130,6 +130,7 @@ export const DiscountForm = ({ onSave, isEditDiscount, data, ...props }) => {
                                 </Form.Control.Feedback>
                             </Form.Group>
                         </Form.Row>
+                        {isEdit && 
                         <Form.Group >
                             <Form.Check
                                 checked={discount.isActive === true}
@@ -145,7 +146,7 @@ export const DiscountForm = ({ onSave, isEditDiscount, data, ...props }) => {
                                 onChange={() => setField("isActive", false)}
                                 name="isActive"
                             />
-                        </Form.Group>
+                        </Form.Group>}
                     </Modal.Body>
                     <Modal.Footer>
                         {errorDb && <p style={{ color: "red" }}>无法{isEdit ? "更新" : "保存"}数据</p>}

@@ -103,6 +103,7 @@ router.get("/:page", auth.isAuth, async (req, res) => {
         };
 
         newDataSet.push(order);
+        newDataSet.sort((a, b) => { return a.orderID - b.orderID });
 
         if (newDataSet.length === newOrders.length) {
           res.status(200).json({
