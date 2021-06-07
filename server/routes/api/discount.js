@@ -57,7 +57,6 @@ router.put("/update/:discountId", auth.isAuth, jsonParser, async (req, res) => {
   try {
     const discountId = req.params.discountId;
     const {
-      code,
       percentage,
       quantity,
       from,
@@ -65,7 +64,6 @@ router.put("/update/:discountId", auth.isAuth, jsonParser, async (req, res) => {
       isActive
     } = req.body;
     const discount = await Discount.findByIdAndUpdate(discountId, {
-      code,
       percentage,
       quantity,
       from,

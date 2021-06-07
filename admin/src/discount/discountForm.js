@@ -23,6 +23,7 @@ export const DiscountForm = ({ onSave, isEditDiscount, data, ...props }) => {
                 try {
                     const res = await updateDiscount(discount);
                     if (res) {
+                        setDiscount({});
                         setSnackBarOpen(true);
                         setValidated(true);
                         onSave();
@@ -37,6 +38,7 @@ export const DiscountForm = ({ onSave, isEditDiscount, data, ...props }) => {
                 try {
                     const res = await addDiscount(discount);
                     if (res) {
+                        setDiscount({});
                         setSnackBarOpen(true);
                         setValidated(false);
                         onSave();

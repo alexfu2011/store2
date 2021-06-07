@@ -31,6 +31,7 @@ export const CategoryForm = ({ onSave, isEditCategory, data, ...props }) => {
                 try {
                     const res = await updateCategory(category);
                     if (res) {
+                        setCategory({ name: "" });
                         setSnackBarOpen(true);
                         onSave();
                     } else {
@@ -44,6 +45,7 @@ export const CategoryForm = ({ onSave, isEditCategory, data, ...props }) => {
                 try {
                     const res = await addCategory(category);
                     if (res) {
+                        setCategory({ name: "" });
                         setSnackBarOpen(true);
                         onSave();
                     } else {

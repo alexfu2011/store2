@@ -54,7 +54,60 @@ router.post("/add", auth.isAuth, jsonParser, async (req, res) => {
         })
       });
   } catch (error) {
-    console.log(error);
+    res.status(400).json({
+      error: "Your request could not be processed. Please try again."
+    });
+  }
+});
+
+router.get("/", auth.isAuth, async (req, res) => {
+  try {
+    const user = req.session._userId;
+    const orders = await Order.find({ user }).populate("cart,logs");
+
+    const newOrders = orders.filter(order => order.cart);
+
+    if (newOrders.length > 0) {
+      const newDataSet = [];
+
+      newOrders.map(async doc => {
+        const cartId = doc.cart._id;
+
+        const cart = await Cart.findById(cartId).populate("user", "-password").populate({
+          path: "products.product"
+        });
+
+        const profile = await Profile.findOne({ _userId: cart.user._id });
+
+        const order = {
+          _id: doc._id,
+          orderID: doc.orderID,
+          total: parseFloat(Number(doc.total.toFixed(2))),
+          discount: doc.discount,
+          created: doc.created,
+          isActive: doc.isActive,
+          logs: doc.logs,
+          cartId: cartId,
+          user: cart.user,
+          profile: profile,
+          products: cart.products
+        };
+
+        newDataSet.push(order);
+        newDataSet.sort((a, b) => { return b.created - a.created });
+
+        if (newDataSet.length === newOrders.length) {
+          res.status(200).json({
+            orders: newDataSet
+          });
+        }
+      });
+    } else {
+      res.status(200).json({
+        orders: []
+      });
+    }
+  } catch (error) {
     res.status(400).json({
       error: "Your request could not be processed. Please try again."
     });

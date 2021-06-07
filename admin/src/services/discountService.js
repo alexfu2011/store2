@@ -97,7 +97,6 @@ export const updateDiscount = (data) => {
     return new Promise((resolve, reject) => {
         const token = localStorage.getItem("token");
         const body = {
-            code: data.code,
             percentage: data.percentage,
             quantity: data.quantity,
             from: data.from,

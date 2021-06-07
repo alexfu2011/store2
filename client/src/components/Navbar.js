@@ -27,6 +27,7 @@ const NavBar = (props) => {
         <Nav className="ml-auto" navbar>
           <Nav.Link href="/">首页</Nav.Link>
           {userInfo ? <>
+          <Nav.Link href="/order">订单</Nav.Link>
           <Nav.Link href="/cart">购物车</Nav.Link>
           <Nav.Link onClick={logoutHandler}>退出</Nav.Link>
           </> :

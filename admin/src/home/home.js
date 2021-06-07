@@ -67,7 +67,7 @@ export const Home = (props) => {
                                     <div className="float-right text-success">
                                     </div>
                                     <h4 className="mb-2">订单</h4>
-                                    <span style={{ color: "green" }}>{data.TotalActiveOrders || 0} 已生效</span>，
+                                    <span style={{ color: "green" }}>{data.TotalActiveOrders || 0} 已生成</span>，
                                             <span style={{ color: "red" }}>{data.TotalInactiveOrders || 0} 已取消</span>
                                 </div>
                             </div>
