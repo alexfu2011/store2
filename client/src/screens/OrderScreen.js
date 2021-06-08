@@ -3,6 +3,7 @@ import { useDispatch, useSelector } from "react-redux";
 import {
   Table,
 } from "react-bootstrap";
+import { logout } from "../actions/userActions";
 import { listOrders } from "../actions/orderAction";
 import Message from "../components/Message";
 import Loader from "../components/Loader";
@@ -15,6 +16,10 @@ const OrderScreen = ({ match, location, history }) => {
 
   const { loading, error, orders } = orderList;
 
+  const logoutHandler = () => {
+    dispatch(logout());
+  };
+
   useEffect(() => {
     dispatch(listOrders());
   }, [dispatch]);
@@ -24,14 +29,14 @@ const OrderScreen = ({ match, location, history }) => {
       {loading ? (
         <Loader />
       ) : error ? (
-        <Message variant='danger'>{error}</Message>
+        <Message variant='info'>请重新 <a href="#" onClick={logoutHandler}>登录</a></Message>
       ) : (
         <>
           {orders &&
             orders.map((order) => (
               <div>
                 <h3>订单号：{order.orderID}</h3>
-                <Table striped bordered hover>
+                <Table striped hover>
                   <thead>
                     <tr>
                       <th>产品名称</th>
