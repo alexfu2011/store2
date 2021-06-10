@@ -106,7 +106,7 @@ export default function ProductScreen({ history, match }) {
               </Card>
             </Col>
           </Row>
-          <p style={{ "margin-top": "20px" }}>{product.description}</p>
+          <p style={{ marginTop: "20px" }}>{product.description}</p>
         </div>
       )}
     </>

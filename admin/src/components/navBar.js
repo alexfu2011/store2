@@ -1,7 +1,7 @@
 import React from 'react';
 import { Navbar, Button } from 'react-bootstrap';
 import { Link } from 'react-router-dom';
-import { FaHome, FaGripVertical, FaShoppingCart, FaPercent, FaUserAlt } from "react-icons/fa";
+import { FaHome, FaGripVertical, FaShoppingCart, FaPercent, FaUserAlt, FaRegImages } from "react-icons/fa";
 import { BiPackage } from "react-icons/bi";
 import './navBar.css';
 
@@ -37,6 +37,10 @@ export const NavBar = (props) => {
                 <Button variant="primary" >
                     <FaUserAlt size={30} color='white'></FaUserAlt>用户
                 </Button>
+            </Link>
+            <Link to='/banner'>
+                <Button variant="primary" >
+                <FaRegImages size={30} />广告</Button>
             </Link>
         </Navbar>
     );

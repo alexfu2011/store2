@@ -8,6 +8,7 @@ import { OrderDetails } from "./orders/orderDetails";
 import { CategoryList } from "./category/categoryList";
 import { DiscountList } from "./discount/discountList";
 import { UserList } from "./user/userList";
+import { BannerList } from "./banner/bannerList";
 import "react-bootstrap-table-next/dist/react-bootstrap-table2.min.css";
 import React, { useEffect, useState } from "react";
 
@@ -36,6 +37,7 @@ function App() {
         <SecuredRoute exact path="/discount" component={DiscountList} />
         <SecuredRoute exact path="/user" component={UserList} />
         <SecuredRoute exact path="/order/order/detail" component={OrderDetails} />
+        <SecuredRoute exact path="/banner" component={BannerList} />
       </Switch>
     </BrowserRouter>
   );
